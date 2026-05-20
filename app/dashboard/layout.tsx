@@ -5,6 +5,9 @@ import { AdminTopbar } from '@/components/admin/admin-topbar';
 import { createClient } from '@/lib/supabase/server';
 import { getUnreadNotificationsCount } from '@/lib/db/queries';
 
+// Zona autenticada: depende del usuario logueado, nunca se prerenderiza en build.
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient();
   const {

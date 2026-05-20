@@ -8,6 +8,9 @@ import { CompareProvider } from '@/components/admin/compare-store';
 import { createClient } from '@/lib/supabase/server';
 import { getUnreadNotificationsCount } from '@/lib/db/queries';
 
+// Zona autenticada: depende del usuario logueado, nunca se prerenderiza en build.
+export const dynamic = 'force-dynamic';
+
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
