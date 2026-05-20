@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import type { ReactNode } from 'react';
 import { AdminSidebar } from '@/components/admin/admin-sidebar';
 import { AdminTopbar } from '@/components/admin/admin-topbar';
+import { MobileBottomNav } from '@/components/admin/mobile-bottom-nav';
 import { CompareBar } from '@/components/admin/compare-bar';
 import { CompareProvider } from '@/components/admin/compare-store';
 import { createClient } from '@/lib/supabase/server';
@@ -49,10 +50,13 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         <AdminSidebar />
         <div className="flex flex-1 flex-col lg:pl-64">
           <AdminTopbar user={{ email: user.email ?? '' }} unreadCount={unreadCount} />
-          <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+          <main className="flex-1 px-4 py-6 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:px-6 lg:px-8 lg:pb-6">
+            {children}
+          </main>
         </div>
       </div>
       <CompareBar />
+      <MobileBottomNav variant="employer" />
     </CompareProvider>
   );
 }

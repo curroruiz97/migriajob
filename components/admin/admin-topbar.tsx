@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { Search, Bell, LogOut, Settings, CreditCard, ChevronDown, Command } from 'lucide-react';
 import { signOutAction } from '@/app/(auth)/actions';
-import { AdminMobileNav } from './admin-mobile-nav';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -43,9 +42,7 @@ export function AdminTopbar({ user, unreadCount = 0 }: AdminTopbarProps) {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 sm:px-6 lg:px-8">
-        <AdminMobileNav />
-
+      <header className="safe-top sticky top-0 z-20 flex min-h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 sm:px-6 lg:px-8">
         {/* Search — left side, fluid up to a sensible max */}
         <form action="/admin/candidatos" className="flex flex-1 max-w-md items-center">
           <div className="group relative w-full">

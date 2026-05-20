@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { EmployeeSidebar } from '@/components/employee/employee-sidebar';
 import { AdminTopbar } from '@/components/admin/admin-topbar';
+import { MobileBottomNav } from '@/components/admin/mobile-bottom-nav';
 import { createClient } from '@/lib/supabase/server';
 import { getUnreadNotificationsCount } from '@/lib/db/queries';
 
@@ -33,8 +34,11 @@ export default async function DashboardLayout({ children }: { children: ReactNod
       <EmployeeSidebar />
       <div className="flex flex-1 flex-col lg:pl-64">
         <AdminTopbar user={{ email: user.email ?? '' }} unreadCount={unreadCount} />
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+        <main className="flex-1 px-4 py-6 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:px-6 lg:px-8 lg:pb-6">
+          {children}
+        </main>
       </div>
+      <MobileBottomNav variant="candidate" />
     </div>
   );
 }
