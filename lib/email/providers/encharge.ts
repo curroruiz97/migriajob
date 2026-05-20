@@ -13,23 +13,25 @@ export class EnchargeProvider implements EmailProvider {
   private readonly eventName: string;
 
   constructor() {
-    // Get configuration from config file or environment variables
+    // Get configuration from config file or environment variables.
+    // No lanzar aquí: el constructor se evalúa durante `next build` al recolectar
+    // page data, y romperia el build si falta la env. La validación se hace en
+    // subscribe(), que solo se ejecuta en runtime cuando alguien se suscribe.
     const enchargeConfig = config.email?.encharge || {};
 
     this.writeKey =
       enchargeConfig.writeKey || process.env.ENCHARGE_WRITE_KEY || '';
     this.defaultTags = enchargeConfig.defaultTags || 'job-alerts-subscriber';
     this.eventName = enchargeConfig.eventName || 'Job Alert Subscription';
-
-    if (!this.writeKey && process.env.NODE_ENV === 'production') {
-      throw new Error('Encharge write key is required in production');
-    }
   }
 
   async subscribe(data: SubscriberData) {
     try {
-      // In development without a key, simulate success
-      if (!this.writeKey && process.env.NODE_ENV === 'development') {
+      // Sin key configurada: simular éxito en desarrollo, error claro en producción.
+      if (!this.writeKey) {
+        if (process.env.NODE_ENV === 'production') {
+          throw new Error('Encharge write key is required in production');
+        }
         return { success: true };
       }
 

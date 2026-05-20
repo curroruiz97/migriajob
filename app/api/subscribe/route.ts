@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import config from '@/config';
 import { RATE_LIMIT_WINDOW_MS } from '@/lib/constants/defaults';
-import { emailProvider } from '@/lib/email';
+import { getEmailProvider } from '@/lib/email';
 
 // Prevent caching
 export const dynamic = 'force-dynamic';
@@ -95,7 +95,7 @@ export async function POST(request: Request) {
     }
 
     // Subscribe the user
-    await emailProvider.subscribe({
+    await getEmailProvider().subscribe({
       email,
       name,
       ip: clientIp,
