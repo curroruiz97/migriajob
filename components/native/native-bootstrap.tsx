@@ -1,0 +1,46 @@
+'use client';
+
+import { useEffect } from 'react';
+
+/**
+ * Inicialización nativa (solo dentro de la app Capacitor; no-op en navegador web).
+ * - StatusBar con color de marca y texto claro, sin solapar el WebView.
+ * - Botón físico "atrás" de Android: retrocede en el historial o sale en la raíz.
+ *
+ * Usa import() dinámico para que los paquetes @capacitor/* no se evalúen en SSR
+ * ni rompan el build del servidor.
+ */
+export function NativeBootstrap() {
+  useEffect(() => {
+    let remove = () => {};
+
+    (async () => {
+      const { Capacitor } = await import('@capacitor/core');
+      if (!Capacitor.isNativePlatform()) return; // DECISIÓN: no hace nada en web
+
+      const [{ StatusBar, Style }, { App }] = await Promise.all([
+        import('@capacitor/status-bar'),
+        import('@capacitor/app'),
+      ]);
+
+      StatusBar.setOverlaysWebView({ overlay: false }).catch(() => {});
+      StatusBar.setBackgroundColor({ color: '#b55339' }).catch(() => {});
+      StatusBar.setStyle({ style: Style.Light }).catch(() => {}); // texto claro sobre terracota
+
+      const sub = await App.addListener('backButton', ({ canGoBack }) => {
+        if (canGoBack) {
+          window.history.back();
+        } else {
+          App.exitApp();
+        }
+      });
+      remove = () => {
+        sub.remove();
+      };
+    })();
+
+    return () => remove();
+  }, []);
+
+  return null;
+}

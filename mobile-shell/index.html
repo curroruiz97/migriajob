@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>MigriaJob</title>
+    <style>
+      :root { color-scheme: light; }
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: #fdf8f3;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      }
+      .wrap {
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        padding: 24px;
+        text-align: center;
+      }
+      .logo {
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #23140b;
+      }
+      .logo span { color: #b55339; }
+      .spinner {
+        width: 28px;
+        height: 28px;
+        border: 3px solid #e8dfd5;
+        border-top-color: #b55339;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      .hint { font-size: 13px; color: #9c8b7b; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="logo">MIGRIA<span>JOB</span></div>
+      <div class="spinner" aria-label="Cargando"></div>
+      <div class="hint">Cargando…</div>
+    </div>
+  </body>
+</html>

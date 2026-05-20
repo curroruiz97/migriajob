@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Sin conexión · MigriaJob</title>
+    <style>
+      :root { color-scheme: light; }
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: #fdf8f3;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: #23140b;
+      }
+      .wrap {
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        padding: 32px;
+        text-align: center;
+      }
+      .logo {
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .logo span { color: #b55339; }
+      .icon {
+        width: 56px;
+        height: 56px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: #fae5d8;
+        color: #b55339;
+        font-size: 26px;
+      }
+      h1 { font-size: 20px; margin: 4px 0 0; }
+      p { font-size: 14px; color: #6b5440; max-width: 320px; margin: 0; line-height: 1.5; }
+      button {
+        margin-top: 8px;
+        appearance: none;
+        border: 0;
+        border-radius: 999px;
+        background: #b55339;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        padding: 12px 28px;
+        cursor: pointer;
+      }
+      button:active { background: #a84d2f; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="logo">MIGRIA<span>JOB</span></div>
+      <div class="icon" aria-hidden="true">⚠</div>
+      <h1>Sin conexión</h1>
+      <p>No hemos podido conectar con MigriaJob. Comprueba tu conexión a internet e inténtalo de nuevo.</p>
+      <button onclick="location.reload()">Reintentar</button>
+    </div>
+  </body>
+</html>

@@ -31,3 +31,14 @@ npm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 .gstack/
+
+# capacitor / android (artefactos de build; el proyecto nativo sí se versiona)
+/android/.gradle/
+/android/build/
+/android/app/build/
+/android/local.properties
+/android/app/src/main/assets/public/
+/android/capacitor-cordova-android-plugins/
+*.apk
+*.aab
+apk-build.log

@@ -204,4 +204,9 @@
     background: hsl(var(--border-strong));
     border-radius: 3px;
   }
+
+  /* Safe areas (notch / barra de gestos). Insets = 0 en escritorio → inofensivas. */
+  .safe-top    { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .safe-x      { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
 }

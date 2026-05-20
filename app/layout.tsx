@@ -1,8 +1,9 @@
 import './globals.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Instrument_Serif } from 'next/font/google';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import type { ReactNode } from 'react';
+import { NativeBootstrap } from '@/components/native/native-bootstrap';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import {
@@ -39,6 +40,13 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover', // necesario para env(safe-area-inset-*) en notch/gestos
+  themeColor: '#b55339',
+};
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   const fontFamily = 'geist';
   const fontClass = getFontClass(fontFamily);
@@ -60,6 +68,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     >
       <body className={bodyClass} style={{ '--font-display': `var(--font-instrument-serif), Georgia, serif` } as React.CSSProperties}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+          <NativeBootstrap />
           <NuqsAdapter>{children}</NuqsAdapter>
           <Toaster />
         </ThemeProvider>
