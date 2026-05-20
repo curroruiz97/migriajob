@@ -11,6 +11,8 @@ export type AuthState = { error?: string; ok?: true };
  * Traduce mensajes de error de Supabase Auth al español.
  */
 function translateAuthError(message: string): string {
+  // Loguea el mensaje original de Supabase para diagnóstico (visible en logs de Vercel).
+  console.error('[auth] Supabase error:', message);
   const lower = message.toLowerCase();
   if (lower.includes('invalid login credentials')) return 'Email o contraseña incorrectos.';
   if (lower.includes('email not confirmed')) return 'Aún no has confirmado tu email. Revisa tu bandeja.';
@@ -21,7 +23,12 @@ function translateAuthError(message: string): string {
   if (lower.includes('signups not allowed') || lower.includes('signup is disabled')) return 'El registro está temporalmente deshabilitado.';
   if (lower.includes('invalid email')) return 'El email no es válido.';
   if (lower.includes('captcha')) return 'Verificación captcha fallida. Inténtalo de nuevo.';
-  if (lower.includes('network') || lower.includes('fetch failed')) return 'No hemos podido conectar con el servidor. Comprueba tu conexión.';
+  // Configuración de Supabase incorrecta (clave/URL mal en Vercel).
+  if (lower.includes('invalid api key') || lower.includes('apikey') || lower.includes('no api key'))
+    return 'Error de configuración del servidor (clave de API). Avisa al equipo.';
+  if (lower.includes('project not found') || lower.includes('not found'))
+    return 'Error de configuración del servidor (proyecto). Avisa al equipo.';
+  if (lower.includes('network') || lower.includes('fetch failed') || lower.includes('fetch')) return 'No hemos podido conectar con el servidor. Comprueba tu conexión.';
   return 'Algo ha ido mal. Inténtalo de nuevo.';
 }
 
