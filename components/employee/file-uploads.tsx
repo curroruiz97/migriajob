@@ -64,13 +64,15 @@ export function AvatarUpload({
   currentUrl,
   initials,
   label = 'Foto de perfil',
+  uploadAction = uploadAvatarAction,
 }: {
   currentUrl: string | null;
   initials: string;
   label?: string;
+  uploadAction?: (prev: State, fd: FormData) => Promise<State>;
 }) {
   const router = useRouter();
-  const [state, action, pending] = useActionState<State, FormData>(uploadAvatarAction, null);
+  const [state, action, pending] = useActionState<State, FormData>(uploadAction, null);
   // Previsualización instantánea del archivo elegido (PASO 2).
   const [preview, setPreview] = useState<string | null>(null);
 

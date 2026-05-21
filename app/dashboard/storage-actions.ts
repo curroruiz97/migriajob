@@ -46,6 +46,31 @@ export async function uploadCvAction(_prev: unknown, formData: FormData) {
   });
 }
 
+export async function uploadCompanyLogoAction(_prev: unknown, formData: FormData) {
+  return safeAction(async () => {
+    const { user, supabase } = await requireUser();
+    const file = formData.get('avatar') as File | null;
+    if (!file || file.size === 0) return { error: 'Selecciona una imagen' };
+    if (file.size > MAX_AVATAR_BYTES) return { error: 'La imagen no puede pesar más de 2 MB' };
+    if (!ALLOWED_IMG_TYPES.includes(file.type)) return { error: 'Formato no admitido (PNG, JPG o WebP)' };
+
+    const ext = file.type === 'image/png' ? 'png' : file.type === 'image/webp' ? 'webp' : 'jpg';
+    const path = `${user.id}/logo.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from('avatars')
+      .upload(path, file, { contentType: file.type, upsert: true });
+    if (upErr) return { error: upErr.message };
+
+    const { data: pub } = supabase.storage.from('avatars').getPublicUrl(path);
+    const url = `${pub.publicUrl}?v=${Date.now()}`;
+
+    await supabase.from('companies').update({ logo_url: url }).eq('owner_id', user.id);
+
+    revalidatePath('/admin/perfil-empresa');
+    return { ok: true as const };
+  });
+}
+
 export async function uploadAvatarAction(_prev: unknown, formData: FormData) {
   return safeAction(async () => {
     const { user, supabase } = await requireUser();
