@@ -84,6 +84,11 @@ export function MobileBottomNav({
   const menu = variant === 'employer' ? EMPLOYER_MENU : CANDIDATE_MENU;
   const hasMore = menu.length > 0;
 
+  // Acento por rol: candidato = terracota (primary), empresa = dorado (accent-warm).
+  const activeIcon =
+    variant === 'employer' ? 'bg-accent-warm/15 text-accent-warm' : 'bg-primary-soft text-primary';
+  const activeText = variant === 'employer' ? 'text-accent-warm' : 'text-primary';
+
   const menuActive = menu.some((item) => isActive(pathname, item));
 
   return (
@@ -106,7 +111,7 @@ export function MobileBottomNav({
                 <span
                   className={cn(
                     'relative flex h-8 w-12 items-center justify-center rounded-full transition-colors',
-                    active ? 'bg-primary-soft text-primary' : 'text-muted-foreground'
+                    active ? activeIcon : 'text-muted-foreground'
                   )}
                 >
                   <item.icon className="h-[18px] w-[18px]" />
@@ -119,7 +124,7 @@ export function MobileBottomNav({
                 <span
                   className={cn(
                     'max-w-full truncate text-[10px] font-medium leading-none transition-colors',
-                    active ? 'text-primary' : 'text-muted-foreground'
+                    active ? activeText : 'text-muted-foreground'
                   )}
                 >
                   {item.label}
@@ -139,7 +144,7 @@ export function MobileBottomNav({
               <span
                 className={cn(
                   'flex h-8 w-12 items-center justify-center rounded-full transition-colors',
-                  menuActive || menuOpen ? 'bg-primary-soft text-primary' : 'text-muted-foreground'
+                  menuActive || menuOpen ? activeIcon : 'text-muted-foreground'
                 )}
               >
                 <Menu className="h-[18px] w-[18px]" />
@@ -147,7 +152,7 @@ export function MobileBottomNav({
               <span
                 className={cn(
                   'text-[10px] font-medium leading-none transition-colors',
-                  menuActive || menuOpen ? 'text-primary' : 'text-muted-foreground'
+                  menuActive || menuOpen ? activeText : 'text-muted-foreground'
                 )}
               >
                 Más

@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useRef } from 'react';
+import { useActionState, useEffect, useRef, useState } from 'react';
 import { FileText, ImagePlus, ExternalLink, Upload } from 'lucide-react';
 import { uploadAvatarAction, uploadCvAction } from '@/app/dashboard/storage-actions';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -62,23 +62,46 @@ export function CvUpload({ currentUrl }: { currentUrl: string | null }) {
 export function AvatarUpload({
   currentUrl,
   initials,
+  label = 'Foto de perfil',
 }: {
   currentUrl: string | null;
   initials: string;
+  label?: string;
 }) {
   const [state, action, pending] = useActionState<State, FormData>(uploadAvatarAction, null);
+  // Previsualización instantánea del archivo elegido (PASO 2).
+  const [preview, setPreview] = useState<string | null>(null);
+
+  function onPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) setPreview(URL.createObjectURL(file));
+  }
+
+  // Cuando el servidor confirma y devuelve la URL definitiva, soltamos el blob local.
+  useEffect(() => {
+    if (state?.ok) setPreview(null);
+  }, [state]);
+
+  // Limpia el objeto URL para no fugar memoria.
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
+
+  const shown = preview ?? currentUrl;
 
   return (
     <div className="rounded-xl border border-border bg-surface p-6">
       <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
         <ImagePlus className="h-4 w-4 text-muted-foreground" />
-        Foto de perfil
+        {label}
       </h3>
       <p className="mt-1 text-xs text-muted-foreground">PNG, JPG o WebP. Máx 2 MB.</p>
 
       <div className="mt-4 flex items-center gap-4">
         <Avatar className="h-16 w-16">
-          {currentUrl && <AvatarImage src={currentUrl} alt="" />}
+          {shown && <AvatarImage src={shown} alt="" />}
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
         <form action={action} className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -87,6 +110,7 @@ export function AvatarUpload({
             name="avatar"
             accept="image/png,image/jpeg,image/webp"
             required
+            onChange={onPick}
             className="block w-full text-xs text-muted-foreground file:mr-3 file:rounded-md file:border file:border-border file:bg-surface-muted file:px-3 file:py-1.5 file:text-foreground file:hover:bg-muted"
           />
           <Button type="submit" size="sm" disabled={pending}>
@@ -95,12 +119,8 @@ export function AvatarUpload({
         </form>
       </div>
 
-      {state?.ok && (
-        <p className="mt-2 text-xs text-success">Foto actualizada.</p>
-      )}
-      {state?.error && (
-        <p className="mt-2 text-xs text-destructive">{state.error}</p>
-      )}
+      {state?.ok && <p className="mt-2 text-xs text-success">Foto actualizada.</p>}
+      {state?.error && <p className="mt-2 text-xs text-destructive">{state.error}</p>}
     </div>
   );
 }

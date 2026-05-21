@@ -14,10 +14,15 @@ export const metadata = {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ registered?: string; redirectTo?: string }>;
+  searchParams: Promise<{ registered?: string; redirectTo?: string; role?: string }>;
 }) {
   const params = await searchParams;
   const registered = params.registered === '1';
+  const isCompany = params.role === 'employer';
+  const subtitle = isCompany
+    ? 'Accede a tu cuenta para gestionar tus ofertas, revisar candidatos y encontrar el talento que necesitas.'
+    : 'Accede a tu cuenta para descubrir nuevas ofertas, seguir tus solicitudes y avanzar en tu proceso.';
+  const registerHref = params.role ? `/registro?role=${params.role}` : '/registro';
 
   return (
     <div className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
@@ -26,21 +31,19 @@ export default async function LoginPage({
         <AuthBrandHeaderMobile variant="login" />
 
         <Link
-          href="/"
+          href="/bienvenida"
           className="hidden items-center gap-1.5 self-start text-sm font-medium text-muted-foreground transition-colors hover:text-foreground lg:inline-flex"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
-          Volver al inicio
+          Volver
         </Link>
 
         <div className="mx-auto mt-10 flex w-full max-w-md flex-1 flex-col justify-center lg:mt-0">
           <header className="mb-8">
             <h1 className="font-display text-4xl leading-[1.05] tracking-tight text-foreground sm:text-5xl">
-              Iniciar <em className="text-gradient-primary not-italic">sesión</em>
+              Bienvenido de <em className="text-gradient-primary not-italic">nuevo</em>
             </h1>
-            <p className="mt-3 text-sm text-muted-foreground">
-              Accede a tu cuenta de Migria para continuar tu proceso o gestionar tu plantilla.
-            </p>
+            <p className="mt-3 text-sm text-muted-foreground">{subtitle}</p>
           </header>
 
           <LoginForm registered={registered} />
@@ -48,7 +51,7 @@ export default async function LoginPage({
           <p className="mt-8 text-center text-sm text-muted-foreground">
             ¿Aún no tienes cuenta?{' '}
             <Link
-              href="/registro"
+              href={registerHref}
               className="font-medium text-primary underline-offset-2 hover:underline"
             >
               Crear cuenta gratis
