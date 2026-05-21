@@ -43,13 +43,22 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   }
 
   const unreadCount = await getUnreadNotificationsCount(user.id).catch(() => 0);
+  const { data: companyLogo } = await supabase
+    .from('companies')
+    .select('logo_url')
+    .eq('owner_id', user.id)
+    .maybeSingle();
 
   return (
     <CompareProvider>
       <div className="flex min-h-screen bg-background">
         <AdminSidebar />
         <div className="flex flex-1 flex-col lg:pl-64">
-          <AdminTopbar user={{ email: user.email ?? '' }} unreadCount={unreadCount} />
+          <AdminTopbar
+            user={{ email: user.email ?? '' }}
+            unreadCount={unreadCount}
+            avatarUrl={companyLogo?.logo_url ?? null}
+          />
           <main className="flex-1 px-4 py-6 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:px-6 lg:px-8 lg:pb-6">
             {children}
           </main>

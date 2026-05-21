@@ -1,6 +1,7 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { updateCompanyAction } from '@/app/admin/perfil-empresa/actions';
 import { Button } from '@/components/ui/button';
@@ -38,7 +39,13 @@ const SECTORS = [
 const SIZES = ['1-10', '11-50', '51-200', '200+'];
 
 export function CompanyForm({ defaults }: { defaults: CompanyDefaults }) {
+  const router = useRouter();
   const [state, action, pending] = useActionState<Result, FormData>(updateCompanyAction, null);
+
+  // Refresca la ruta al guardar para que el logo del topbar se actualice (Bug 4/6).
+  useEffect(() => {
+    if (state && 'ok' in state && state.ok) router.refresh();
+  }, [state, router]);
 
   return (
     <form action={action} className="space-y-8 rounded-2xl border border-border bg-surface p-5 sm:p-6">

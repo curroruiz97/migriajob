@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Logo } from '@/components/ui/logo';
 import {
   Tooltip,
@@ -27,6 +27,8 @@ interface AdminTopbarProps {
   unreadCount?: number;
   /** 'employer' (por defecto): buscador de candidatos + facturación. 'candidate': solo marca + perfil. */
   variant?: 'employer' | 'candidate';
+  /** Foto del candidato o logo de la empresa; se refleja en el avatar superior. */
+  avatarUrl?: string | null;
 }
 
 function getInitials(email: string) {
@@ -38,7 +40,7 @@ function getInitials(email: string) {
   return name.slice(0, 2).toUpperCase();
 }
 
-export function AdminTopbar({ user, unreadCount = 0, variant = 'employer' }: AdminTopbarProps) {
+export function AdminTopbar({ user, unreadCount = 0, variant = 'employer', avatarUrl = null }: AdminTopbarProps) {
   const initials = getInitials(user.email);
   const displayName = user.email.split('@')[0] ?? user.email;
   const hasUnread = unreadCount > 0;
@@ -120,6 +122,7 @@ export function AdminTopbar({ user, unreadCount = 0, variant = 'employer' }: Adm
                 aria-label="Abrir menú de usuario"
               >
                 <Avatar className="h-8 w-8 ring-2 ring-primary/15 transition-all group-hover:ring-primary/30">
+                  {avatarUrl && <AvatarImage src={avatarUrl} alt="" />}
                   <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-xs font-semibold text-primary-foreground">
                     {initials}
                   </AvatarFallback>
@@ -138,6 +141,7 @@ export function AdminTopbar({ user, unreadCount = 0, variant = 'employer' }: Adm
             <DropdownMenuContent align="end" sideOffset={8} className="w-64 overflow-hidden p-0">
               <div className="flex items-center gap-3 border-b border-border bg-gradient-to-br from-primary-soft/60 via-surface to-surface px-3 py-3">
                 <Avatar className="h-10 w-10 ring-2 ring-primary/20">
+                  {avatarUrl && <AvatarImage src={avatarUrl} alt="" />}
                   <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-sm font-semibold text-primary-foreground">
                     {initials}
                   </AvatarFallback>

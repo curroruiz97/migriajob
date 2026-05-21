@@ -28,12 +28,22 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   }
 
   const unreadCount = await getUnreadNotificationsCount(user.id).catch(() => 0);
+  const { data: cand } = await supabase
+    .from('candidates')
+    .select('avatar_url')
+    .eq('profile_id', user.id)
+    .maybeSingle();
 
   return (
     <div className="flex min-h-screen bg-background">
       <EmployeeSidebar />
       <div className="flex flex-1 flex-col lg:pl-64">
-        <AdminTopbar user={{ email: user.email ?? '' }} unreadCount={unreadCount} variant="candidate" />
+        <AdminTopbar
+          user={{ email: user.email ?? '' }}
+          unreadCount={unreadCount}
+          variant="candidate"
+          avatarUrl={cand?.avatar_url ?? null}
+        />
         <main className="flex-1 px-4 py-6 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:px-6 lg:px-8 lg:pb-6">
           {children}
         </main>

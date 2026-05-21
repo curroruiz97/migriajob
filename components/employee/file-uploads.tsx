@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { FileText, ImagePlus, ExternalLink, Upload } from 'lucide-react';
 import { uploadAvatarAction, uploadCvAction } from '@/app/dashboard/storage-actions';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -68,6 +69,7 @@ export function AvatarUpload({
   initials: string;
   label?: string;
 }) {
+  const router = useRouter();
   const [state, action, pending] = useActionState<State, FormData>(uploadAvatarAction, null);
   // Previsualización instantánea del archivo elegido (PASO 2).
   const [preview, setPreview] = useState<string | null>(null);
@@ -77,10 +79,14 @@ export function AvatarUpload({
     if (file) setPreview(URL.createObjectURL(file));
   }
 
-  // Cuando el servidor confirma y devuelve la URL definitiva, soltamos el blob local.
+  // Al confirmar el servidor: soltar el blob local y refrescar la ruta para que
+  // el avatar del topbar (en el layout) se actualice al instante (Bug 4).
   useEffect(() => {
-    if (state?.ok) setPreview(null);
-  }, [state]);
+    if (state?.ok) {
+      setPreview(null);
+      router.refresh();
+    }
+  }, [state, router]);
 
   // Limpia el objeto URL para no fugar memoria.
   useEffect(() => {
