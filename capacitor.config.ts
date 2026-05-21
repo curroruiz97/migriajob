@@ -9,7 +9,9 @@ const config: CapacitorConfig = {
   server: {
     // DECISIÓN: WebView hospedado. MigriaJob usa SSR + server actions + middleware,
     // así que NO se puede exportar estático; cargamos el sitio en producción.
-    url: 'https://migriajob.vercel.app',
+    // La app abre en /bienvenida (pantalla nativa de roles); si hay sesión,
+    // /bienvenida redirige al área del usuario.
+    url: 'https://migriajob.vercel.app/bienvenida',
     androidScheme: 'https',
     // Pantalla mostrada si la URL no carga (sin conexión / error).
     errorPath: 'offline.html',

@@ -23,8 +23,8 @@ const initial: AuthState = {};
 
 type Role = 'candidate' | 'employer';
 
-export function RegistroForm() {
-  const [role, setRole] = useState<Role>('candidate');
+export function RegistroForm({ initialRole = 'candidate' }: { initialRole?: Role }) {
+  const [role, setRole] = useState<Role>(initialRole);
   const [showPassword, setShowPassword] = useState(false);
   const [state, formAction, pending] = useActionState(signUpAction, initial);
 
