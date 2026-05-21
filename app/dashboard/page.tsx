@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 
 export default function DashboardIndex() {
-  redirect('/dashboard/mi-perfil');
+  // Pantalla de inicio del candidato: Ofertas.
+  redirect('/dashboard/ofertas');
 }

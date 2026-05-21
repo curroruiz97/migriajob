@@ -9,14 +9,16 @@ import {
   Search,
   Workflow,
   MessageSquare,
+  MessageCircle,
   CreditCard,
   Heart,
   GitCompare,
   Bell,
   BookmarkCheck,
   FileText,
+  ClipboardList,
+  Briefcase,
   User,
-  CalendarCheck,
   Settings,
   Menu,
   LogOut,
@@ -27,7 +29,14 @@ import { signOutAction } from '@/app/(auth)/actions';
 import { Logo } from '@/components/ui/logo';
 import { cn } from '@/lib/utils';
 
-type NavItem = { href: string; label: string; icon: LucideIcon; exact?: boolean };
+type NavItem = {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  exact?: boolean;
+  /** Muestra el badge de no leídos en este tab. */
+  badge?: boolean;
+};
 
 const EMPLOYER_PRIMARY: NavItem[] = [
   { href: '/admin', label: 'Inicio', icon: LayoutDashboard, exact: true },
@@ -47,31 +56,36 @@ const EMPLOYER_MENU: NavItem[] = [
 ];
 
 const CANDIDATE_PRIMARY: NavItem[] = [
+  { href: '/dashboard/ofertas', label: 'Ofertas', icon: Briefcase },
+  { href: '/dashboard/solicitudes', label: 'Solicitudes', icon: ClipboardList },
+  { href: '/dashboard/mensajes', label: 'Mensajes', icon: MessageCircle, badge: true },
   { href: '/dashboard/mi-perfil', label: 'Perfil', icon: User },
-  { href: '/dashboard/mis-aplicaciones', label: 'Solicitudes', icon: FileText },
-  { href: '/dashboard/disponibilidad', label: 'Disponib.', icon: CalendarCheck },
 ];
 
-const CANDIDATE_MENU: NavItem[] = [
-  { href: '/dashboard/configuracion', label: 'Configuración', icon: Settings },
-];
+const CANDIDATE_MENU: NavItem[] = []; // El candidato no tiene "Más": 4 tabs directos.
 
 function isActive(pathname: string, item: NavItem) {
   return item.exact ? pathname === item.href : pathname.startsWith(item.href);
 }
 
-export function MobileBottomNav({ variant }: { variant: 'employer' | 'candidate' }) {
+export function MobileBottomNav({
+  variant,
+  unreadCount = 0,
+}: {
+  variant: 'employer' | 'candidate';
+  unreadCount?: number;
+}) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const primary = variant === 'employer' ? EMPLOYER_PRIMARY : CANDIDATE_PRIMARY;
   const menu = variant === 'employer' ? EMPLOYER_MENU : CANDIDATE_MENU;
+  const hasMore = menu.length > 0;
 
   const menuActive = menu.some((item) => isActive(pathname, item));
 
   return (
     <>
-      {/* Bottom tab bar — solo móvil */}
       <nav
         aria-label="Navegación principal"
         className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 backdrop-blur-md lg:hidden"
@@ -80,6 +94,7 @@ export function MobileBottomNav({ variant }: { variant: 'employer' | 'candidate'
         <div className="mx-auto flex h-16 max-w-lg items-stretch justify-around px-1">
           {primary.map((item) => {
             const active = isActive(pathname, item);
+            const showBadge = item.badge && unreadCount > 0;
             return (
               <Link
                 key={item.href}
@@ -88,11 +103,16 @@ export function MobileBottomNav({ variant }: { variant: 'employer' | 'candidate'
               >
                 <span
                   className={cn(
-                    'flex h-8 w-12 items-center justify-center rounded-full transition-colors',
+                    'relative flex h-8 w-12 items-center justify-center rounded-full transition-colors',
                     active ? 'bg-primary-soft text-primary' : 'text-muted-foreground'
                   )}
                 >
                   <item.icon className="h-[18px] w-[18px]" />
+                  {showBadge && (
+                    <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full border-2 border-surface bg-primary px-1 text-[9px] font-bold leading-none text-primary-foreground">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
                 </span>
                 <span
                   className={cn(
@@ -106,41 +126,43 @@ export function MobileBottomNav({ variant }: { variant: 'employer' | 'candidate'
             );
           })}
 
-          {/* Tab "Más" — abre el menú full-screen */}
-          <button
-            type="button"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Más opciones"
-            aria-expanded={menuOpen}
-            className="group flex flex-1 flex-col items-center justify-center gap-1"
-          >
-            <span
-              className={cn(
-                'flex h-8 w-12 items-center justify-center rounded-full transition-colors',
-                menuActive || menuOpen ? 'bg-primary-soft text-primary' : 'text-muted-foreground'
-              )}
+          {hasMore && (
+            <button
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Más opciones"
+              aria-expanded={menuOpen}
+              className="group flex flex-1 flex-col items-center justify-center gap-1"
             >
-              <Menu className="h-[18px] w-[18px]" />
-            </span>
-            <span
-              className={cn(
-                'text-[10px] font-medium leading-none transition-colors',
-                menuActive || menuOpen ? 'text-primary' : 'text-muted-foreground'
-              )}
-            >
-              Más
-            </span>
-          </button>
+              <span
+                className={cn(
+                  'flex h-8 w-12 items-center justify-center rounded-full transition-colors',
+                  menuActive || menuOpen ? 'bg-primary-soft text-primary' : 'text-muted-foreground'
+                )}
+              >
+                <Menu className="h-[18px] w-[18px]" />
+              </span>
+              <span
+                className={cn(
+                  'text-[10px] font-medium leading-none transition-colors',
+                  menuActive || menuOpen ? 'text-primary' : 'text-muted-foreground'
+                )}
+              >
+                Más
+              </span>
+            </button>
+          )}
         </div>
       </nav>
 
-      {/* Menú full-screen (slide-up) */}
-      <MobileMenu
-        open={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        items={menu}
-        pathname={pathname}
-      />
+      {hasMore && (
+        <MobileMenu
+          open={menuOpen}
+          onClose={() => setMenuOpen(false)}
+          items={menu}
+          pathname={pathname}
+        />
+      )}
     </>
   );
 }
@@ -160,14 +182,12 @@ function MobileMenu({
 
   return (
     <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Menú">
-      {/* Overlay */}
       <button
         type="button"
         aria-label="Cerrar menú"
         onClick={onClose}
         className="absolute inset-0 bg-black/40 animate-in fade-in-0"
       />
-      {/* Panel a pantalla completa con slide-up */}
       <div className="absolute inset-0 flex flex-col bg-background animate-in slide-in-from-bottom duration-300">
         <header
           className="flex items-center justify-between border-b border-border px-4"

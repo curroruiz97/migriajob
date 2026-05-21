@@ -39,6 +39,12 @@ export async function updateProfileAction(_prev: unknown, formData: FormData) {
     const skills = skillsRaw
       ? skillsRaw.split(',').map((s) => s.trim()).filter(Boolean)
       : [];
+    const locationCity = String(formData.get('locationCity') ?? '').trim() || null;
+    const locationCountry = String(formData.get('locationCountry') ?? '').trim() || null;
+    const languagesRaw = String(formData.get('languages') ?? '').trim();
+    const languages = languagesRaw
+      ? languagesRaw.split(',').map((s) => s.trim()).filter(Boolean)
+      : [];
 
     // Update profile
     await supabase
@@ -65,6 +71,9 @@ export async function updateProfileAction(_prev: unknown, formData: FormData) {
         years_experience: yearsExperience,
         desired_salary_min: desiredSalaryMin,
         skills,
+        location_city: locationCity,
+        location_country: locationCountry,
+        languages,
       });
     } else {
       await supabase
@@ -76,12 +85,81 @@ export async function updateProfileAction(_prev: unknown, formData: FormData) {
           years_experience: yearsExperience,
           desired_salary_min: desiredSalaryMin,
           skills,
+          location_city: locationCity,
+          location_country: locationCountry,
+          languages,
           updated_at: new Date().toISOString(),
         })
         .eq('profile_id', user.id);
     }
 
     revalidatePath('/dashboard/mi-perfil');
+    return { ok: true as const };
+  });
+}
+
+export async function applyToJobAction(jobId: string) {
+  return safeAction(async () => {
+    const { user, supabase } = await requireUser();
+
+    const { data: candidate } = await supabase
+      .from('candidates')
+      .select('id')
+      .eq('profile_id', user.id)
+      .maybeSingle();
+
+    if (!candidate) {
+      return { error: 'Completa tu perfil antes de solicitar ofertas.' as string };
+    }
+
+    // Evita duplicados
+    const { data: existing } = await supabase
+      .from('applications')
+      .select('id')
+      .eq('candidate_id', candidate.id)
+      .eq('job_id', jobId)
+      .maybeSingle();
+
+    if (!existing) {
+      await supabase.from('applications').insert({
+        candidate_id: candidate.id,
+        job_id: jobId,
+        status: 'submitted',
+      });
+    }
+
+    revalidatePath('/dashboard/solicitudes');
+    return { ok: true as const };
+  });
+}
+
+export async function sendMessageAction(conversationId: string, body: string) {
+  return safeAction(async () => {
+    const { user, supabase } = await requireUser();
+    const text = body.trim();
+    if (!text) return { error: 'El mensaje está vacío.' as string };
+
+    // Verifica que el usuario pertenece a la conversación
+    const { data: conv } = await supabase
+      .from('conversations')
+      .select('id, employer_id, candidate_id')
+      .eq('id', conversationId)
+      .maybeSingle();
+    if (!conv || (conv.employer_id !== user.id && conv.candidate_id !== user.id)) {
+      return { error: 'No tienes acceso a esta conversación.' as string };
+    }
+
+    await supabase.from('messages').insert({
+      conversation_id: conversationId,
+      sender_id: user.id,
+      body: text,
+    });
+    await supabase
+      .from('conversations')
+      .update({ last_message_at: new Date().toISOString() })
+      .eq('id', conversationId);
+
+    revalidatePath(`/dashboard/mensajes/${conversationId}`);
     return { ok: true as const };
   });
 }
