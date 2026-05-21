@@ -132,7 +132,7 @@ export function OfferForm({ jobId, defaults }: { jobId?: string; defaults?: Offe
       </div>
 
       <div className="space-y-1.5">
-        <Label>Skills / aptitudes (separadas por comas)</Label>
+        <Label>Habilidades / aptitudes (separadas por comas)</Label>
         <Input name="skills" defaultValue={d.skills} placeholder="Cocina española, APPCC, trabajo en equipo" />
       </div>
 

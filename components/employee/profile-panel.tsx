@@ -65,9 +65,9 @@ export function ProfilePanel({
     const langCount = form.languages.split(',').map((s) => s.trim()).filter(Boolean).length;
     const its = [
       { label: 'Foto de perfil', done: hasAvatar, weight: 10 },
-      { label: 'Titular (headline)', done: form.headline.trim().length > 5, weight: 10 },
+      { label: 'Titular profesional', done: form.headline.trim().length > 5, weight: 10 },
       { label: 'Sobre mí (>50 caracteres)', done: form.bio.trim().length > 50, weight: 15 },
-      { label: 'Al menos 1 skill', done: skillsCount > 0, weight: 15 },
+      { label: 'Al menos 1 habilidad', done: skillsCount > 0, weight: 15 },
       { label: 'Experiencia profesional', done: hasExperience, weight: 10 },
       { label: 'Idiomas', done: langCount > 0, weight: 10 },
       { label: 'Años de experiencia', done: form.yearsExperience.trim() !== '', weight: 5 },
@@ -206,7 +206,7 @@ export function ProfilePanel({
           <Field label="Salario esperado (€/año, mínimo)">
             <Input value={form.desiredSalaryMin} onChange={set('desiredSalaryMin')} type="number" min={0} step={1000} />
           </Field>
-          <Field label="Skills (separadas por comas)" full>
+          <Field label="Habilidades (separadas por comas)" full>
             <Input value={form.skills} onChange={set('skills')} placeholder="Cocina española, APPCC, repostería" />
           </Field>
           <Field label="Idiomas (separados por comas)" full>
