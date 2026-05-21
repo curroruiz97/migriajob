@@ -50,16 +50,29 @@ export default async function EditarOfertaPage({
   if (!job || (company && job.company_id !== company.id)) notFound();
   const j = job as Record<string, unknown>;
 
+  // País + ciudad: si la migración 0007 está aplicada usamos j.country; si no,
+  // derivamos el país del texto de `location` ("Ciudad, País").
+  const loc = (j.location as string | null) ?? '';
+  const country = (j.country as string | null) || (loc.includes('Perú') ? 'Perú' : 'España');
+  const city = loc.replace(/,?\s*(España|Perú)\s*$/i, '').trim();
+  const startDate = j.start_date ? String(j.start_date).slice(0, 10) : '';
+  // Categoría: columna 0007, o primer skill como respaldo.
+  const category =
+    (j.category as string | null) ||
+    (Array.isArray(j.skills) && (j.skills as string[])[0] ? (j.skills as string[])[0] : '');
+
   const defaults: OfferDefaults = {
     title: (j.title as string) ?? '',
+    category,
     description: (j.description as string) ?? '',
     requirements: (j.requirements as string | null) ?? '',
-    location: (j.location as string | null) ?? '',
+    country,
+    city,
     job_type: (j.job_type as string) ?? 'full_time',
     work_mode: (j.work_mode as string) ?? 'on_site',
     salary_min: j.salary_min != null ? String(j.salary_min) : '',
     salary_max: j.salary_max != null ? String(j.salary_max) : '',
-    skills: Array.isArray(j.skills) ? (j.skills as string[]).join(', ') : '',
+    start_date: startDate,
     status: (j.status as string) ?? 'published',
   };
 

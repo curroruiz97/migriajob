@@ -2,7 +2,7 @@
 
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Play, Pause, Copy } from 'lucide-react';
+import { Play, Pause, Copy, XCircle } from 'lucide-react';
 import { setJobStatusAction, duplicateJobAction } from '@/app/admin/ofertas/actions';
 import { Button } from '@/components/ui/button';
 
@@ -17,9 +17,10 @@ export function JobRowActions({ jobId, status }: { jobId: string; status: string
     });
 
   const isActive = status === 'published';
+  const isClosed = status === 'archived';
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       {isActive ? (
         <Button
           variant="ghost"
@@ -39,6 +40,17 @@ export function JobRowActions({ jobId, status }: { jobId: string; status: string
           onClick={() => run(() => setJobStatusAction(jobId, 'published'))}
         >
           <Play className="mr-1 h-3.5 w-3.5" /> Activar
+        </Button>
+      )}
+      {!isClosed && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="rounded-lg text-muted-foreground"
+          disabled={pending}
+          onClick={() => run(() => setJobStatusAction(jobId, 'archived'))}
+        >
+          <XCircle className="mr-1 h-3.5 w-3.5" /> Cerrar
         </Button>
       )}
       <Button

@@ -46,7 +46,7 @@ export default async function LoginPage({
             <p className="mt-3 text-sm text-muted-foreground">{subtitle}</p>
           </header>
 
-          <LoginForm registered={registered} />
+          <LoginForm registered={registered} role={params.role} />
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
             ¿Aún no tienes cuenta?{' '}

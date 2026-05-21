@@ -10,12 +10,14 @@ import { Label } from '@/components/ui/label';
 
 const initial: AuthState = {};
 
-export function LoginForm({ registered }: { registered?: boolean }) {
+export function LoginForm({ registered, role }: { registered?: boolean; role?: string }) {
   const [state, formAction, pending] = useActionState(signInAction, initial);
   const [showPassword, setShowPassword] = useState(false);
 
   return (
     <form action={formAction} className="space-y-5">
+      {/* Rol elegido en la bienvenida; el server action lo aplica a la cuenta. */}
+      {role && <input type="hidden" name="role" value={role} />}
       {registered && (
         <div className="flex items-start gap-2 rounded-xl border border-success/30 bg-success-soft px-3 py-2.5 text-sm text-success">
           <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />

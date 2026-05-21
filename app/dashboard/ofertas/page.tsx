@@ -45,10 +45,11 @@ interface FeedItem {
 
 function dbSalary(min: number | null, max: number | null, cur: string | null): string | null {
   if (min == null && max == null) return null;
-  const c = cur || '€';
-  const f = (n: number) => `${(n / 1000).toFixed(0)}k`;
-  if (min != null && max != null) return `${f(min)}–${f(max)} ${c}`;
-  return `${f((min ?? max) as number)}+ ${c}`;
+  const sym = !cur || cur === 'EUR' ? '€' : cur;
+  const f = (n: number) => new Intl.NumberFormat('es-ES').format(n);
+  if (min != null && max != null) return `${f(min)}–${f(max)} ${sym}/mes`;
+  if (min != null) return `Desde ${f(min)} ${sym}/mes`;
+  return `Hasta ${f(max as number)} ${sym}/mes`;
 }
 
 interface PageProps {

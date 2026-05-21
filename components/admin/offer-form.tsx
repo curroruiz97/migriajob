@@ -11,29 +11,48 @@ import { Separator } from '@/components/ui/separator';
 
 type Result = { ok?: true } | { error: string } | null;
 
+// Categorías de puesto (foco hostelería + industria).
+const CATEGORIES = [
+  'Cocinero',
+  'Camarero',
+  'Jefe de sala',
+  'Hostelería',
+  'Operario de producción',
+  'Pescadero',
+  'Técnico de mantenimiento',
+  'Supervisor',
+  'Otro',
+];
+
+const COUNTRIES = ['España', 'Perú'];
+
 export interface OfferDefaults {
   title: string;
+  category: string;
   description: string;
   requirements: string;
-  location: string;
+  country: string;
+  city: string;
   job_type: string;
   work_mode: string;
   salary_min: string;
   salary_max: string;
-  skills: string;
+  start_date: string;
   status: string;
 }
 
 const EMPTY: OfferDefaults = {
   title: '',
+  category: '',
   description: '',
   requirements: '',
-  location: '',
+  country: 'España',
+  city: '',
   job_type: 'full_time',
   work_mode: 'on_site',
   salary_min: '',
   salary_max: '',
-  skills: '',
+  start_date: '',
   status: 'published',
 };
 
@@ -60,12 +79,26 @@ export function OfferForm({ jobId, defaults }: { jobId?: string; defaults?: Offe
       )}
 
       <div className="space-y-1.5">
-        <Label>Título del puesto</Label>
-        <Input name="title" defaultValue={d.title} required placeholder="Cocinero/a" />
+        <Label>Título del puesto *</Label>
+        <Input name="title" defaultValue={d.title} required placeholder="Cocinero/a para restaurante" />
       </div>
 
       <div className="space-y-1.5">
-        <Label>Descripción del puesto</Label>
+        <Label>Categoría *</Label>
+        <Select name="category" defaultValue={d.category} required>
+          <option value="" disabled>
+            Selecciona una categoría…
+          </option>
+          {CATEGORIES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </Select>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label>Descripción del puesto *</Label>
         <textarea
           name="description"
           defaultValue={d.description}
@@ -77,10 +110,11 @@ export function OfferForm({ jobId, defaults }: { jobId?: string; defaults?: Offe
       </div>
 
       <div className="space-y-1.5">
-        <Label>Requisitos</Label>
+        <Label>Requisitos *</Label>
         <textarea
           name="requirements"
           defaultValue={d.requirements}
+          required
           rows={3}
           className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           placeholder="Experiencia, formación, idiomas…"
@@ -91,49 +125,53 @@ export function OfferForm({ jobId, defaults }: { jobId?: string; defaults?: Offe
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label>Jornada</Label>
-          <Select name="job_type" defaultValue={d.job_type}>
+          <Label>Modalidad *</Label>
+          <Select name="job_type" defaultValue={d.job_type} required>
             <option value="full_time">Jornada completa</option>
             <option value="part_time">Media jornada</option>
-            <option value="contract">Por contrato</option>
-            <option value="internship">Prácticas</option>
-            <option value="freelance">Freelance</option>
           </Select>
         </div>
         <div className="space-y-1.5">
-          <Label>Modalidad</Label>
-          <Select name="work_mode" defaultValue={d.work_mode}>
+          <Label>Tipo *</Label>
+          <Select name="work_mode" defaultValue={d.work_mode} required>
             <option value="on_site">Presencial</option>
-            <option value="hybrid">Híbrido</option>
             <option value="remote">Teletrabajo</option>
           </Select>
         </div>
         <div className="space-y-1.5">
-          <Label>Ubicación</Label>
-          <Input name="location" defaultValue={d.location} placeholder="Madrid" />
+          <Label>País *</Label>
+          <Select name="country" defaultValue={d.country || 'España'} required>
+            {COUNTRIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <Label>Ciudad *</Label>
+          <Input name="city" defaultValue={d.city} required placeholder="Madrid" />
+        </div>
+        <div className="space-y-1.5">
+          <Label>Salario mínimo (€/mes)</Label>
+          <Input name="salary_min" type="number" min={0} step={50} defaultValue={d.salary_min} placeholder="1400" />
+        </div>
+        <div className="space-y-1.5">
+          <Label>Salario máximo (€/mes)</Label>
+          <Input name="salary_max" type="number" min={0} step={50} defaultValue={d.salary_max} placeholder="1800" />
+        </div>
+        <div className="space-y-1.5">
+          <Label>Fecha de incorporación</Label>
+          <Input name="start_date" type="date" defaultValue={d.start_date} />
         </div>
         <div className="space-y-1.5">
           <Label>Estado</Label>
           <Select name="status" defaultValue={d.status}>
             <option value="published">Activa (publicada)</option>
             <option value="paused">Pausada</option>
-            <option value="draft">Borrador</option>
             <option value="archived">Cerrada</option>
           </Select>
         </div>
-        <div className="space-y-1.5">
-          <Label>Salario mínimo (€/año)</Label>
-          <Input name="salary_min" type="number" min={0} step={1000} defaultValue={d.salary_min} />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Salario máximo (€/año)</Label>
-          <Input name="salary_max" type="number" min={0} step={1000} defaultValue={d.salary_max} />
-        </div>
-      </div>
-
-      <div className="space-y-1.5">
-        <Label>Habilidades / aptitudes (separadas por comas)</Label>
-        <Input name="skills" defaultValue={d.skills} placeholder="Cocina española, APPCC, trabajo en equipo" />
       </div>
 
       <div className="flex justify-end gap-2">
@@ -151,16 +189,19 @@ export function OfferForm({ jobId, defaults }: { jobId?: string; defaults?: Offe
 function Select({
   name,
   defaultValue,
+  required,
   children,
 }: {
   name: string;
   defaultValue: string;
+  required?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <select
       name={name}
       defaultValue={defaultValue}
+      required={required}
       className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {children}

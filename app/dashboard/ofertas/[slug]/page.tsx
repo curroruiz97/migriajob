@@ -45,9 +45,16 @@ export default async function CandidateJobDetail({
         alreadyApplied = !!app;
       }
     }
-    const sal = dbJob.salary_min != null || dbJob.salary_max != null
-      ? `${dbJob.salary_min ? `${(dbJob.salary_min / 1000).toFixed(0)}k` : ''}${dbJob.salary_min && dbJob.salary_max ? '–' : ''}${dbJob.salary_max ? `${(dbJob.salary_max / 1000).toFixed(0)}k` : '+'} ${dbJob.currency || '€'}`
-      : null;
+    const salSym = !dbJob.currency || dbJob.currency === 'EUR' ? '€' : dbJob.currency;
+    const salFmt = (n: number) => new Intl.NumberFormat('es-ES').format(n);
+    const sal =
+      dbJob.salary_min != null && dbJob.salary_max != null
+        ? `${salFmt(dbJob.salary_min)}–${salFmt(dbJob.salary_max)} ${salSym}/mes`
+        : dbJob.salary_min != null
+        ? `Desde ${salFmt(dbJob.salary_min)} ${salSym}/mes`
+        : dbJob.salary_max != null
+        ? `Hasta ${salFmt(dbJob.salary_max)} ${salSym}/mes`
+        : null;
     return (
       <Shell
         title={dbJob.title}

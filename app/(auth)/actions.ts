@@ -44,19 +44,35 @@ export async function signInAction(_prev: AuthState, formData: FormData): Promis
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) return { error: translateAuthError(error.message) };
 
+  // Rol elegido en la pantalla de bienvenida (input oculto del formulario).
+  // Esta elección es AUTORITATIVA: si el usuario entra como "empresa" o
+  // "candidato", aplicamos ese rol a su cuenta (salvo admin, que es intocable).
+  const chosen = String(formData.get('role') ?? '');
+
   // Determinar destino según rol
   const { data: { user } } = await supabase.auth.getUser();
-  let dest = '/admin';
+  let role: string | undefined;
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
       .single();
-    dest = profile?.role === 'employer' || profile?.role === 'admin'
-      ? '/admin'
-      : '/dashboard/mi-perfil';
+    role = profile?.role ?? undefined;
+
+    // Sincronizar el rol con la elección de la bienvenida.
+    if (
+      (chosen === 'employer' || chosen === 'candidate') &&
+      role !== 'admin' &&
+      role !== chosen
+    ) {
+      await supabase.from('profiles').update({ role: chosen }).eq('id', user.id);
+      role = chosen;
+    }
   }
+
+  const dest =
+    role === 'employer' || role === 'admin' ? '/admin' : '/dashboard/mi-perfil';
 
   revalidatePath('/', 'layout');
   redirect(dest);
@@ -87,7 +103,8 @@ export async function signUpAction(_prev: AuthState, formData: FormData): Promis
   });
   if (error) return { error: translateAuthError(error.message) };
 
-  redirect('/login?registered=1');
+  // Preservar el rol elegido para que el login posterior lo aplique.
+  redirect(`/login?registered=1&role=${parsed.data.role}`);
 }
 
 export async function signOutAction() {

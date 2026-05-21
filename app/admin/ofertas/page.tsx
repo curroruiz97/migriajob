@@ -79,11 +79,11 @@ export default async function MisOfertasPage() {
       ) : jobs.length === 0 ? (
         <EmptyState
           icon={Megaphone}
-          title="Aún no has publicado ofertas"
+          title="Aún no has publicado ninguna oferta"
           description="Publica tu primera oferta y empieza a recibir candidaturas."
           action={
             <Button asChild>
-              <Link href="/admin/ofertas/nueva">Crear primera oferta</Link>
+              <Link href="/admin/ofertas/nueva">Publicar tu primera oferta</Link>
             </Button>
           }
           className="mt-6"
@@ -124,6 +124,17 @@ export default async function MisOfertasPage() {
             );
           })}
         </div>
+      )}
+
+      {/* FAB: publicar oferta — siempre visible en esta pestaña. */}
+      {company && (
+        <Link
+          href="/admin/ofertas/nueva"
+          aria-label="Publicar oferta"
+          className="fixed right-5 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform hover:scale-105 active:scale-95 bottom-[calc(5rem_+_env(safe-area-inset-bottom))] lg:right-8 lg:bottom-8"
+        >
+          <Plus className="h-6 w-6" />
+        </Link>
       )}
     </div>
   );
