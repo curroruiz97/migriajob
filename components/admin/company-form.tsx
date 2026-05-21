@@ -12,13 +12,30 @@ type Result = { ok?: true } | { error: string } | null;
 
 export interface CompanyDefaults {
   name: string;
+  tax_id: string;
   industry: string;
   size: string;
-  location: string;
+  founded_year: string;
   website: string;
+  contact_name: string;
+  contact_email: string;
+  contact_phone: string;
+  location: string;
   description: string;
   logo_url: string;
 }
+
+const SECTORS = [
+  'Hostelería y turismo',
+  'Producción',
+  'Logística',
+  'Construcción',
+  'Mantenimiento',
+  'Limpieza',
+  'Agricultura',
+  'Otro',
+];
+const SIZES = ['1-10', '11-50', '51-200', '200+'];
 
 export function CompanyForm({ defaults }: { defaults: CompanyDefaults }) {
   const [state, action, pending] = useActionState<Result, FormData>(updateCompanyAction, null);
@@ -40,38 +57,64 @@ export function CompanyForm({ defaults }: { defaults: CompanyDefaults }) {
         <Field label="Nombre comercial / razón social" full>
           <Input name="name" defaultValue={defaults.name} required placeholder="Grupo Hostelero S.L." />
         </Field>
+        <Field label="CIF / NIF">
+          <Input name="tax_id" defaultValue={defaults.tax_id} placeholder="B12345678" />
+        </Field>
+        <Field label="Año de fundación">
+          <Input name="founded_year" type="number" min={1900} max={2100} defaultValue={defaults.founded_year} placeholder="2015" />
+        </Field>
         <Field label="Sector de actividad">
-          <Input name="industry" defaultValue={defaults.industry} placeholder="Hostelería" />
+          <Select name="industry" defaultValue={defaults.industry}>
+            <option value="">Selecciona…</option>
+            {SECTORS.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </Select>
         </Field>
         <Field label="Número de empleados">
-          <Input name="size" defaultValue={defaults.size} placeholder="11–50" />
-        </Field>
-      </Section>
-
-      <Separator />
-
-      <Section title="Contacto y presencia">
-        <Field label="Ubicación / sede">
-          <Input name="location" defaultValue={defaults.location} placeholder="Madrid" />
+          <Select name="size" defaultValue={defaults.size}>
+            <option value="">Selecciona…</option>
+            {SIZES.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </Select>
         </Field>
         <Field label="Sitio web">
           <Input name="website" defaultValue={defaults.website} type="url" placeholder="https://tuempresa.com" />
         </Field>
-        <Field label="URL del logotipo" full>
+        <Field label="URL del logotipo">
           <Input name="logo_url" defaultValue={defaults.logo_url} type="url" placeholder="https://…/logo.png" />
         </Field>
       </Section>
 
       <Separator />
 
-      <Section title="Sobre nosotros">
-        <Field label="Descripción de la empresa" full>
+      <Section title="Contacto">
+        <Field label="Persona de contacto (nombre y cargo)" full>
+          <Input name="contact_name" defaultValue={defaults.contact_name} placeholder="María Fernández — Dir. RR. HH." />
+        </Field>
+        <Field label="Email corporativo">
+          <Input name="contact_email" defaultValue={defaults.contact_email} type="email" placeholder="rrhh@tuempresa.com" />
+        </Field>
+        <Field label="Teléfono">
+          <Input name="contact_phone" defaultValue={defaults.contact_phone} type="tel" placeholder="+34 600 000 000" />
+        </Field>
+        <Field label="Ciudad / provincia" full>
+          <Input name="location" defaultValue={defaults.location} placeholder="Madrid" />
+        </Field>
+      </Section>
+
+      <Separator />
+
+      <Section title="Sobre la empresa">
+        <Field label="Descripción" full>
           <textarea
             name="description"
             defaultValue={defaults.description}
             rows={5}
+            maxLength={800}
             className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            placeholder="Presenta tu empresa, su cultura y qué ofrece a los empleados."
+            placeholder="Describe tu empresa, tu cultura de trabajo y qué ofreces a tus empleados."
           />
         </Field>
       </Section>
@@ -100,5 +143,25 @@ function Field({ label, full, children }: { label: string; full?: boolean; child
       <Label>{label}</Label>
       {children}
     </div>
+  );
+}
+
+function Select({
+  name,
+  defaultValue,
+  children,
+}: {
+  name: string;
+  defaultValue: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <select
+      name={name}
+      defaultValue={defaultValue}
+      className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      {children}
+    </select>
   );
 }

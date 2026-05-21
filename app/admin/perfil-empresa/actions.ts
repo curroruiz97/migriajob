@@ -31,6 +31,16 @@ export async function updateCompanyAction(_prev: unknown, formData: FormData) {
     const website = String(formData.get('website') ?? '').trim() || null;
     const description = String(formData.get('description') ?? '').trim() || null;
     const logo_url = String(formData.get('logo_url') ?? '').trim() || null;
+    // Campos añadidos por la migración 0004.
+    const tax_id = String(formData.get('tax_id') ?? '').trim() || null;
+    const foundedRaw = formData.get('founded_year');
+    const founded_year = foundedRaw ? Number(foundedRaw) : null;
+    const contact_name = String(formData.get('contact_name') ?? '').trim() || null;
+    const contact_email = String(formData.get('contact_email') ?? '').trim() || null;
+    const contact_phone = String(formData.get('contact_phone') ?? '').trim() || null;
+
+    const base = { name, industry, size, location, website, description, logo_url } as Record<string, unknown>;
+    const extra = { tax_id, founded_year, contact_name, contact_email, contact_phone } as Record<string, unknown>;
 
     const { data: existing } = await supabase
       .from('companies')
@@ -39,21 +49,17 @@ export async function updateCompanyAction(_prev: unknown, formData: FormData) {
       .maybeSingle();
 
     if (existing) {
+      // Núcleo (columnas siempre presentes) + extras de 0004 en un único update.
       await supabase
         .from('companies')
-        .update({ name, industry, size, location, website, description, logo_url })
+        .update({ ...base, ...extra })
         .eq('id', existing.id);
     } else {
       await supabase.from('companies').insert({
         owner_id: user.id,
-        name,
         slug: slugify(name, user.id.slice(0, 8)),
-        industry,
-        size,
-        location,
-        website,
-        description,
-        logo_url,
+        ...base,
+        ...extra,
       });
     }
 

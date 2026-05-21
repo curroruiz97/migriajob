@@ -19,10 +19,15 @@ export default async function PerfilEmpresaPage() {
   const c = (company ?? {}) as Record<string, unknown>;
   const defaults: CompanyDefaults = {
     name: (c.name as string) ?? '',
+    tax_id: (c.tax_id as string | null) ?? '',
     industry: (c.industry as string | null) ?? '',
     size: (c.size as string | null) ?? '',
+    founded_year: c.founded_year != null ? String(c.founded_year) : '',
     location: (c.location as string | null) ?? '',
     website: (c.website as string | null) ?? '',
+    contact_name: (c.contact_name as string | null) ?? '',
+    contact_email: (c.contact_email as string | null) ?? '',
+    contact_phone: (c.contact_phone as string | null) ?? '',
     description: (c.description as string | null) ?? '',
     logo_url: (c.logo_url as string | null) ?? '',
   };
