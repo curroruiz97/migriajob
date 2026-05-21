@@ -26,70 +26,71 @@ export async function updateProfileAction(_prev: unknown, formData: FormData) {
   return safeAction(async () => {
     const { user, supabase } = await requireUser();
 
-    const fullName = String(formData.get('fullName') ?? '').trim();
-    const phone = String(formData.get('phone') ?? '').trim() || null;
-    const headline = String(formData.get('headline') ?? '').trim() || null;
-    const currentRole = String(formData.get('currentRole') ?? '').trim() || null;
-    const bio = String(formData.get('bio') ?? '').trim() || null;
-    const yearsRaw = formData.get('yearsExperience');
-    const yearsExperience = yearsRaw ? Number(yearsRaw) : null;
-    const salaryRaw = formData.get('desiredSalaryMin');
-    const desiredSalaryMin = salaryRaw ? Number(salaryRaw) : null;
-    const skillsRaw = String(formData.get('skills') ?? '').trim();
-    const skills = skillsRaw
-      ? skillsRaw.split(',').map((s) => s.trim()).filter(Boolean)
-      : [];
-    const locationCity = String(formData.get('locationCity') ?? '').trim() || null;
-    const locationCountry = String(formData.get('locationCountry') ?? '').trim() || null;
-    const languagesRaw = String(formData.get('languages') ?? '').trim();
-    const languages = languagesRaw
-      ? languagesRaw.split(',').map((s) => s.trim()).filter(Boolean)
-      : [];
+    const str = (k: string) => String(formData.get(k) ?? '').trim() || null;
+    const num = (k: string) => {
+      const v = formData.get(k);
+      return v ? Number(v) : null;
+    };
+    const list = (k: string) => {
+      const raw = String(formData.get(k) ?? '').trim();
+      return raw ? raw.split(',').map((s) => s.trim()).filter(Boolean) : [];
+    };
+    const json = (k: string) => {
+      const raw = String(formData.get(k) ?? '').trim();
+      if (!raw) return [];
+      try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    };
 
-    // Update profile
+    const fullName = String(formData.get('fullName') ?? '').trim();
+    const phone = str('phone');
+
+    // profiles
     await supabase
       .from('profiles')
       .update({ full_name: fullName, phone, updated_at: new Date().toISOString() })
       .eq('id', user.id);
 
-    // Upsert candidate row
+    // candidates (todos los campos del PASO 3; columnas nuevas vienen de la migración 0005)
+    const candidateData = {
+      headline: str('headline'),
+      current_role: str('currentRole'),
+      bio: str('bio'),
+      years_experience: num('yearsExperience'),
+      desired_salary_min: num('desiredSalaryMin'),
+      desired_salary_max: num('desiredSalaryMax'),
+      skills: list('skills'),
+      location_city: str('locationCity'),
+      location_country: str('locationCountry'),
+      country_of_origin: str('nationality'),
+      date_of_birth: str('dateOfBirth'),
+      languages: json('languages'),
+      experience: json('experiences'),
+      preferred_locations: list('preferredLocations'),
+      willing_to_relocate: formData.get('willingToRelocate') === 'true',
+      start_availability: str('startAvailability'),
+    };
+
     const { data: existing } = await supabase
       .from('candidates')
       .select('id, slug')
       .eq('profile_id', user.id)
       .maybeSingle();
 
-    const slug = existing?.slug ?? generateSlug(fullName, user.id.slice(0, 8));
-
     if (!existing) {
       await supabase.from('candidates').insert({
         profile_id: user.id,
-        slug,
-        headline,
-        current_role: currentRole,
-        bio,
-        years_experience: yearsExperience,
-        desired_salary_min: desiredSalaryMin,
-        skills,
-        location_city: locationCity,
-        location_country: locationCountry,
-        languages,
+        slug: generateSlug(fullName, user.id.slice(0, 8)),
+        ...candidateData,
       });
     } else {
       await supabase
         .from('candidates')
-        .update({
-          headline,
-          current_role: currentRole,
-          bio,
-          years_experience: yearsExperience,
-          desired_salary_min: desiredSalaryMin,
-          skills,
-          location_city: locationCity,
-          location_country: locationCountry,
-          languages,
-          updated_at: new Date().toISOString(),
-        })
+        .update({ ...candidateData, updated_at: new Date().toISOString() })
         .eq('profile_id', user.id);
     }
 
