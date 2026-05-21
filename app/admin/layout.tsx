@@ -59,7 +59,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             unreadCount={unreadCount}
             avatarUrl={companyLogo?.logo_url ?? null}
           />
-          <main className="flex-1 px-4 py-6 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:px-6 lg:px-8 lg:pb-6">
+          <main className="w-full max-w-[100vw] flex-1 overflow-x-hidden px-4 py-6 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:px-6 lg:px-8 lg:pb-6">
             {children}
           </main>
         </div>

@@ -57,8 +57,8 @@ export function OffersFilters() {
         />
       </div>
 
-      {/* Filtros rápidos (envuelven en vertical; nunca scroll horizontal) */}
-      <div className="flex flex-wrap gap-x-3 gap-y-2">
+      {/* Filtros rápidos: cada grupo en su línea y los chips envuelven. Nunca scroll horizontal. */}
+      <div className="flex w-full max-w-full flex-col gap-2 overflow-x-hidden">
         <FilterGroup
           label="Contrato"
           options={JOB_TYPES}
@@ -103,7 +103,7 @@ function FilterGroup({
   onChange: (v: string) => void;
 }) {
   return (
-    <div className="flex shrink-0 items-center gap-1.5">
+    <div className="flex w-full max-w-full flex-wrap items-center gap-1.5">
       <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
         {label}:
       </span>
