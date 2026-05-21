@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  LayoutDashboard,
+  Megaphone,
+  Building2,
   Users,
   Search,
   Workflow,
@@ -19,14 +20,15 @@ import { Logo } from '@/components/ui/logo';
 import { cn } from '@/lib/utils';
 
 const NAV = [
-  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+  { href: '/admin/ofertas', label: 'Ofertas', icon: Megaphone },
   { href: '/admin/candidatos', label: 'Candidatos', icon: Users },
+  { href: '/admin/mensajes', label: 'Mensajes', icon: MessageSquare },
+  { href: '/admin/perfil-empresa', label: 'Perfil de empresa', icon: Building2 },
+  { href: '/admin/procesos', label: 'Mis procesos', icon: Workflow },
   { href: '/admin/busqueda-avanzada', label: 'Búsqueda avanzada', icon: Search },
   { href: '/admin/busquedas-guardadas', label: 'Búsquedas guardadas', icon: BookmarkCheck },
-  { href: '/admin/procesos', label: 'Mis procesos', icon: Workflow },
   { href: '/admin/favoritos', label: 'Favoritos', icon: Heart },
   { href: '/admin/comparador', label: 'Comparador', icon: GitCompare },
-  { href: '/admin/mensajes', label: 'Mensajes', icon: MessageSquare },
   { href: '/admin/plantillas', label: 'Plantillas', icon: FileText },
   { href: '/admin/notificaciones', label: 'Notificaciones', icon: Bell },
   { href: '/admin/facturacion', label: 'Facturación', icon: CreditCard },

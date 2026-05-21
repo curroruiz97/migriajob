@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import {
-  LayoutDashboard,
   Users,
   Search,
   Workflow,
@@ -18,6 +17,8 @@ import {
   FileText,
   ClipboardList,
   Briefcase,
+  Megaphone,
+  Building2,
   User,
   Settings,
   Menu,
@@ -39,13 +40,14 @@ type NavItem = {
 };
 
 const EMPLOYER_PRIMARY: NavItem[] = [
-  { href: '/admin', label: 'Inicio', icon: LayoutDashboard, exact: true },
+  { href: '/admin/ofertas', label: 'Ofertas', icon: Megaphone },
   { href: '/admin/candidatos', label: 'Candidatos', icon: Users },
-  { href: '/admin/procesos', label: 'Procesos', icon: Workflow },
-  { href: '/admin/mensajes', label: 'Mensajes', icon: MessageSquare },
+  { href: '/admin/mensajes', label: 'Mensajes', icon: MessageSquare, badge: true },
+  { href: '/admin/perfil-empresa', label: 'Empresa', icon: Building2 },
 ];
 
 const EMPLOYER_MENU: NavItem[] = [
+  { href: '/admin/procesos', label: 'Mis procesos', icon: Workflow },
   { href: '/admin/busqueda-avanzada', label: 'Búsqueda avanzada', icon: Search },
   { href: '/admin/busquedas-guardadas', label: 'Búsquedas guardadas', icon: BookmarkCheck },
   { href: '/admin/favoritos', label: 'Favoritos', icon: Heart },
