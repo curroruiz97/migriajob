@@ -57,8 +57,8 @@ export function OffersFilters() {
         />
       </div>
 
-      {/* Filtros rápidos */}
-      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+      {/* Filtros rápidos (envuelven en vertical; nunca scroll horizontal) */}
+      <div className="flex flex-wrap gap-x-3 gap-y-2">
         <FilterGroup
           label="Contrato"
           options={JOB_TYPES}
