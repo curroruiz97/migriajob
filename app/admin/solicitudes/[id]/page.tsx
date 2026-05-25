@@ -180,7 +180,7 @@ export default async function SolicitudDetallePage({
           )}
           {c?.slug && (
             <Link
-              href={`/perfiles/${c.slug}`}
+              href={`/admin/candidatos/${c.slug}`}
               className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-border bg-surface px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted"
             >
               <ExternalLink className="h-4 w-4" />

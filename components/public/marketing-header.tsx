@@ -21,7 +21,9 @@ export async function MarketingHeader() {
   } = await supabase.auth.getUser();
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-glass">
+    <header
+      className="safe-top sticky top-0 z-40 w-full border-b border-border/60 bg-glass"
+    >
       <div className="mx-auto flex h-24 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
         <Logo height={72} />
 
