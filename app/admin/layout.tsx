@@ -28,8 +28,11 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     redirect('/dashboard/mi-perfil');
   }
 
+  // Detectamos si estamos en onboarding via header `x-pathname` que setea
+  // nuestro middleware. Sin esto, Next 15 deja el pathname vacío y entramos
+  // en bucle redirect /admin/onboarding -> /admin/onboarding (= pantalla blanca).
   const hdrs = await headers();
-  const pathname = hdrs.get('x-invoke-path') ?? hdrs.get('x-pathname') ?? '';
+  const pathname = hdrs.get('x-pathname') ?? hdrs.get('x-invoke-path') ?? '';
   const isOnboarding = pathname.includes('/admin/onboarding');
 
   if (!isOnboarding) {

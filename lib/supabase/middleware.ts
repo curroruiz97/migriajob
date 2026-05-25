@@ -17,6 +17,12 @@ export async function updateSession(request: NextRequest) {
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const demoAuth = process.env.DEMO_AUTH === '1';
 
+  // Propagamos el pathname como header `x-pathname` para que los Server
+  // Components (especialmente los Layouts) puedan saber qué ruta están
+  // sirviendo. Next 15 ya NO expone `x-invoke-path` por defecto.
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-pathname', request.nextUrl.pathname);
+
   // Modo demo: sin Supabase configurado, dejar pasar todo (DEMO_AUTH simula login).
   if (!url || !anonKey || url.includes('your-project') || anonKey.length < 20) {
     if (!demoAuth) {
@@ -30,10 +36,10 @@ export async function updateSession(request: NextRequest) {
         return NextResponse.redirect(u);
       }
     }
-    return NextResponse.next({ request });
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
-  let supabaseResponse = NextResponse.next({ request });
+  let supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } });
 
   const supabase = createServerClient<Database>(url, anonKey, {
     cookies: {
@@ -44,7 +50,7 @@ export async function updateSession(request: NextRequest) {
         for (const { name, value } of cookiesToSet) {
           request.cookies.set(name, value);
         }
-        supabaseResponse = NextResponse.next({ request });
+        supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } });
         for (const { name, value, options } of cookiesToSet) {
           supabaseResponse.cookies.set(name, value, options);
         }
