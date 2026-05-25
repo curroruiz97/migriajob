@@ -86,10 +86,10 @@ export function MobileBottomNav({
   const menu = variant === 'employer' ? EMPLOYER_MENU : CANDIDATE_MENU;
   const hasMore = menu.length > 0;
 
-  // Acento por rol: candidato = terracota (primary), empresa = dorado (accent-warm).
-  const activeIcon =
-    variant === 'employer' ? 'bg-accent-warm/15 text-accent-warm' : 'bg-primary-soft text-primary';
-  const activeText = variant === 'employer' ? 'text-accent-warm' : 'text-primary';
+  // Acento unificado: ambos roles usan el terracota (primary) de marca para
+  // que el resalto sea consistente entre /dashboard y /admin.
+  const activeIcon = 'bg-primary-soft text-primary';
+  const activeText = 'text-primary';
 
   const menuActive = menu.some((item) => isActive(pathname, item));
 
