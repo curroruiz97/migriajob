@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, Bell, LogOut, Settings, CreditCard, ChevronDown, Command } from 'lucide-react';
+import { Search, Bell, LogOut, CreditCard, ChevronDown, Command } from 'lucide-react';
 import { signOutAction } from '@/app/(auth)/actions';
 import { Button } from '@/components/ui/button';
 import {
@@ -152,19 +152,10 @@ export function AdminTopbar({ user, unreadCount = 0, variant = 'employer', avata
                 </div>
               </div>
 
-              {/* Empleador: Configuración + Facturación. Candidato: nada aquí (Configuración va en Perfil; Facturación oculta). */}
+              {/* Empleador: solo Facturación (Configuración la accede desde otro lado). Candidato: nada aquí. */}
               {!isCandidate && (
                 <>
                   <div className="p-1">
-                    <DropdownMenuItem asChild>
-                      <Link
-                        href="/dashboard/configuracion"
-                        className="flex cursor-pointer items-center gap-2.5 px-2.5 py-2 text-sm"
-                      >
-                        <Settings className="h-4 w-4 text-muted-foreground" />
-                        Configuración
-                      </Link>
-                    </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link
                         href="/admin/facturacion"

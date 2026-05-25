@@ -31,11 +31,14 @@ export default async function PerfilEmpresaPage() {
     description: (c.description as string | null) ?? '',
   };
 
-  // Completitud aproximada (decide si abrir el modal automáticamente).
+  // Completitud (los mismos 5 campos visibles en el form simplificado:
+  // logo + nombre + sector + ubicación + descripción).
   const checks = [
-    !!c.logo_url, !!defaults.name, !!defaults.tax_id, !!defaults.industry,
-    !!defaults.contact_name, !!defaults.contact_role, !!defaults.contact_email,
-    !!defaults.contact_phone, !!defaults.city, !!defaults.province,
+    !!c.logo_url,
+    !!defaults.name,
+    !!defaults.industry,
+    !!(defaults.city || defaults.province),
+    !!defaults.description,
   ];
   const initialCompletion = Math.round((checks.filter(Boolean).length / checks.length) * 100);
 

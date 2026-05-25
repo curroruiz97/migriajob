@@ -70,14 +70,16 @@ export interface CompanyDefaults {
 export function CompanyPerfil({
   defaults,
   logoUrl,
-  initialCompletion,
 }: {
   defaults: CompanyDefaults;
   logoUrl: string | null;
-  initialCompletion: number;
+  /** Mantenida en el tipo por compatibilidad, ya no se usa para abrir el modal. */
+  initialCompletion?: number;
 }) {
   const router = useRouter();
-  const [open, setOpen] = useState(initialCompletion < 50);
+  // El modal NUNCA se abre solo: el usuario lo abre desde el banner
+  // "Tu perfil está al X%" o desde el botón "Editar perfil".
+  const [open, setOpen] = useState(false);
   // Los campos visibles + un "location" único (texto libre). Mapeamos city <-> location.
   const [form, setForm] = useState({
     name: defaults.name,
