@@ -72,13 +72,20 @@ export function AvatarUpload({
   uploadAction?: (prev: State, fd: FormData) => Promise<State>;
 }) {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const [state, action, pending] = useActionState<State, FormData>(uploadAction, null);
   // Previsualización instantánea del archivo elegido (PASO 2).
   const [preview, setPreview] = useState<string | null>(null);
 
+  // Al elegir archivo: previsualizar y SUBIR automáticamente, para que el
+  // usuario no tenga que pulsar un botón extra (antes esto confundía: la
+  // gente pulsaba "Guardar cambios" del modal, que solo guardaba textos).
   function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (file) setPreview(URL.createObjectURL(file));
+    if (!file) return;
+    setPreview(URL.createObjectURL(file));
+    // requestSubmit dispara `<form action={...}>` con FormData (incluye el file).
+    formRef.current?.requestSubmit();
   }
 
   // Al confirmar el servidor: soltar el blob local y refrescar la ruta para que
@@ -105,29 +112,32 @@ export function AvatarUpload({
         <ImagePlus className="h-4 w-4 text-muted-foreground" />
         {label}
       </h3>
-      <p className="mt-1 text-xs text-muted-foreground">PNG, JPG o WebP. Máx 2 MB.</p>
+      <p className="mt-1 text-xs text-muted-foreground">
+        PNG, JPG o WebP. Máx 2 MB. Se guarda automáticamente al seleccionar.
+      </p>
 
       <div className="mt-4 flex items-center gap-4">
         <Avatar className="h-16 w-16">
           {shown && <AvatarImage src={shown} alt="" />}
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
-        <form action={action} className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <form ref={formRef} action={action} className="flex flex-1 flex-col gap-2">
           <input
             type="file"
             name="avatar"
             accept="image/png,image/jpeg,image/webp"
             required
+            disabled={pending}
             onChange={onPick}
-            className="block w-full text-xs text-muted-foreground file:mr-3 file:rounded-md file:border file:border-border file:bg-surface-muted file:px-3 file:py-1.5 file:text-foreground file:hover:bg-muted"
+            className="block w-full text-xs text-muted-foreground file:mr-3 file:rounded-md file:border file:border-border file:bg-surface-muted file:px-3 file:py-1.5 file:text-foreground file:hover:bg-muted disabled:opacity-60"
           />
-          <Button type="submit" size="sm" disabled={pending}>
-            {pending ? 'Subiendo…' : 'Cambiar'}
-          </Button>
+          {pending && (
+            <p className="text-xs text-muted-foreground">Subiendo imagen…</p>
+          )}
         </form>
       </div>
 
-      {state?.ok && <p className="mt-2 text-xs text-success">Foto actualizada.</p>}
+      {state?.ok && <p className="mt-2 text-xs text-success">Imagen guardada.</p>}
       {state?.error && <p className="mt-2 text-xs text-destructive">{state.error}</p>}
     </div>
   );
