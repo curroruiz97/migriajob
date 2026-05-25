@@ -5,6 +5,7 @@ import { JOBS as CONTENT_JOBS } from '@/lib/content/jobs';
 import { Badge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/ui/empty-state';
 import { OffersFilters } from '@/components/employee/offers-filters';
+import { SavedJobButton } from '@/components/employee/saved-job-button';
 
 export const metadata = { title: 'Ofertas' };
 
@@ -41,6 +42,10 @@ interface FeedItem {
   workMode: string;
   salaryText: string | null;
   salaryMax: number | null;
+  /** Solo presente en ofertas reales (tabla `jobs`). Habilita guardar como favorita. */
+  jobId?: string;
+  /** Verdadero si la oferta ya está guardada por el candidato actual. */
+  saved?: boolean;
 }
 
 function dbSalary(min: number | null, max: number | null, cur: string | null): string | null {
@@ -63,9 +68,29 @@ export default async function OfertasPage({ searchParams }: PageProps) {
   // 1) Ofertas reales publicadas por empresas (tabla jobs)
   const { data: dbData } = await supabase
     .from('jobs')
-    .select('slug, title, location, job_type, work_mode, salary_min, salary_max, currency, company:companies(name)')
+    .select('id, slug, title, location, job_type, work_mode, salary_min, salary_max, currency, company:companies(name)')
     .eq('status', 'published')
     .order('published_at', { ascending: false });
+
+  // 1b) Set de job_ids guardados por el candidato actual (para pintar el botón).
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  let savedIds = new Set<string>();
+  if (user) {
+    const { data: candidate } = await supabase
+      .from('candidates')
+      .select('id')
+      .eq('profile_id', user.id)
+      .maybeSingle();
+    if (candidate) {
+      const { data: savedRows } = await supabase
+        .from('saved_jobs')
+        .select('job_id')
+        .eq('candidate_id', candidate.id);
+      savedIds = new Set((savedRows ?? []).map((r) => r.job_id as string));
+    }
+  }
 
   const dbItems: FeedItem[] = ((dbData ?? []) as unknown as Array<Record<string, unknown>>).map((j) => ({
     slug: j.slug as string,
@@ -76,6 +101,8 @@ export default async function OfertasPage({ searchParams }: PageProps) {
     workMode: (j.work_mode as string) ?? 'on_site',
     salaryText: dbSalary(j.salary_min as number | null, j.salary_max as number | null, j.currency as string | null),
     salaryMax: (j.salary_max as number | null) ?? null,
+    jobId: j.id as string,
+    saved: savedIds.has(j.id as string),
   }));
 
   // 2) Ofertas curadas (mismo origen que la web) para que NUNCA esté vacío
@@ -122,15 +149,19 @@ export default async function OfertasPage({ searchParams }: PageProps) {
       ) : (
         <div className="flex flex-col gap-3">
           {items.map((j) => (
-            <Link
+            <div
               key={j.slug}
-              href={`/dashboard/ofertas/${j.slug}`}
-              className="card-hover group flex items-start gap-4 rounded-2xl border border-border bg-surface p-4 sm:p-5"
+              className="card-hover group relative flex items-start gap-4 rounded-2xl border border-border bg-surface p-4 sm:p-5"
             >
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary-soft to-primary-soft/40 text-primary ring-1 ring-primary/15">
+              <Link
+                href={`/dashboard/ofertas/${j.slug}`}
+                className="absolute inset-0 z-0 rounded-2xl"
+                aria-label={`Ver oferta ${j.title}`}
+              />
+              <div className="pointer-events-none flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary-soft to-primary-soft/40 text-primary ring-1 ring-primary/15">
                 <Briefcase className="h-6 w-6" />
               </div>
-              <div className="min-w-0 flex-1">
+              <div className="pointer-events-none relative z-10 min-w-0 flex-1">
                 <h2 className="line-clamp-1 font-semibold text-foreground transition-colors group-hover:text-primary">
                   {j.title}
                 </h2>
@@ -154,8 +185,14 @@ export default async function OfertasPage({ searchParams }: PageProps) {
                   )}
                 </div>
               </div>
-              <ArrowUpRight className="hidden h-4 w-4 shrink-0 self-center text-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary sm:block" />
-            </Link>
+              {/* Botón favorito (solo ofertas reales con jobId) */}
+              {j.jobId && (
+                <div className="relative z-10 self-start">
+                  <SavedJobButton jobId={j.jobId} initiallySaved={Boolean(j.saved)} compact />
+                </div>
+              )}
+              <ArrowUpRight className="pointer-events-none hidden h-4 w-4 shrink-0 self-center text-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary sm:block" />
+            </div>
           ))}
         </div>
       )}

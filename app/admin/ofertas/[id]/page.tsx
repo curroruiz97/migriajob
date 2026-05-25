@@ -91,6 +91,17 @@ export default async function EditarOfertaPage({
     }))
   );
 
+  // Cabecera de detalle: lo que el empleador "ve" de su propia oferta al
+  // entrar. No hay botón de "Solicitar información" — esta vista es interna
+  // del empleador: candidatos inscritos + edición.
+  const jobTitle = (j.title as string) ?? 'Sin título';
+  const jobStatus = (j.status as string) ?? 'draft';
+  const jobLocation = (j.location as string | null) ?? null;
+  const STATUS_LABEL: Record<string, string> = {
+    published: 'Activa', paused: 'Pausada', draft: 'Borrador',
+    archived: 'Cerrada', expired: 'Caducada',
+  };
+
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <Link
@@ -100,10 +111,29 @@ export default async function EditarOfertaPage({
         <ArrowLeft className="h-3.5 w-3.5" /> Mis ofertas
       </Link>
 
+      {/* Detalle de la oferta (vista del propio empleador, sin CTA público) */}
+      <section className="rounded-2xl border border-border bg-surface p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <h1 className="font-display text-2xl leading-tight tracking-tight text-foreground">
+              {jobTitle}
+            </h1>
+            {jobLocation && (
+              <p className="mt-1 inline-flex items-center gap-1 text-sm text-muted-foreground">
+                <MapPin className="h-3.5 w-3.5" /> {jobLocation}
+              </p>
+            )}
+          </div>
+          <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
+            {STATUS_LABEL[jobStatus] ?? jobStatus}
+          </span>
+        </div>
+      </section>
+
       <section className="space-y-3">
-        <h1 className="font-display text-2xl leading-tight tracking-tight text-foreground">
+        <h2 className="font-display text-xl leading-tight tracking-tight text-foreground">
           Candidatos inscritos ({withScores.length})
-        </h1>
+        </h2>
         {withScores.length === 0 ? (
           <EmptyState
             icon={Users}
@@ -168,7 +198,7 @@ export default async function EditarOfertaPage({
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-display text-2xl leading-tight tracking-tight text-foreground">
+        <h2 className="font-display text-xl leading-tight tracking-tight text-foreground">
           Editar oferta
         </h2>
         <OfferForm jobId={id} defaults={defaults} />

@@ -1,30 +1,25 @@
 'use client';
 
-import { useActionState, useEffect } from 'react';
+/**
+ * Formulario de creación / edición de oferta — versión simplificada.
+ *
+ * Visible al empleador: SOLO 4 campos (título, descripción, ubicación, salario).
+ * El resto (job_type, work_mode, status, country, category…) se rellena con
+ * valores por defecto razonables para que la API/BD acepten la inserción
+ * sin obligar al empleador a configurarlos. Se pueden añadir más adelante.
+ */
+
+import { useActionState, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertCircle } from 'lucide-react';
 import { createJobAction, updateJobAction } from '@/app/admin/ofertas/actions';
 import { Button } from '@/components/ui/button';
+import { DateWheelPicker } from '@/components/ui/date-wheel-picker';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 
 type Result = { ok?: true } | { error: string } | null;
-
-// Categorías de puesto (foco hostelería + industria).
-const CATEGORIES = [
-  'Cocinero',
-  'Camarero',
-  'Jefe de sala',
-  'Hostelería',
-  'Operario de producción',
-  'Pescadero',
-  'Técnico de mantenimiento',
-  'Supervisor',
-  'Otro',
-];
-
-const COUNTRIES = ['España', 'Perú'];
 
 export interface OfferDefaults {
   title: string;
@@ -43,7 +38,7 @@ export interface OfferDefaults {
 
 const EMPTY: OfferDefaults = {
   title: '',
-  category: '',
+  category: 'Otro',
   description: '',
   requirements: '',
   country: 'España',
@@ -61,6 +56,7 @@ export function OfferForm({ jobId, defaults }: { jobId?: string; defaults?: Offe
   const router = useRouter();
   const action = jobId ? updateJobAction.bind(null, jobId) : createJobAction;
   const [state, formAction, pending] = useActionState<Result, FormData>(action, null);
+  const [startDate, setStartDate] = useState<string>(d.start_date);
 
   useEffect(() => {
     if (state && 'ok' in state && state.ok) {
@@ -80,99 +76,82 @@ export function OfferForm({ jobId, defaults }: { jobId?: string; defaults?: Offe
 
       <div className="space-y-1.5">
         <Label>Título del puesto *</Label>
-        <Input name="title" defaultValue={d.title} required placeholder="Cocinero/a para restaurante" />
+        <Input name="title" defaultValue={d.title} required placeholder="Ej: Cocinero/a para restaurante" />
       </div>
 
       <div className="space-y-1.5">
-        <Label>Categoría *</Label>
-        <Select name="category" defaultValue={d.category} required>
-          <option value="" disabled>
-            Selecciona una categoría…
-          </option>
-          {CATEGORIES.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </Select>
-      </div>
-
-      <div className="space-y-1.5">
-        <Label>Descripción del puesto *</Label>
+        <Label>Descripción detallada del puesto *</Label>
         <textarea
           name="description"
           defaultValue={d.description}
           required
-          rows={5}
+          rows={7}
           className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          placeholder="Funciones, equipo, horarios…"
+          placeholder="Funciones del puesto, horario, equipo, requisitos imprescindibles, beneficios…"
         />
+        <p className="text-[11px] text-muted-foreground">
+          Cuéntales a los candidatos qué van a hacer y qué buscas en la persona ideal.
+        </p>
       </div>
 
       <div className="space-y-1.5">
-        <Label>Requisitos *</Label>
-        <textarea
-          name="requirements"
-          defaultValue={d.requirements}
-          required
-          rows={3}
-          className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          placeholder="Experiencia, formación, idiomas…"
-        />
+        <Label>Ubicación *</Label>
+        <Input name="city" defaultValue={d.city} required placeholder="Ej: Madrid · España" />
+        <p className="text-[11px] text-muted-foreground">
+          Ciudad, provincia o región donde se trabaja.
+        </p>
       </div>
 
       <Separator />
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-1.5">
-          <Label>Modalidad *</Label>
-          <Select name="job_type" defaultValue={d.job_type} required>
-            <option value="full_time">Jornada completa</option>
-            <option value="part_time">Media jornada</option>
-          </Select>
-        </div>
-        <div className="space-y-1.5">
-          <Label>Tipo *</Label>
-          <Select name="work_mode" defaultValue={d.work_mode} required>
-            <option value="on_site">Presencial</option>
-            <option value="remote">Teletrabajo</option>
-          </Select>
-        </div>
-        <div className="space-y-1.5">
-          <Label>País *</Label>
-          <Select name="country" defaultValue={d.country || 'España'} required>
-            {COUNTRIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </Select>
-        </div>
-        <div className="space-y-1.5">
-          <Label>Ciudad *</Label>
-          <Input name="city" defaultValue={d.city} required placeholder="Madrid" />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Salario mínimo (€/mes)</Label>
-          <Input name="salary_min" type="number" min={0} step={50} defaultValue={d.salary_min} placeholder="1400" />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Salario máximo (€/mes)</Label>
-          <Input name="salary_max" type="number" min={0} step={50} defaultValue={d.salary_max} placeholder="1800" />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Fecha de incorporación</Label>
-          <Input name="start_date" type="date" defaultValue={d.start_date} />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Estado</Label>
-          <Select name="status" defaultValue={d.status}>
-            <option value="published">Activa (publicada)</option>
-            <option value="paused">Pausada</option>
-            <option value="archived">Cerrada</option>
-          </Select>
+      <div>
+        <Label className="mb-1.5 block">Salario ofrecido</Label>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <Input
+              name="salary_min"
+              type="number"
+              min={0}
+              step={50}
+              defaultValue={d.salary_min}
+              placeholder="Mínimo €/mes"
+            />
+            <p className="text-[11px] text-muted-foreground">Mínimo</p>
+          </div>
+          <div className="space-y-1">
+            <Input
+              name="salary_max"
+              type="number"
+              min={0}
+              step={50}
+              defaultValue={d.salary_max}
+              placeholder="Máximo €/mes"
+            />
+            <p className="text-[11px] text-muted-foreground">Máximo</p>
+          </div>
         </div>
       </div>
+
+      <div className="space-y-1.5">
+        <Label>Fecha de incorporación (opcional)</Label>
+        <DateWheelPicker
+          name="start_date"
+          mode="date"
+          value={startDate}
+          onChange={setStartDate}
+          placeholder="Sin definir"
+          minYear={new Date().getFullYear()}
+          maxYear={new Date().getFullYear() + 2}
+        />
+      </div>
+
+      {/* Campos requeridos por BD, con valores por defecto invisibles para el usuario. */}
+      <input type="hidden" name="category" value={d.category || 'Otro'} />
+      <input type="hidden" name="requirements" value={d.requirements || 'Ver descripción del puesto.'} />
+      <input type="hidden" name="country" value={d.country || 'España'} />
+      <input type="hidden" name="job_type" value={d.job_type || 'full_time'} />
+      <input type="hidden" name="work_mode" value={d.work_mode || 'on_site'} />
+      <input type="hidden" name="status" value={d.status || 'published'} />
 
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={() => router.push('/admin/ofertas')}>
@@ -183,28 +162,5 @@ export function OfferForm({ jobId, defaults }: { jobId?: string; defaults?: Offe
         </Button>
       </div>
     </form>
-  );
-}
-
-function Select({
-  name,
-  defaultValue,
-  required,
-  children,
-}: {
-  name: string;
-  defaultValue: string;
-  required?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <select
-      name={name}
-      defaultValue={defaultValue}
-      required={required}
-      className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-    >
-      {children}
-    </select>
   );
 }

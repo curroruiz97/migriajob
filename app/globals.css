@@ -213,3 +213,18 @@
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
   .safe-x      { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
 }
+
+/*
+ * Reglas que solo se aplican cuando la web corre dentro de la app Capacitor.
+ * NativeBootstrap añade la clase `app-native` al <html> al detectar la plataforma.
+ */
+html.app-native .app-only-web {
+  display: none !important;
+}
+html.app-native main[data-app-main] {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+}
+
+/* Ocultar la barra de scroll (ruedas tipo iOS, listas horizontales, etc.) */
+.hide-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }

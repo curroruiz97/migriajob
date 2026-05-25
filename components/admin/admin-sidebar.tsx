@@ -15,15 +15,17 @@ import {
   Bell,
   BookmarkCheck,
   FileText,
+  Inbox,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 import { cn } from '@/lib/utils';
 
-const NAV = [
+const NAV: Array<{ href: string; label: string; icon: typeof Megaphone; exact?: boolean }> = [
   { href: '/admin/ofertas', label: 'Ofertas', icon: Megaphone },
-  { href: '/admin/candidatos', label: 'Candidatos', icon: Users },
+  { href: '/admin/solicitudes', label: 'Solicitudes', icon: Inbox },
   { href: '/admin/mensajes', label: 'Mensajes', icon: MessageSquare },
   { href: '/admin/perfil-empresa', label: 'Perfil de empresa', icon: Building2 },
+  { href: '/admin/candidatos', label: 'Buscar candidatos', icon: Users },
   { href: '/admin/procesos', label: 'Mis procesos', icon: Workflow },
   { href: '/admin/busqueda-avanzada', label: 'Búsqueda avanzada', icon: Search },
   { href: '/admin/busquedas-guardadas', label: 'Búsquedas guardadas', icon: BookmarkCheck },

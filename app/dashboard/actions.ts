@@ -99,6 +99,47 @@ export async function updateProfileAction(_prev: unknown, formData: FormData) {
   });
 }
 
+/**
+ * Marca/desmarca una oferta como favorita del candidato actual.
+ * Devuelve el nuevo estado (`saved`) para que el UI lo refleje.
+ */
+export async function toggleSavedJobAction(jobId: string) {
+  return safeAction(async () => {
+    const { user, supabase } = await requireUser();
+
+    const { data: candidate } = await supabase
+      .from('candidates')
+      .select('id')
+      .eq('profile_id', user.id)
+      .maybeSingle();
+
+    if (!candidate) {
+      return { error: 'Completa tu perfil antes de guardar ofertas.' as string };
+    }
+
+    const { data: existing } = await supabase
+      .from('saved_jobs')
+      .select('id')
+      .eq('candidate_id', candidate.id)
+      .eq('job_id', jobId)
+      .maybeSingle();
+
+    if (existing) {
+      await supabase.from('saved_jobs').delete().eq('id', existing.id);
+      revalidatePath('/dashboard/ofertas');
+      revalidatePath(`/dashboard/ofertas`);
+      return { ok: true as const, saved: false };
+    }
+
+    await supabase.from('saved_jobs').insert({
+      candidate_id: candidate.id,
+      job_id: jobId,
+    });
+    revalidatePath('/dashboard/ofertas');
+    return { ok: true as const, saved: true };
+  });
+}
+
 export async function applyToJobAction(jobId: string) {
   return safeAction(async () => {
     const { user, supabase } = await requireUser();

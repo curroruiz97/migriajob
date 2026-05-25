@@ -16,6 +16,7 @@ import {
   BookmarkCheck,
   FileText,
   ClipboardList,
+  Inbox,
   Briefcase,
   Megaphone,
   Building2,
@@ -41,12 +42,13 @@ type NavItem = {
 
 const EMPLOYER_PRIMARY: NavItem[] = [
   { href: '/admin/ofertas', label: 'Ofertas', icon: Megaphone },
-  { href: '/admin/candidatos', label: 'Candidatos', icon: Users },
+  { href: '/admin/solicitudes', label: 'Solicitudes', icon: Inbox },
   { href: '/admin/mensajes', label: 'Mensajes', icon: MessageSquare, badge: true },
   { href: '/admin/perfil-empresa', label: 'Empresa', icon: Building2 },
 ];
 
 const EMPLOYER_MENU: NavItem[] = [
+  { href: '/admin/candidatos', label: 'Buscar candidatos', icon: Users },
   { href: '/admin/procesos', label: 'Mis procesos', icon: Workflow },
   { href: '/admin/busqueda-avanzada', label: 'Búsqueda avanzada', icon: Search },
   { href: '/admin/busquedas-guardadas', label: 'Búsquedas guardadas', icon: BookmarkCheck },

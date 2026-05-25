@@ -18,6 +18,7 @@ import { updateProfileAction, updateAvailabilityAction } from '@/app/dashboard/a
 import { AvatarUpload, CvUpload } from '@/components/employee/file-uploads';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { DateWheelPicker } from '@/components/ui/date-wheel-picker';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -282,7 +283,16 @@ export function CandidatePerfil({
                 <AvatarUpload currentUrl={avatarUrl} initials={initials} />
                 <Grid>
                   <FieldEl label="Nombre completo"><Input value={form.fullName} onChange={set('fullName')} /></FieldEl>
-                  <FieldEl label="Fecha de nacimiento"><Input type="date" value={form.dateOfBirth} onChange={set('dateOfBirth')} /></FieldEl>
+                  <FieldEl label="Fecha de nacimiento">
+                    <DateWheelPicker
+                      value={form.dateOfBirth}
+                      onChange={(v) => setForm((f) => ({ ...f, dateOfBirth: v }))}
+                      mode="date"
+                      placeholder="Selecciona tu fecha de nacimiento"
+                      maxYear={new Date().getFullYear() - 14}
+                      minYear={1925}
+                    />
+                  </FieldEl>
                   <FieldEl label="Nacionalidad">
                     <SelectEl value={form.nationality} onChange={set('nationality')}>
                       <option value="">Selecciona…</option>
@@ -356,8 +366,23 @@ export function CandidatePerfil({
                       <div className="grid gap-2 sm:grid-cols-2">
                         <Input placeholder="Puesto" value={ex.position} onChange={(e) => setExperiences((a) => a.map((x, i) => i === idx ? { ...x, position: e.target.value } : x))} />
                         <Input placeholder="Empresa" value={ex.company} onChange={(e) => setExperiences((a) => a.map((x, i) => i === idx ? { ...x, company: e.target.value } : x))} />
-                        <Input type="month" value={ex.start_date} onChange={(e) => setExperiences((a) => a.map((x, i) => i === idx ? { ...x, start_date: e.target.value } : x))} />
-                        <Input type="month" value={ex.end_date} disabled={ex.current} onChange={(e) => setExperiences((a) => a.map((x, i) => i === idx ? { ...x, end_date: e.target.value } : x))} />
+                        <DateWheelPicker
+                          mode="month"
+                          value={ex.start_date}
+                          onChange={(v) => setExperiences((a) => a.map((x, i) => i === idx ? { ...x, start_date: v } : x))}
+                          placeholder="Inicio"
+                          maxYear={new Date().getFullYear()}
+                          minYear={1960}
+                        />
+                        <DateWheelPicker
+                          mode="month"
+                          value={ex.end_date}
+                          onChange={(v) => setExperiences((a) => a.map((x, i) => i === idx ? { ...x, end_date: v } : x))}
+                          placeholder={ex.current ? 'Actualidad' : 'Fin'}
+                          disabled={ex.current}
+                          maxYear={new Date().getFullYear()}
+                          minYear={1960}
+                        />
                       </div>
                       <label className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                         <input type="checkbox" checked={ex.current} onChange={(e) => setExperiences((a) => a.map((x, i) => i === idx ? { ...x, current: e.target.checked } : x))} className="h-3.5 w-3.5 accent-primary" />

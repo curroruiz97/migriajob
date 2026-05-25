@@ -7,6 +7,7 @@ import { getJobBySlug as getContentJob } from '@/lib/content/jobs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ApplyButton } from '@/components/employee/apply-button';
+import { SavedJobButton } from '@/components/employee/saved-job-button';
 
 const JOB_TYPE_LABELS: Record<string, string> = {
   full_time: 'Jornada completa', part_time: 'Media jornada', contract: 'Contrato',
@@ -37,12 +38,37 @@ export default async function CandidateJobDetail({
   if (dbJob) {
     const { data: { user } } = await supabase.auth.getUser();
     let alreadyApplied = false;
+    let alreadySaved = false;
+    let profileReady = false;
+    let profileSummary:
+      | { fullName?: string | null; headline?: string | null; hasCv?: boolean; skillsCount?: number }
+      | undefined;
     if (user) {
-      const { data: candidate } = await supabase.from('candidates').select('id').eq('profile_id', user.id).maybeSingle();
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .maybeSingle<{ full_name: string | null }>();
+      const { data: candidate } = await supabase
+        .from('candidates')
+        .select('id, headline, cv_url, skills')
+        .eq('profile_id', user.id)
+        .maybeSingle<{ id: string; headline: string | null; cv_url: string | null; skills: string[] | null }>();
       if (candidate) {
-        const { data: app } = await supabase
-          .from('applications').select('id').eq('candidate_id', candidate.id).eq('job_id', dbJob.id).maybeSingle();
+        const [{ data: app }, { data: saved }] = await Promise.all([
+          supabase.from('applications').select('id').eq('candidate_id', candidate.id).eq('job_id', dbJob.id).maybeSingle(),
+          supabase.from('saved_jobs').select('id').eq('candidate_id', candidate.id).eq('job_id', dbJob.id).maybeSingle(),
+        ]);
         alreadyApplied = !!app;
+        alreadySaved = !!saved;
+        // Perfil "listo" = al menos nombre + headline. CV y skills son opcionales.
+        profileReady = Boolean((profile?.full_name ?? '').trim() && (candidate.headline ?? '').trim());
+        profileSummary = {
+          fullName: profile?.full_name ?? null,
+          headline: candidate.headline,
+          hasCv: Boolean(candidate.cv_url),
+          skillsCount: candidate.skills?.length ?? 0,
+        };
       }
     }
     const salSym = !dbJob.currency || dbJob.currency === 'EUR' ? '€' : dbJob.currency;
@@ -63,7 +89,17 @@ export default async function CandidateJobDetail({
         jobType={JOB_TYPE_LABELS[dbJob.job_type] ?? dbJob.job_type}
         workMode={WORK_MODE_LABELS[dbJob.work_mode] ?? dbJob.work_mode}
         salary={sal}
-        cta={<ApplyButton jobId={dbJob.id} alreadyApplied={alreadyApplied} />}
+        cta={
+          <div className="space-y-2">
+            <ApplyButton
+              jobId={dbJob.id}
+              alreadyApplied={alreadyApplied}
+              profileReady={profileReady}
+              profileSummary={profileSummary}
+            />
+            <SavedJobButton jobId={dbJob.id} initiallySaved={alreadySaved} />
+          </div>
+        }
       >
         {dbJob.description && <Section title="Descripción"><p className="whitespace-pre-line leading-relaxed text-foreground">{dbJob.description}</p></Section>}
         {dbJob.requirements && <Section title="Requisitos"><p className="whitespace-pre-line leading-relaxed text-foreground">{dbJob.requirements}</p></Section>}

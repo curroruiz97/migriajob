@@ -18,6 +18,10 @@ export function NativeBootstrap() {
       const { Capacitor } = await import('@capacitor/core');
       if (!Capacitor.isNativePlatform()) return; // DECISIÓN: no hace nada en web
 
+      // Marca el documento para que la CSS pueda esconder el footer/header de
+      // marketing y reservar espacio para el bottom nav nativo.
+      document.documentElement.classList.add('app-native');
+
       const [{ StatusBar, Style }, { App }] = await Promise.all([
         import('@capacitor/status-bar'),
         import('@capacitor/app'),
