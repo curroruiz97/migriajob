@@ -1,11 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, MapPin, Clock, Wallet, Building2, CheckCircle2, ArrowRight } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Wallet, Building2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getJobBySlug } from '@/lib/db/queries';
-import { getJobBySlug as getContentJob } from '@/lib/content/jobs';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { ApplyButton } from '@/components/employee/apply-button';
 import { SavedJobButton } from '@/components/employee/saved-job-button';
 
@@ -108,42 +106,10 @@ export default async function CandidateJobDetail({
     );
   }
 
-  // 2) Oferta curada (contenido, mismo origen que la web)
-  const c = getContentJob(slug);
-  if (!c) notFound();
-  return (
-    <Shell
-      title={c.title}
-      subtitle={c.category}
-      location={c.city ?? c.countryName}
-      jobType={c.type}
-      workMode={c.mode}
-      salary={c.salary ?? null}
-      cta={
-        <Button asChild size="lg" className="h-11 w-full rounded-xl text-sm font-semibold">
-          <Link href="/contacto">Solicitar información <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
-        </Button>
-      }
-    >
-      <Section title="Sobre el puesto">
-        {c.description.map((p, i) => <p key={i} className="leading-relaxed text-foreground">{p}</p>)}
-      </Section>
-      <Section title="Requisitos">
-        <ul className="space-y-2">
-          {c.requirements.map((r, i) => (
-            <li key={i} className="flex gap-2 text-foreground"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" /><span>{r}</span></li>
-          ))}
-        </ul>
-      </Section>
-      <Section title="Lo que ofrecemos">
-        <ul className="space-y-2">
-          {c.offer.map((o, i) => (
-            <li key={i} className="flex gap-2 text-foreground"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><span>{o}</span></li>
-          ))}
-        </ul>
-      </Section>
-    </Shell>
-  );
+  // Si no hay oferta real con ese slug, 404. (Las ofertas "ejemplo" curadas
+  // de la web pública se eliminaron por petición; sólo se muestran ofertas
+  // publicadas por empresas reales.)
+  notFound();
 }
 
 function Shell({

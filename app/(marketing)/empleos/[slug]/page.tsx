@@ -1,29 +1,40 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
-  ArrowLeft, ArrowRight, Briefcase, MapPin, Clock, CheckCircle2,
-  ShieldCheck, Sparkles,
+  ArrowLeft, ArrowRight, Briefcase, MapPin, Clock, Wallet, Building2, ShieldCheck,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
-import { CountryFlag } from '@/components/ui/country-flag';
-import { JobCard } from '@/components/public/job-card';
-import { JOBS, getJobBySlug, getRelatedJobs } from '@/lib/content/jobs';
+import { getJobBySlug } from '@/lib/db/queries';
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
-export function generateStaticParams() {
-  return JOBS.map((j) => ({ slug: j.slug }));
+const JOB_TYPE_LABELS: Record<string, string> = {
+  full_time: 'Jornada completa', part_time: 'Media jornada', contract: 'Contrato',
+  internship: 'Prácticas', freelance: 'Freelance',
+};
+const WORK_MODE_LABELS: Record<string, string> = {
+  on_site: 'Presencial', hybrid: 'Híbrido', remote: 'Teletrabajo',
+};
+
+function salaryText(min: number | null, max: number | null, cur: string | null): string | null {
+  if (min == null && max == null) return null;
+  const sym = !cur || cur === 'EUR' ? '€' : cur;
+  const f = (n: number) => new Intl.NumberFormat('es-ES').format(n);
+  if (min != null && max != null) return `${f(min)}–${f(max)} ${sym}/mes`;
+  if (min != null) return `Desde ${f(min)} ${sym}/mes`;
+  return `Hasta ${f(max as number)} ${sym}/mes`;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const job = getJobBySlug(slug);
+  const job = await getJobBySlug(slug).catch(() => null);
   if (!job) return { title: 'Oferta no encontrada' };
+  const j = job as { title: string; description: string | null };
   return {
-    title: `${job.title} — ${job.countryName}`,
-    description: job.shortDescription,
+    title: j.title,
+    description: (j.description ?? '').slice(0, 160),
   };
 }
 
@@ -31,10 +42,19 @@ export default async function JobDetailPage({
   params,
 }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const job = getJobBySlug(slug);
+  const job = (await getJobBySlug(slug).catch(() => null)) as
+    | (Record<string, unknown> & {
+        id: string; title: string; description: string | null;
+        requirements: string | null; benefits: string | null;
+        location: string | null; job_type: string; work_mode: string;
+        salary_min: number | null; salary_max: number | null; currency: string | null;
+        skills: string[] | null; company: { name: string } | null;
+      })
+    | null;
+
   if (!job) notFound();
-  const related = getRelatedJobs(slug, 3);
-  const Icon = job.icon;
+
+  const sal = salaryText(job.salary_min, job.salary_max, job.currency);
 
   return (
     <div className="bg-background">
@@ -49,30 +69,34 @@ export default async function JobDetailPage({
           </Link>
           <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:items-start">
             <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg sm:h-20 sm:w-20">
-              <Icon className="h-8 w-8 sm:h-10 sm:w-10" />
+              <Briefcase className="h-8 w-8 sm:h-10 sm:w-10" />
             </div>
             <div className="flex-1">
-              <Badge variant="soft" className="mb-3">
-                {job.category}
-              </Badge>
+              {job.company?.name && (
+                <Badge variant="soft" className="mb-3 gap-1">
+                  <Building2 className="h-3 w-3" /> {job.company.name}
+                </Badge>
+              )}
               <h1 className="font-display text-4xl tracking-tight text-foreground sm:text-5xl">
                 {job.title}
               </h1>
               <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                <Badge variant="outline" className="gap-1">
-                  <CountryFlag code={job.countryCode} size="sm" /> {job.countryName}
-                </Badge>
-                {job.city && (
+                {job.location && (
                   <Badge variant="outline" className="gap-1">
-                    <MapPin className="h-3 w-3" /> {job.city}
+                    <MapPin className="h-3 w-3" /> {job.location}
                   </Badge>
                 )}
                 <Badge variant="outline" className="gap-1">
-                  <Clock className="h-3 w-3" /> {job.type}
+                  <Clock className="h-3 w-3" /> {JOB_TYPE_LABELS[job.job_type] ?? job.job_type}
                 </Badge>
                 <Badge variant="outline" className="gap-1">
-                  <Briefcase className="h-3 w-3" /> {job.mode}
+                  <Briefcase className="h-3 w-3" /> {WORK_MODE_LABELS[job.work_mode] ?? job.work_mode}
                 </Badge>
+                {sal && (
+                  <Badge variant="outline" className="gap-1 border-primary/30 bg-primary-soft/50 text-primary">
+                    <Wallet className="h-3 w-3" /> {sal}
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
@@ -83,33 +107,29 @@ export default async function JobDetailPage({
       <Container size="md" className="py-12">
         <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
           <article className="space-y-10">
-            <Section title="Sobre el puesto">
-              {job.description.map((p, i) => (
-                <p key={i} className="text-foreground leading-relaxed">{p}</p>
-              ))}
-            </Section>
+            {job.description && (
+              <Section title="Sobre el puesto">
+                <p className="whitespace-pre-line leading-relaxed text-foreground">
+                  {job.description}
+                </p>
+              </Section>
+            )}
 
-            <Section title="Requisitos">
-              <ul className="space-y-2">
-                {job.requirements.map((r, i) => (
-                  <li key={i} className="flex gap-2 text-foreground">
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
-                    <span>{r}</span>
-                  </li>
-                ))}
-              </ul>
-            </Section>
+            {job.requirements && (
+              <Section title="Requisitos">
+                <p className="whitespace-pre-line leading-relaxed text-foreground">
+                  {job.requirements}
+                </p>
+              </Section>
+            )}
 
-            <Section title="Lo que ofrecemos">
-              <ul className="space-y-2">
-                {job.offer.map((o, i) => (
-                  <li key={i} className="flex gap-2 text-foreground">
-                    <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                    <span>{o}</span>
-                  </li>
-                ))}
-              </ul>
-            </Section>
+            {job.benefits && (
+              <Section title="Lo que ofrecen">
+                <p className="whitespace-pre-line leading-relaxed text-foreground">
+                  {job.benefits}
+                </p>
+              </Section>
+            )}
 
             <Section title="Acompañamiento Migria" icon={ShieldCheck}>
               <p className="text-muted-foreground">
@@ -125,11 +145,11 @@ export default async function JobDetailPage({
             <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
               <h3 className="font-display text-lg text-foreground">Aplica ya</h3>
               <p className="mt-1 text-xs text-muted-foreground">
-                Procesos abiertos, plazas limitadas. Sin coste para el candidato.
+                Crea tu perfil en Migria y envía tu candidatura en un clic.
               </p>
               <Button asChild size="lg" className="mt-4 w-full">
-                <Link href="/contacto">
-                  Solicitar información <ArrowRight className="ml-1.5 h-4 w-4" />
+                <Link href={`/login?redirectTo=/dashboard/ofertas/${slug}`}>
+                  Aplicar a esta oferta <ArrowRight className="ml-1.5 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild size="sm" variant="outline" className="mt-2 w-full">
@@ -140,7 +160,7 @@ export default async function JobDetailPage({
             <div className="rounded-2xl border border-border bg-surface-muted/40 p-5 text-sm">
               <p className="font-semibold text-foreground">¿Eres empresa?</p>
               <p className="mt-1 text-muted-foreground">
-                ¿Tienes vacantes parecidas? Pide presupuesto para tu plantilla.
+                Publica tus vacantes y recibe candidatos verificados.
               </p>
               <Link
                 href="/empresas"
@@ -152,35 +172,6 @@ export default async function JobDetailPage({
           </aside>
         </div>
       </Container>
-
-      {/* RELACIONADAS */}
-      {related.length > 0 && (
-        <section className="border-t border-border bg-surface-muted/40 py-16">
-          <Container size="xl">
-            <div className="flex items-end justify-between gap-6">
-              <div>
-                <Badge variant="outline" className="mb-3">
-                  Más ofertas
-                </Badge>
-                <h2 className="font-display text-3xl leading-tight text-foreground sm:text-4xl">
-                  Otras <em className="text-gradient-primary not-italic">oportunidades</em> similares.
-                </h2>
-              </div>
-              <Link
-                href="/empleos"
-                className="hidden shrink-0 items-center gap-1 text-sm font-medium text-primary hover:underline md:inline-flex"
-              >
-                Ver todas <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((j) => (
-                <JobCard key={j.slug} job={j} />
-              ))}
-            </div>
-          </Container>
-        </section>
-      )}
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Briefcase, MapPin, Clock, Wallet, ArrowUpRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
-import { JOBS as CONTENT_JOBS } from '@/lib/content/jobs';
 import { Badge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/ui/empty-state';
 import { OffersFilters } from '@/components/employee/offers-filters';
@@ -20,17 +19,6 @@ const WORK_MODE_LABELS: Record<string, string> = {
   on_site: 'Presencial',
   hybrid: 'Híbrido',
   remote: 'Teletrabajo',
-};
-// Mapeo del contenido estático (mismo que alimenta migriajob.com/empleos) al enum.
-const CONTENT_TYPE: Record<string, string> = {
-  'Jornada completa': 'full_time',
-  'Media jornada': 'part_time',
-  'Por turnos': 'full_time',
-};
-const CONTENT_MODE: Record<string, string> = {
-  Presencial: 'on_site',
-  Teletrabajo: 'remote',
-  Híbrido: 'hybrid',
 };
 
 interface FeedItem {
@@ -92,7 +80,7 @@ export default async function OfertasPage({ searchParams }: PageProps) {
     }
   }
 
-  const dbItems: FeedItem[] = ((dbData ?? []) as unknown as Array<Record<string, unknown>>).map((j) => ({
+  let items: FeedItem[] = ((dbData ?? []) as unknown as Array<Record<string, unknown>>).map((j) => ({
     slug: j.slug as string,
     title: j.title as string,
     subtitle: ((j.company as { name: string } | null)?.name) ?? 'Empresa confidencial',
@@ -104,22 +92,6 @@ export default async function OfertasPage({ searchParams }: PageProps) {
     jobId: j.id as string,
     saved: savedIds.has(j.id as string),
   }));
-
-  // 2) Ofertas curadas (mismo origen que la web) para que NUNCA esté vacío
-  const contentItems: FeedItem[] = CONTENT_JOBS.map((j) => ({
-    slug: j.slug,
-    title: j.title,
-    subtitle: j.category,
-    location: j.city ?? j.countryName,
-    jobType: CONTENT_TYPE[j.type] ?? 'full_time',
-    workMode: CONTENT_MODE[j.mode] ?? 'on_site',
-    salaryText: j.salary ?? null,
-    salaryMax: null,
-  }));
-
-  // Merge: primero las de empresas, luego las curadas (sin duplicar slugs)
-  const seen = new Set(dbItems.map((i) => i.slug));
-  let items = [...dbItems, ...contentItems.filter((i) => !seen.has(i.slug))];
 
   // Filtros (solo si el usuario los aplica). Por defecto: TODAS.
   const q = (params.q ?? '').toLowerCase().trim();
