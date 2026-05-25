@@ -22,7 +22,6 @@ import {
   CheckCircle2,
   AlertTriangle,
   X,
-  Settings,
   ChevronRight,
   CreditCard,
   Building2,
@@ -202,15 +201,6 @@ export function CompanyPerfil({
         >
           <span className="flex items-center gap-3 text-sm font-medium text-foreground">
             <CreditCard className="h-4 w-4 text-muted-foreground" /> Datos de facturación
-          </span>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </Link>
-        <Link
-          href="/dashboard/configuracion"
-          className="flex items-center justify-between rounded-2xl border border-border bg-surface px-5 py-4 transition-colors hover:bg-muted"
-        >
-          <span className="flex items-center gap-3 text-sm font-medium text-foreground">
-            <Settings className="h-4 w-4 text-muted-foreground" /> Configuración de la cuenta
           </span>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </Link>
