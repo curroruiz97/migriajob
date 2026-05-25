@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
 import type { ReactNode } from 'react';
 import { AdminSidebar } from '@/components/admin/admin-sidebar';
 import { AdminTopbar } from '@/components/admin/admin-topbar';
@@ -12,6 +11,18 @@ import { getUnreadNotificationsCount } from '@/lib/db/queries';
 // Zona autenticada: depende del usuario logueado, nunca se prerenderiza en build.
 export const dynamic = 'force-dynamic';
 
+/**
+ * Layout admin compartido entre /admin/* (incluído /admin/onboarding).
+ *
+ * NO redirige a /admin/onboarding si falta la company: ese chequeo se hace
+ * en /admin/page.tsx (la ruta a la que apunta el "índice" del área admin),
+ * porque hacerlo desde el layout requería detectar el pathname (header
+ * `x-invoke-path` eliminado en Next 15) y entraba en bucle infinito de
+ * redirecciones provocando pantalla en blanco en el WebView.
+ *
+ * Las páginas internas (ofertas, solicitudes, etc.) ya manejan la ausencia
+ * de company mostrando un EmptyState con enlace a /admin/perfil-empresa.
+ */
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -26,23 +37,6 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   const role = roleProfile?.role ?? 'candidate';
   if (role === 'candidate') {
     redirect('/dashboard/mi-perfil');
-  }
-
-  // Detectamos si estamos en onboarding via header `x-pathname` que setea
-  // nuestro middleware. Sin esto, Next 15 deja el pathname vacío y entramos
-  // en bucle redirect /admin/onboarding -> /admin/onboarding (= pantalla blanca).
-  const hdrs = await headers();
-  const pathname = hdrs.get('x-pathname') ?? hdrs.get('x-invoke-path') ?? '';
-  const isOnboarding = pathname.includes('/admin/onboarding');
-
-  if (!isOnboarding) {
-    const { data: company } = await supabase
-      .from('companies')
-      .select('id')
-      .eq('owner_id', user.id)
-      .limit(1)
-      .maybeSingle();
-    if (!company) redirect('/admin/onboarding');
   }
 
   const unreadCount = await getUnreadNotificationsCount(user.id).catch(() => 0);
