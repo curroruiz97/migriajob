@@ -166,39 +166,47 @@ export function DateWheelPicker({
               </button>
             </header>
 
-            <div className="relative px-4 pt-4">
-              {/* Banda central que marca la selección */}
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-x-4 top-1/2 z-0 h-10 -translate-y-1/2 rounded-xl bg-primary-soft/60 ring-1 ring-primary/20"
-                style={{ top: `calc(50% + ${ITEM_H * 0}px)` }}
-              />
-              <div className="relative z-10 flex gap-2">
-                {mode === 'date' && (
+            {/*
+              Contenedor sin padding interno arriba: la banda central se posiciona
+              respecto al wrapper de ruedas (no respecto a un padre con padding),
+              así queda perfectamente alineada con la fila central de cada wheel
+              (que está a HALF * ITEM_H del top por su propio padding).
+            */}
+            <div className="px-4 py-4">
+              <div className="relative">
+                {/* Banda central que marca la selección */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 z-0 rounded-xl bg-primary-soft/60 ring-1 ring-primary/20"
+                  style={{ top: ITEM_H * HALF, height: ITEM_H }}
+                />
+                <div className="relative z-10 flex gap-2">
+                  {mode === 'date' && (
+                    <Wheel
+                      items={days}
+                      value={tmpDay}
+                      onChange={setTmpDay}
+                      format={(n) => String(n)}
+                      ariaLabel="Día"
+                    />
+                  )}
                   <Wheel
-                    items={days}
-                    value={tmpDay}
-                    onChange={setTmpDay}
-                    format={(n) => String(n)}
-                    ariaLabel="Día"
+                    items={months}
+                    value={tmpMonth}
+                    onChange={setTmpMonth}
+                    format={(n) => (mode === 'date' ? MONTHS_ABBR[n - 1] : MONTHS_ES[n - 1])}
+                    ariaLabel="Mes"
+                    flexGrow={mode === 'month' ? 2 : 1.5}
                   />
-                )}
-                <Wheel
-                  items={months}
-                  value={tmpMonth}
-                  onChange={setTmpMonth}
-                  format={(n) => (mode === 'date' ? MONTHS_ABBR[n - 1] : MONTHS_ES[n - 1])}
-                  ariaLabel="Mes"
-                  flexGrow={mode === 'month' ? 2 : 1.5}
-                />
-                <Wheel
-                  items={years}
-                  value={tmpYear}
-                  onChange={setTmpYear}
-                  format={(n) => String(n)}
-                  ariaLabel="Año"
-                  flexGrow={1.4}
-                />
+                  <Wheel
+                    items={years}
+                    value={tmpYear}
+                    onChange={setTmpYear}
+                    format={(n) => String(n)}
+                    ariaLabel="Año"
+                    flexGrow={1.4}
+                  />
+                </div>
               </div>
             </div>
 

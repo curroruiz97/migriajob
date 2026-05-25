@@ -10,6 +10,7 @@ import { HeroFloatingCards } from '@/components/public/hero-floating-cards';
 import { AnimatedCounter } from '@/components/ui/animated-counter';
 import { CountryFlag } from '@/components/ui/country-flag';
 import { getFeaturedProfiles } from '@/lib/db/queries';
+import { createClient } from '@/lib/supabase/server';
 
 export const revalidate = 300;
 
@@ -58,6 +59,26 @@ const COUNTRIES = ['PE', 'CO', 'VE', 'EC', 'AR', 'MX', 'BO', 'DO', 'CL'];
 export default async function HomePage() {
   const featured = await getFeaturedProfiles().catch(() => []);
 
+  // Rol del usuario actual (si lo hay) para mostrar solo la CTA relevante:
+  //   - candidato → solo "Soy candidato, busco trabajo"
+  //   - empresa/admin → solo "Soy empresa, busco talento"
+  //   - sin sesión → ambos botones (web pública)
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  let role: 'candidate' | 'employer' | 'admin' | null = null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .maybeSingle<{ role: 'candidate' | 'employer' | 'admin' }>();
+    role = profile?.role ?? 'candidate';
+  }
+  const showEmpresa = !role || role === 'employer' || role === 'admin';
+  const showCandidato = !role || role === 'candidate';
+
   return (
     <div className="bg-background">
       {/* HERO */}
@@ -100,18 +121,22 @@ export default async function HomePage() {
               </form>
 
               <div className="mt-6 flex flex-wrap gap-3">
-                <Button asChild variant="outline" size="sm" className="rounded-full">
-                  <Link href="/empresas">
-                    <Building2 className="mr-1.5 h-3.5 w-3.5" />
-                    Soy empresa, busco talento
-                  </Link>
-                </Button>
-                <Button asChild variant="ghost" size="sm" className="rounded-full">
-                  <Link href="/empleados">
-                    <Users className="mr-1.5 h-3.5 w-3.5" />
-                    Soy candidato, busco trabajo
-                  </Link>
-                </Button>
+                {showEmpresa && (
+                  <Button asChild variant="outline" size="sm" className="rounded-full">
+                    <Link href="/empresas">
+                      <Building2 className="mr-1.5 h-3.5 w-3.5" />
+                      Soy empresa, busco talento
+                    </Link>
+                  </Button>
+                )}
+                {showCandidato && (
+                  <Button asChild variant="ghost" size="sm" className="rounded-full">
+                    <Link href="/empleados">
+                      <Users className="mr-1.5 h-3.5 w-3.5" />
+                      Soy candidato, busco trabajo
+                    </Link>
+                  </Button>
+                )}
               </div>
 
               <div className="mt-8 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">

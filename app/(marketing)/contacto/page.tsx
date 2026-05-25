@@ -4,13 +4,31 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { createClient } from '@/lib/supabase/server';
 
 export const metadata = {
   title: 'Contacto',
   description: 'Solicita presupuesto o resuelve dudas. Te respondemos en menos de 48 horas.',
 };
 
-export default function ContactoPage() {
+export default async function ContactoPage() {
+  // Igual que en home: si hay sesión, ocultamos la tarjeta del rol contrario.
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  let role: 'candidate' | 'employer' | 'admin' | null = null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .maybeSingle<{ role: 'candidate' | 'employer' | 'admin' }>();
+    role = profile?.role ?? 'candidate';
+  }
+  const showEmpresa = !role || role === 'employer' || role === 'admin';
+  const showCandidato = !role || role === 'candidate';
+
   return (
     <div className="bg-background">
       {/* HERO */}
@@ -29,31 +47,42 @@ export default function ContactoPage() {
         </div>
       </section>
 
-      {/* DOS BLOQUES: empresa / candidato */}
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="rounded-2xl border border-border bg-surface p-6">
-            <Building2 className="h-8 w-8 text-primary" />
-            <h2 className="font-display mt-4 text-2xl text-foreground">Soy empresa</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Necesito incorporar profesionales hispanoamericanos a mi plantilla.
-            </p>
-            <Button asChild variant="outline" size="sm" className="mt-4">
-              <a href="#form">Solicitar presupuesto ↓</a>
-            </Button>
+      {/* DOS BLOQUES: empresa / candidato — filtramos por rol cuando hay sesión */}
+      {(showEmpresa || showCandidato) && (
+        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <div
+            className={
+              'grid gap-6 ' +
+              (showEmpresa && showCandidato ? 'md:grid-cols-2' : 'mx-auto max-w-xl')
+            }
+          >
+            {showEmpresa && (
+              <div className="rounded-2xl border border-border bg-surface p-6">
+                <Building2 className="h-8 w-8 text-primary" />
+                <h2 className="font-display mt-4 text-2xl text-foreground">Soy empresa</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Necesito incorporar profesionales hispanoamericanos a mi plantilla.
+                </p>
+                <Button asChild variant="outline" size="sm" className="mt-4">
+                  <a href="#form">Solicitar presupuesto ↓</a>
+                </Button>
+              </div>
+            )}
+            {showCandidato && (
+              <div className="rounded-2xl border border-border bg-surface p-6">
+                <Users className="h-8 w-8 text-primary" />
+                <h2 className="font-display mt-4 text-2xl text-foreground">Soy candidato</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Quiero información sobre cómo trabajar en España con MIGRIA.
+                </p>
+                <Button asChild variant="outline" size="sm" className="mt-4">
+                  <a href="#form">Escribirnos ↓</a>
+                </Button>
+              </div>
+            )}
           </div>
-          <div className="rounded-2xl border border-border bg-surface p-6">
-            <Users className="h-8 w-8 text-primary" />
-            <h2 className="font-display mt-4 text-2xl text-foreground">Soy candidato</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Quiero información sobre cómo trabajar en España con MIGRIA.
-            </p>
-            <Button asChild variant="outline" size="sm" className="mt-4">
-              <a href="#form">Escribirnos ↓</a>
-            </Button>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* INFO CONTACTO */}
       <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
