@@ -207,11 +207,22 @@ export async function updateApplicationStatusAction(
 ) {
   return safeAction(async () => {
     const { supabase } = await requireEmployer();
-    await supabase
+    // NB: la tabla `applications` no tiene columna `updated_at` (ver migración
+    // 0001). El intento anterior de setearla hacía fallar el UPDATE.
+    const { error } = await supabase
       .from('applications')
-      .update({ status: status as never, updated_at: new Date().toISOString() })
+      .update({ status: status as never })
       .eq('id', applicationId);
+    if (error) return { error: error.message };
+
+    // Revalidar todas las pantallas donde aparece el estado:
+    //   - listado y detalle de solicitudes del empleador
+    //   - vista de oferta del empleador (lista de candidatos inscritos)
+    //   - listado de solicitudes del candidato
+    revalidatePath('/admin/solicitudes');
+    revalidatePath(`/admin/solicitudes/${applicationId}`);
     revalidatePath('/admin/ofertas');
+    revalidatePath('/dashboard/solicitudes');
     return { ok: true as const };
   });
 }
