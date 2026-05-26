@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { safeAction } from '@/lib/actions/safe';
+import { upsertSelectionStage } from '@/lib/actions/selection-process';
 
 export async function sendMessageAction(_prev: unknown, formData: FormData) {
   return safeAction(async () => {
@@ -21,6 +22,23 @@ export async function sendMessageAction(_prev: unknown, formData: FormData) {
       body,
     });
     if (error) return { error: error.message };
+
+    // Si el remitente es el empleador, asegurar que el candidato aparece en
+    // el kanban "Mis procesos" como 'contacted' (no degrada si ya está más
+    // avanzado). Identificamos al candidato leyendo la conversación.
+    const { data: conv } = await supabase
+      .from('conversations')
+      .select('employer_id, candidate_id')
+      .eq('id', conversationId)
+      .maybeSingle<{ employer_id: string; candidate_id: string }>();
+    if (conv && conv.employer_id === user.id) {
+      await upsertSelectionStage(supabase, {
+        employerId: user.id,
+        candidateProfileId: conv.candidate_id,
+        targetStage: 'contacted',
+      });
+      revalidatePath('/admin/procesos');
+    }
 
     revalidatePath(`/admin/mensajes/${conversationId}`);
     revalidatePath('/admin/mensajes');
@@ -72,7 +90,16 @@ export async function startConversationAction(candidateUserId: string) {
       .single();
     if (error || !created) return { error: error?.message ?? 'No se pudo crear' };
 
+    // El simple hecho de abrir conversación cuenta como "contacto" — añade
+    // al candidato al kanban en la columna 'Contactado'.
+    await upsertSelectionStage(supabase, {
+      employerId: user.id,
+      candidateProfileId: candidateUserId,
+      targetStage: 'contacted',
+    });
+
     revalidatePath('/admin/mensajes');
+    revalidatePath('/admin/procesos');
     return { ok: true as const, id: created.id };
   });
 }

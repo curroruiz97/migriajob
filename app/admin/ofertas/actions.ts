@@ -3,6 +3,10 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { safeAction } from '@/lib/actions/safe';
+import {
+  upsertSelectionStage,
+  applicationStatusToStage,
+} from '@/lib/actions/selection-process';
 
 async function requireEmployer() {
   const supabase = await createClient();
@@ -206,7 +210,7 @@ export async function updateApplicationStatusAction(
   status: 'submitted' | 'reviewing' | 'shortlisted' | 'rejected' | 'hired'
 ) {
   return safeAction(async () => {
-    const { supabase } = await requireEmployer();
+    const { user, supabase } = await requireEmployer();
     // NB: la tabla `applications` no tiene columna `updated_at` (ver migración
     // 0001). El intento anterior de setearla hacía fallar el UPDATE.
     const { error } = await supabase
@@ -214,6 +218,25 @@ export async function updateApplicationStatusAction(
       .update({ status: status as never })
       .eq('id', applicationId);
     if (error) return { error: error.message };
+
+    // Mantener sincronizado el kanban "Mis procesos" con el estado de la
+    // solicitud (shortlisted → contacted, hired → hired, rejected → rejected).
+    const { data: app } = await supabase
+      .from('applications')
+      .select('candidate_id, job_id, candidate:candidates(profile_id)')
+      .eq('id', applicationId)
+      .maybeSingle();
+    const candidate = (app as unknown as { candidate: { profile_id: string } | null } | null)?.candidate;
+    const jobId = (app as unknown as { job_id: string } | null)?.job_id ?? null;
+    if (candidate?.profile_id) {
+      await upsertSelectionStage(supabase, {
+        employerId: user.id,
+        candidateProfileId: candidate.profile_id,
+        targetStage: applicationStatusToStage(status),
+        jobId,
+      });
+      revalidatePath('/admin/procesos');
+    }
 
     // Revalidar todas las pantallas donde aparece el estado:
     //   - listado y detalle de solicitudes del empleador
