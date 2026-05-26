@@ -38,12 +38,35 @@ export default async function MisOfertasPage() {
 
   let jobs: JobRow[] = [];
   if (company) {
+    // Contamos las solicitudes en vivo con un embed de Supabase
+    // (la columna applications_count no se mantiene sincronizada por trigger
+    // así que llevaba siempre 0).
     const { data } = await supabase
       .from('jobs')
-      .select('id, title, location, status, applications_count')
+      .select('id, title, location, status, applications:applications(count)')
       .eq('company_id', company.id)
       .order('created_at', { ascending: false });
-    jobs = (data ?? []) as JobRow[];
+
+    jobs = (data ?? []).map((j) => {
+      const row = j as unknown as {
+        id: string;
+        title: string;
+        location: string | null;
+        status: string;
+        applications?: Array<{ count: number }> | null;
+      };
+      const count =
+        Array.isArray(row.applications) && row.applications[0]
+          ? row.applications[0].count
+          : 0;
+      return {
+        id: row.id,
+        title: row.title,
+        location: row.location ?? null,
+        status: row.status,
+        applications_count: count,
+      };
+    });
   }
 
   return (
