@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { MessageCircle, Bell, ChevronRight, Building2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getConversations, getNotifications } from '@/lib/db/queries';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { EmptyState } from '@/components/ui/empty-state';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -32,18 +33,21 @@ export default async function MensajesPage() {
     getNotifications(user!.id, { limit: 30 }).catch(() => []),
   ]);
 
-  // Resolver nombre de empresa de cada conversación (por owner_id = employer_id)
+  // Resolver nombre y logo de la empresa de cada conversación
+  // (por owner_id = employer_id). Necesita la policy de migración 0009
+  // que permite SELECT público de companies.
   const employerIds = Array.from(
     new Set(conversations.map((c) => (c as { employer_id: string }).employer_id))
   );
-  const companyByOwner = new Map<string, string>();
+  const companyByOwner = new Map<string, { name: string; logo_url: string | null }>();
   if (employerIds.length > 0) {
     const { data: companies } = await supabase
       .from('companies')
-      .select('owner_id, name')
+      .select('owner_id, name, logo_url')
       .in('owner_id', employerIds);
     for (const c of companies ?? []) {
-      companyByOwner.set((c as { owner_id: string }).owner_id, (c as { name: string }).name);
+      const row = c as { owner_id: string; name: string; logo_url: string | null };
+      companyByOwner.set(row.owner_id, { name: row.name, logo_url: row.logo_url });
     }
   }
 
@@ -74,16 +78,21 @@ export default async function MensajesPage() {
             <ul className="divide-y divide-border">
               {conversations.map((c) => {
                 const conv = c as { id: string; employer_id: string; last_message_at: string };
-                const name = companyByOwner.get(conv.employer_id) ?? 'Empresa';
+                const company = companyByOwner.get(conv.employer_id);
+                const name = company?.name ?? 'Empresa';
+                const initials = name.split(' ').map((s) => s[0]).slice(0, 2).join('').toUpperCase();
                 return (
                   <li key={conv.id}>
                     <Link
                       href={`/dashboard/mensajes/${conv.id}`}
                       className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-muted"
                     >
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary">
-                        <Building2 className="h-5 w-5" />
-                      </span>
+                      <Avatar className="h-10 w-10 shrink-0">
+                        {company?.logo_url && <AvatarImage src={company.logo_url} alt="" />}
+                        <AvatarFallback className="bg-primary-soft text-primary">
+                          {company ? initials : <Building2 className="h-5 w-5" />}
+                        </AvatarFallback>
+                      </Avatar>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-foreground">{name}</p>
                         <p className="truncate text-xs text-muted-foreground">
