@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Briefcase, ClipboardList, MessageCircle, User, Settings } from 'lucide-react';
+import { Briefcase, ClipboardList, MessageCircle, User, Settings, ListChecks } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 import { cn } from '@/lib/utils';
 
@@ -10,6 +10,7 @@ const NAV = [
   { href: '/dashboard/ofertas', label: 'Ofertas', icon: Briefcase },
   { href: '/dashboard/solicitudes', label: 'Solicitudes', icon: ClipboardList },
   { href: '/dashboard/mensajes', label: 'Mensajes', icon: MessageCircle },
+  { href: '/dashboard/mi-proceso', label: 'Mi proceso', icon: ListChecks },
   { href: '/dashboard/mi-perfil', label: 'Mi perfil', icon: User },
   { href: '/dashboard/configuracion', label: 'Configuración', icon: Settings },
 ];

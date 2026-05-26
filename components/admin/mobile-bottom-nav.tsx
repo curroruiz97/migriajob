@@ -20,8 +20,8 @@ import {
   Briefcase,
   Megaphone,
   Building2,
-  User,
   Settings,
+  ListChecks,
   Menu,
   LogOut,
   X,
@@ -63,7 +63,9 @@ const CANDIDATE_PRIMARY: NavItem[] = [
   { href: '/dashboard/ofertas', label: 'Ofertas', icon: Briefcase },
   { href: '/dashboard/solicitudes', label: 'Solicitudes', icon: ClipboardList },
   { href: '/dashboard/mensajes', label: 'Mensajes', icon: MessageCircle, badge: true },
-  { href: '/dashboard/mi-perfil', label: 'Perfil', icon: User },
+  // "Mi proceso" sustituye a "Perfil" en el bottom nav (Perfil ahora se accede
+  // desde el avatar arriba a la derecha).
+  { href: '/dashboard/mi-proceso', label: 'Mi proceso', icon: ListChecks },
 ];
 
 const CANDIDATE_MENU: NavItem[] = []; // El candidato no tiene "Más": 4 tabs directos.
