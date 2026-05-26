@@ -3,6 +3,8 @@ import type { ReactNode } from 'react';
 import { EmployeeSidebar } from '@/components/employee/employee-sidebar';
 import { AdminTopbar } from '@/components/admin/admin-topbar';
 import { MobileBottomNav } from '@/components/admin/mobile-bottom-nav';
+import { RealtimeMessagesToast } from '@/components/realtime/realtime-messages-toast';
+import { RealtimeApplicationStatusToast } from '@/components/realtime/realtime-application-status-toast';
 import { createClient } from '@/lib/supabase/server';
 import { getUnreadNotificationsCount } from '@/lib/db/queries';
 
@@ -30,12 +32,16 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   const unreadCount = await getUnreadNotificationsCount(user.id).catch(() => 0);
   const { data: cand } = await supabase
     .from('candidates')
-    .select('avatar_url')
+    .select('id, avatar_url')
     .eq('profile_id', user.id)
     .maybeSingle();
 
   return (
     <div className="flex min-h-screen bg-background">
+      {/* Avisos in-app (toast + refresh) */}
+      <RealtimeMessagesToast userId={user.id} />
+      {cand?.id && <RealtimeApplicationStatusToast candidateId={cand.id} />}
+
       <EmployeeSidebar />
       <div className="flex flex-1 flex-col lg:pl-64">
         <AdminTopbar

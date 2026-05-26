@@ -5,6 +5,7 @@ import { AdminTopbar } from '@/components/admin/admin-topbar';
 import { MobileBottomNav } from '@/components/admin/mobile-bottom-nav';
 import { CompareBar } from '@/components/admin/compare-bar';
 import { CompareProvider } from '@/components/admin/compare-store';
+import { RealtimeMessagesToast } from '@/components/realtime/realtime-messages-toast';
 import { createClient } from '@/lib/supabase/server';
 import { getUnreadNotificationsCount } from '@/lib/db/queries';
 
@@ -48,6 +49,9 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
   return (
     <CompareProvider>
+      {/* Avisos in-app (toast + refresh) para mensajes nuevos */}
+      <RealtimeMessagesToast userId={user.id} />
+
       <div className="flex min-h-screen bg-background">
         <AdminSidebar />
         <div className="flex flex-1 flex-col lg:pl-64">
