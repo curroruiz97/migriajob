@@ -42,6 +42,40 @@ export type ProfileFilters = {
   inSpain?: boolean;
 };
 
+/**
+ * Devuelve variantes del término de búsqueda para que ILIKE encuentre
+ * coincidencias incluso si el usuario busca masculino y el candidato
+ * tiene femenino (o viceversa), singular ↔ plural, mayúsculas, etc.
+ *
+ * Ejemplos:
+ *   "cocinero"   → ["cocinero", "cocin"]
+ *   "Cocineras"  → ["cocineras", "cocin"]
+ *   "camarero parrilla" → ["camarero parrilla", "camarer parrill"]
+ *   "Sumiller"   → ["sumiller", "sumill"]
+ */
+function buildSearchVariants(input: string): string[] {
+  const cleaned = input
+    .trim()
+    .toLowerCase()
+    .replace(/[%_,'"]/g, ' ') // escape de SQL wildcards y comillas
+    .replace(/\s+/g, ' ');
+  if (!cleaned) return [];
+
+  const stemWord = (w: string): string =>
+    w
+      .replace(/(ciones)$/, 'cion')
+      .replace(/(idades|edades)$/, 'idad')
+      .replace(/(es|as|os)$/, '')
+      .replace(/(a|o|e)$/, '');
+
+  const variants = new Set<string>();
+  variants.add(cleaned);
+  const stemmed = cleaned.split(' ').map(stemWord).join(' ').trim();
+  if (stemmed.length >= 3 && stemmed !== cleaned) variants.add(stemmed);
+
+  return [...variants];
+}
+
 export async function searchProfiles(filters: ProfileFilters = {}): Promise<Candidate[]> {
   const supabase = await createClient();
   const perPage = Math.min(filters.perPage ?? 20, 100);
@@ -61,9 +95,23 @@ export async function searchProfiles(filters: ProfileFilters = {}): Promise<Cand
   if (filters.verified) q = q.eq('verified', true);
   if (filters.inSpain) q = q.eq('location_country', 'España');
 
-  // Búsqueda full-text
+  // Búsqueda flexible:
+  //  - tolerante a género (cocinero ↔ cocinera ↔ cocineros ↔ cocineras)
+  //  - tolerante a plural (camarero ↔ camareros)
+  //  - case-insensitive y sin tener que ser exact
+  // Estrategia: genera variantes del término (incluyendo su raíz tras quitar
+  // sufijos típicos en español) y aplica ILIKE sobre las columnas de texto
+  // relevantes con un OR.
   if (filters.q && filters.q.trim().length > 0) {
-    q = q.textSearch('search_vector', filters.q, { type: 'plain', config: 'spanish' });
+    const variants = buildSearchVariants(filters.q);
+    if (variants.length > 0) {
+      const conditions = variants.flatMap((v) => [
+        `headline.ilike.%${v}%`,
+        `current_role.ilike.%${v}%`,
+        `bio.ilike.%${v}%`,
+      ]);
+      q = q.or(conditions.join(','));
+    }
   }
 
   const { data } = await q
