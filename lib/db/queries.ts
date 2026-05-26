@@ -2,6 +2,7 @@ import 'server-only';
 
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/lib/supabase/types';
+import { findSynonymGroups } from '@/lib/job-synonyms';
 
 type Candidate = Database['public']['Tables']['candidates']['Row'];
 
@@ -44,14 +45,21 @@ export type ProfileFilters = {
 
 /**
  * Devuelve variantes del término de búsqueda para que ILIKE encuentre
- * coincidencias incluso si el usuario busca masculino y el candidato
- * tiene femenino (o viceversa), singular ↔ plural, mayúsculas, etc.
+ * coincidencias incluso si:
+ *   - el usuario busca masculino y el candidato tiene femenino (o viceversa)
+ *   - se trata de singular ↔ plural
+ *   - se usa una variante regional del mismo puesto (chef ↔ cocinero,
+ *     camarero ↔ mesero ↔ mozo, fregaplatos ↔ lavalozas, etc.) — ver
+ *     `lib/job-synonyms.ts`.
+ *
+ * Estrategia: expande el término con sinónimos (si los hay) y aplica un
+ * stem morfológico básico en español para que el ILIKE matchee la raíz.
  *
  * Ejemplos:
- *   "cocinero"   → ["cocinero", "cocin"]
- *   "Cocineras"  → ["cocineras", "cocin"]
- *   "camarero parrilla" → ["camarero parrilla", "camarer parrill"]
- *   "Sumiller"   → ["sumiller", "sumill"]
+ *   "cocinero"   → ["cocinero", "cocin", "chef", "cheff", "cuoco", ...]
+ *   "mesero"     → ["mesero", "meser", "camarero", "mozo", "waiter", ...]
+ *   "camarero parrilla" → ["camarero parrilla", "camarer parrill", "mesero parrilla", ...]
+ *   "Sumiller"   → ["sumiller", "sumill", "sommelier", "enologo", ...]
  */
 function buildSearchVariants(input: string): string[] {
   const cleaned = input
@@ -69,9 +77,22 @@ function buildSearchVariants(input: string): string[] {
       .replace(/(a|o|e)$/, '');
 
   const variants = new Set<string>();
-  variants.add(cleaned);
-  const stemmed = cleaned.split(' ').map(stemWord).join(' ').trim();
-  if (stemmed.length >= 3 && stemmed !== cleaned) variants.add(stemmed);
+
+  // 1) Empieza con el término que escribió el usuario + su raíz.
+  const addWithStem = (raw: string) => {
+    const t = raw.trim().toLowerCase();
+    if (!t) return;
+    variants.add(t);
+    const stemmed = t.split(' ').map(stemWord).join(' ').trim();
+    if (stemmed.length >= 3 && stemmed !== t) variants.add(stemmed);
+  };
+  addWithStem(cleaned);
+
+  // 2) Expande con sinónimos del sector servicios / hostelería
+  //    (variantes ES + LATAM).
+  for (const group of findSynonymGroups(cleaned)) {
+    for (const syn of group) addWithStem(syn);
+  }
 
   return [...variants];
 }
