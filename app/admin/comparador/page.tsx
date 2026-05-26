@@ -1,8 +1,9 @@
-import { GitCompare } from 'lucide-react';
+import Link from 'next/link';
+import { GitCompare, Users, MousePointer2, ArrowRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { EmptyState } from '@/components/ui/empty-state';
+import { Button } from '@/components/ui/button';
 import type { Database } from '@/lib/supabase/types';
 
 type Candidate = Database['public']['Tables']['candidates']['Row'];
@@ -31,11 +32,49 @@ export default async function ComparadorPage({
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Comparador de candidatos</h1>
           <p className="mt-1 text-sm text-muted-foreground">Compara hasta 4 candidatos en paralelo.</p>
         </div>
-        <EmptyState
-          icon={GitCompare}
-          title="Sin candidatos para comparar"
-          description="Selecciona candidatos y pásalos por la URL: ?ids=id1,id2,id3"
-        />
+
+        <div className="mx-auto max-w-2xl rounded-2xl border border-border bg-surface p-8 text-center sm:p-10">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary-soft text-primary">
+            <GitCompare className="h-7 w-7" />
+          </div>
+          <h2 className="mt-5 font-display text-2xl text-foreground">
+            Aún no has elegido candidatos
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Para comparar dos o más perfiles en paralelo, sigue estos pasos:
+          </p>
+
+          <ol className="mx-auto mt-6 max-w-md space-y-3 text-left text-sm">
+            <Step
+              n={1}
+              icon={Users}
+              title="Entra en Buscar candidatos"
+              description="Desde el menú lateral o el botón de aquí abajo."
+            />
+            <Step
+              n={2}
+              icon={MousePointer2}
+              title="Marca los candidatos a comparar"
+              description="Usa el botón de comparar de cada tarjeta (icono ⇆). Puedes elegir hasta 4."
+            />
+            <Step
+              n={3}
+              icon={GitCompare}
+              title="Pulsa 'Comparar' en la barra inferior"
+              description="Aparece automáticamente al seleccionar 2 o más candidatos."
+            />
+          </ol>
+
+          <div className="mt-7 flex flex-wrap justify-center gap-2">
+            <Button asChild className="rounded-xl">
+              <Link href="/admin/candidatos">
+                <Users className="mr-1.5 h-4 w-4" />
+                Ir a Buscar candidatos
+                <ArrowRight className="ml-1.5 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -125,5 +164,32 @@ export default async function ComparadorPage({
         </table>
       </div>
     </div>
+  );
+}
+
+function Step({
+  n,
+  icon: Icon,
+  title,
+  description,
+}: {
+  n: number;
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+}) {
+  return (
+    <li className="flex items-start gap-3 rounded-xl border border-border bg-surface-muted/30 p-3">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+        {n}
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
+          <Icon className="h-3.5 w-3.5 text-primary" />
+          {title}
+        </p>
+        <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
+      </div>
+    </li>
   );
 }
