@@ -14,6 +14,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ApplicantStatusSelect } from '@/components/admin/applicant-status-select';
+import { FavoriteButton } from '@/components/admin/favorite-button';
 import { StartConversationButton } from '@/components/admin/start-conversation-button';
 
 export const metadata = { title: 'Solicitud' };
@@ -114,6 +115,18 @@ export default async function SolicitudDetallePage({
     .maybeSingle();
   if (!company || j?.company_id !== (company as { id: string }).id) notFound();
 
+  // ¿Ya está el candidato en favoritos del empleador?
+  let alreadyFavorite = false;
+  if (c?.id) {
+    const { data: fav } = await supabase
+      .from('favorites')
+      .select('id')
+      .eq('employer_id', user.id)
+      .eq('candidate_id', c.id)
+      .maybeSingle();
+    alreadyFavorite = !!fav;
+  }
+
   const fullName: string = p?.full_name || c?.headline || c?.current_role || 'Candidato';
   const initials = fullName.split(' ').map((s: string) => s[0]).slice(0, 2).join('').toUpperCase();
   const st = STATUS_LABEL[app.status] ?? STATUS_LABEL.submitted;
@@ -187,6 +200,7 @@ export default async function SolicitudDetallePage({
               Ver perfil completo
             </Link>
           )}
+          {c?.id && <FavoriteButton candidateId={c.id} initial={alreadyFavorite} />}
           <ApplicantStatusSelect applicationId={app.id} status={app.status} />
         </div>
       </section>

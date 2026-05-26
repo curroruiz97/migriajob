@@ -8,18 +8,28 @@ import { Badge } from '@/components/ui/badge';
 
 export const metadata = { title: 'Búsqueda avanzada' };
 
+// Roles típicos en hostelería y restauración (foco de la app).
 const ROLE_PRESETS = [
-  'Frontend Developer',
-  'Backend Developer',
-  'Full Stack Developer',
-  'Diseñador UX/UI',
-  'Product Manager',
-  'Data Engineer',
-  'DevOps / SRE',
-  'Mobile (iOS/Android)',
+  'Cocinero',
+  'Ayudante de cocina',
+  'Jefe de cocina',
+  'Camarero',
+  'Ayudante de camarero',
+  'Encargado de sala',
+  'Barista',
+  'Sumiller',
+  'Recepcionista',
+  'Personal de limpieza',
 ];
 
-const INDUSTRIES = ['SaaS', 'Fintech', 'E-commerce', 'Healthtech', 'Edtech', 'Marketplaces'];
+const INDUSTRIES = [
+  'Hostelería',
+  'Restauración',
+  'Hotelería',
+  'Catering',
+  'Cafeterías y bares',
+  'Servicios',
+];
 
 export default function BusquedaAvanzadaPage() {
   return (

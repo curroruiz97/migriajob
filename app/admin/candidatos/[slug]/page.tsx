@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { FavoriteButton } from '@/components/admin/favorite-button';
 import { StartConversationButton } from '@/components/admin/start-conversation-button';
 
 export const metadata = { title: 'Perfil del candidato' };
@@ -87,6 +88,15 @@ export default async function CandidatoAdminPage({
     .maybeSingle();
   if (!app) notFound();
 
+  // ¿Es ya favorito del empleador?
+  const { data: fav } = await supabase
+    .from('favorites')
+    .select('id')
+    .eq('employer_id', user.id)
+    .eq('candidate_id', candidate.id)
+    .maybeSingle();
+  const alreadyFavorite = !!fav;
+
   // Datos derivados.
   const { data: profile } = await supabase
     .from('profiles')
@@ -152,7 +162,10 @@ export default async function CandidatoAdminPage({
         </div>
 
         <Separator className="my-4" />
-        <StartConversationButton candidateUserId={candidate.profile_id} candidateName={fullName} />
+        <div className="flex flex-wrap gap-2">
+          <StartConversationButton candidateUserId={candidate.profile_id} candidateName={fullName} />
+          <FavoriteButton candidateId={candidate.id} initial={alreadyFavorite} />
+        </div>
       </section>
 
       {/* Contacto */}
