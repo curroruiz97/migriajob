@@ -2,18 +2,16 @@
 
 /**
  * Aviso in-app al CANDIDATO cuando una empresa cambia el estado de su
- * solicitud (reviewing → shortlisted → hired / rejected). Mostramos toast
- * con la etiqueta humana y refrescamos para que las listas reflejen el
- * cambio sin recarga manual.
+ * solicitud (reviewing → shortlisted → hired / rejected).
  *
- * Requiere Supabase Realtime habilitado en `applications` (ya hecho en
- * la migración 0008_realtime_applications.sql).
+ * Suscripción estable durante toda la sesión (refs para router/toast).
  */
 
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { notifyFx } from '@/lib/realtime-fx';
 
 const STATUS_LABEL: Record<string, string> = {
   submitted: 'Enviada',
@@ -27,12 +25,12 @@ const STATUS_LABEL: Record<string, string> = {
 export function RealtimeApplicationStatusToast({ candidateId }: { candidateId: string }) {
   const router = useRouter();
   const { toast } = useToast();
-  const subscribedRef = useRef(false);
+  const routerRef = useRef(router);
+  const toastRef = useRef(toast);
+  routerRef.current = router;
+  toastRef.current = toast;
 
   useEffect(() => {
-    if (subscribedRef.current) return;
-    subscribedRef.current = true;
-
     const supabase = createClient();
     if (!('channel' in supabase)) return;
 
@@ -45,21 +43,25 @@ export function RealtimeApplicationStatusToast({ candidateId }: { candidateId: s
           const oldRow = payload.old as { status?: string };
           const newRow = payload.new as { status?: string };
           if (!newRow?.status) return;
-          if (oldRow?.status === newRow.status) return; // sin cambio efectivo
+          if (oldRow?.status === newRow.status) return;
 
-          toast({
+          notifyFx();
+          toastRef.current({
             title: 'Estado de tu solicitud actualizado',
             description: `Nuevo estado: ${STATUS_LABEL[newRow.status] ?? newRow.status}`,
+            duration: 8000,
           });
-          router.refresh();
+          routerRef.current.refresh();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('[RT-app-status] channel:', status);
+      });
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [candidateId, router, toast]);
+  }, [candidateId]);
 
   return null;
 }
