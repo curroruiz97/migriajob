@@ -15,7 +15,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { notifyFx } from '@/lib/realtime-fx';
 
-const RT_DEBUG = true;
+const RT_DEBUG = false;
 function rtLog(...args: unknown[]) {
   if (RT_DEBUG) console.log('[RT-messages]', ...args);
 }
