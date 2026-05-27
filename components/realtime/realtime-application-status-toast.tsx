@@ -54,9 +54,7 @@ export function RealtimeApplicationStatusToast({ candidateId }: { candidateId: s
           routerRef.current.refresh();
         }
       )
-      .subscribe((status) => {
-        console.log('[RT-app-status] channel:', status);
-      });
+      .subscribe();
 
     return () => {
       supabase.removeChannel(channel);

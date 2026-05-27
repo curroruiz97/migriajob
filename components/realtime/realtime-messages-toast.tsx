@@ -2,15 +2,11 @@
 
 /**
  * Aviso in-app cuando llega un nuevo mensaje en cualquier conversación
- * en la que participa el usuario actual. Muestra toast + refresh.
+ * en la que participa el usuario actual.
  *
- * - Filtra silenciosamente los mensajes que NO van dirigidos al usuario
- *   actual (los que envía él mismo no notifican).
- * - Si ya estás dentro de la conversación afectada, no muestra toast
- *   (sería ruido); solo refresca la vista.
- *
- * Necesita Supabase Realtime habilitado para las tablas `messages` y
- * `conversations` (ver migración 0010_realtime_messages.sql).
+ * Suscripción estable durante toda la sesión: el canal se crea una sola vez
+ * al montar y se cierra al desmontar. Para que pathname/router/toast no
+ * recreen el canal cada navegación, los guardamos en refs.
  */
 
 import { useEffect, useRef } from 'react';
@@ -19,7 +15,6 @@ import { createClient } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { notifyFx } from '@/lib/realtime-fx';
 
-// DEBUG temporal — pon en false cuando arreglemos el bug.
 const RT_DEBUG = true;
 function rtLog(...args: unknown[]) {
   if (RT_DEBUG) console.log('[RT-messages]', ...args);
@@ -29,15 +24,20 @@ export function RealtimeMessagesToast({ userId }: { userId: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
-  const conversationIdsRef = useRef<Set<string>>(new Set());
-  const subscribedRef = useRef(false);
 
+  // Refs estables: el callback del canal lee siempre el valor actual sin
+  // necesidad de que el useEffect se vuelva a ejecutar.
+  const routerRef = useRef(router);
+  const pathnameRef = useRef(pathname);
+  const toastRef = useRef(toast);
+  const conversationIdsRef = useRef<Set<string>>(new Set());
+
+  routerRef.current = router;
+  pathnameRef.current = pathname;
+  toastRef.current = toast;
+
+  // Se ejecuta UNA SOLA VEZ por userId (no en cada navegación).
   useEffect(() => {
-    if (subscribedRef.current) {
-      rtLog('useEffect re-ejecutado pero ya suscrito → skip');
-      return;
-    }
-    subscribedRef.current = true;
     rtLog('Montando — userId:', userId);
 
     const supabase = createClient();
@@ -50,7 +50,7 @@ export function RealtimeMessagesToast({ userId }: { userId: string }) {
     let mounted = true;
 
     // 1) Cacheamos los IDs de conversación del usuario para filtrar en cliente.
-    const loadConvs = async () => {
+    (async () => {
       const { data, error } = await supabase
         .from('conversations')
         .select('id')
@@ -63,47 +63,41 @@ export function RealtimeMessagesToast({ userId }: { userId: string }) {
         rtLog('📋 Conversaciones cargadas:', ids.length, ids);
         conversationIdsRef.current = new Set(ids);
       }
-    };
-    loadConvs();
+    })();
 
-    // 2) Suscripción global a inserts en messages.
+    // 2) Suscripción a inserts en messages.
     const messagesChannel = supabase
       .channel(`messages-user-${userId}`)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'messages' },
         (payload) => {
-          rtLog('📨 INSERT recibido en messages:', payload.new);
+          rtLog('📨 INSERT messages:', payload.new);
           const m = payload.new as { sender_id?: string; conversation_id?: string; body?: string };
-          if (!m?.conversation_id) {
-            rtLog('  → sin conversation_id, ignorado');
-            return;
-          }
+          if (!m?.conversation_id) return;
           if (m.sender_id === userId) {
-            rtLog('  → soy yo el emisor, ignorado');
+            rtLog('  → yo soy el emisor, ignorado');
             return;
           }
           if (!conversationIdsRef.current.has(m.conversation_id)) {
-            rtLog('  → conv NO está en mi cache:', m.conversation_id,
-                  'cache actual:', [...conversationIdsRef.current]);
+            rtLog('  → conv NO está en mi cache:', m.conversation_id);
             return;
           }
-
-          const insideChat = pathname?.endsWith(`/mensajes/${m.conversation_id}`);
+          const insideChat = pathnameRef.current?.endsWith(`/mensajes/${m.conversation_id}`);
           rtLog('  → ✅ válido, insideChat:', insideChat);
           if (!insideChat) {
             notifyFx();
-            toast({
+            toastRef.current({
               title: 'Nuevo mensaje',
               description: (m.body ?? '').slice(0, 80) || 'Has recibido un nuevo mensaje.',
               duration: 8000,
             });
           }
-          router.refresh();
+          routerRef.current.refresh();
         }
       )
       .subscribe((status, err) => {
-        rtLog('🔌 messages channel status:', status, err ? `err: ${err.message}` : '');
+        rtLog('🔌 messages channel:', status, err ? `err: ${err.message}` : '');
       });
 
     // 3) Mantenemos el cache de conversaciones al día (si abren una nueva conv).
@@ -113,7 +107,7 @@ export function RealtimeMessagesToast({ userId }: { userId: string }) {
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'conversations' },
         (payload) => {
-          rtLog('💬 INSERT recibido en conversations:', payload.new);
+          rtLog('💬 INSERT conversations:', payload.new);
           const c = payload.new as { id?: string; employer_id?: string; candidate_id?: string };
           if (!c?.id) return;
           if (c.employer_id === userId || c.candidate_id === userId) {
@@ -123,7 +117,7 @@ export function RealtimeMessagesToast({ userId }: { userId: string }) {
         }
       )
       .subscribe((status) => {
-        rtLog('🔌 conversations channel status:', status);
+        rtLog('🔌 conversations channel:', status);
       });
 
     return () => {
@@ -132,7 +126,9 @@ export function RealtimeMessagesToast({ userId }: { userId: string }) {
       supabase.removeChannel(messagesChannel);
       supabase.removeChannel(convChannel);
     };
-  }, [userId, pathname, router, toast]);
+    // Solo userId como dependencia: el canal se crea una vez y vive toda la sesión.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   return null;
 }

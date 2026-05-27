@@ -56,9 +56,7 @@ export function RealtimeApplicationsToast({ companyId }: { companyId: string }) 
           routerRef.current.refresh();
         }
       )
-      .subscribe((status) => {
-        console.log('[RT-apps] channel:', status);
-      });
+      .subscribe();
 
     return () => {
       mounted = false;
