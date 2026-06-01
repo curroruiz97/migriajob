@@ -147,7 +147,7 @@ export function ProfileCard({ profile, view = 'grid', highlighted, hrefPrefix = 
         <div className="flex items-center gap-2">
           <CompareToggle
             candidateId={profile.id}
-            candidateName={profile.headline ?? profile.current_role ?? 'Candidato'}
+            candidateName={profile.full_name ?? profile.headline ?? profile.current_role ?? 'Candidato'}
             candidateSlug={profile.slug}
           />
           <Badge className={AVAILABILITY_STYLES[profile.availability]}>

@@ -16,7 +16,7 @@ export function CompareBar() {
   const ids = items.map((i) => i.id).join(',');
 
   return (
-    <div className="fixed bottom-4 left-1/2 z-40 w-[min(640px,calc(100vw-2rem))] -translate-x-1/2">
+    <div className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom)+0.5rem)] left-1/2 z-50 w-[min(640px,calc(100vw-2rem))] -translate-x-1/2 lg:bottom-4">
       <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface/95 p-3 shadow-2xl backdrop-blur">
         <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
           <GitCompare className="h-4 w-4" />
