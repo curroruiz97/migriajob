@@ -1,17 +1,19 @@
 'use client';
 
-import { useQueryState, parseAsInteger } from 'nuqs';
+import { useQueryState, parseAsInteger, parseAsStringLiteral } from 'nuqs';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+const PER_PAGE_OPTIONS = [20, 50, 100] as const;
+
 /**
- * Paginación para el listado de perfiles/candidatos. Lee y escribe el
- * parámetro `page` en la URL (compartible) vía nuqs, igual que el resto de
- * filtros. No se renderiza si solo hay una página.
+ * Paginación para el listado de perfiles/candidatos. Lee y escribe los
+ * parámetros `page` y `perPage` en la URL (compartible) vía nuqs, igual que
+ * el resto de filtros. No se renderiza si total <= 0.
  */
 export function ProfilesPagination({
   total,
-  perPage,
+  perPage: perPageProp,
 }: {
   total: number;
   perPage: number;
@@ -20,12 +22,23 @@ export function ProfilesPagination({
     'page',
     parseAsInteger.withDefault(1).withOptions({ shallow: false })
   );
+  const [, setPerPage] = useQueryState(
+    'perPage',
+    parseAsStringLiteral(['20', '50', '100']).withDefault('20').withOptions({ shallow: false })
+  );
 
+  const perPage = perPageProp;
   const totalPages = Math.max(1, Math.ceil(total / perPage));
   const current = Math.min(Math.max(1, page), totalPages);
-  if (totalPages <= 1) return null;
 
   const go = (p: number) => setPage(p <= 1 ? null : Math.min(p, totalPages));
+
+  const changePerPage = (value: string) => {
+    setPerPage(value === '20' ? null : value as '20' | '50' | '100');
+    setPage(null); // volver a página 1 al cambiar tamaño
+  };
+
+  if (total <= 0) return null;
 
   // Ventana de páginas alrededor de la actual (1 … n-1 n n+1 … N)
   const pages: number[] = [];
@@ -41,49 +54,66 @@ export function ProfilesPagination({
       aria-label="Paginación de perfiles"
       className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-border pt-5 sm:flex-row"
     >
-      <p className="text-sm text-muted-foreground">
-        Mostrando <strong className="text-foreground">{start.toLocaleString('es-ES')}</strong>–
-        <strong className="text-foreground">{end.toLocaleString('es-ES')}</strong> de{' '}
-        <strong className="text-foreground">{total.toLocaleString('es-ES')}</strong>
-      </p>
+      <div className="flex items-center gap-3">
+        <p className="text-sm text-muted-foreground">
+          Mostrando <strong className="text-foreground">{start.toLocaleString('es-ES')}</strong>–
+          <strong className="text-foreground">{end.toLocaleString('es-ES')}</strong> de{' '}
+          <strong className="text-foreground">{total.toLocaleString('es-ES')}</strong>
+        </p>
 
-      <div className="flex items-center gap-1">
-        <PageBtn
-          onClick={() => go(current - 1)}
-          disabled={current <= 1}
-          aria-label="Página anterior"
+        <select
+          value={String(perPage)}
+          onChange={(e) => changePerPage(e.target.value)}
+          aria-label="Resultados por página"
+          className="h-9 rounded-lg border border-border bg-surface px-2 text-sm text-foreground transition-colors hover:bg-muted"
         >
-          <ChevronLeft className="h-4 w-4" />
-        </PageBtn>
-
-        {from > 1 && (
-          <>
-            <PageBtn onClick={() => go(1)}>1</PageBtn>
-            {from > 2 && <span className="px-1 text-muted-foreground">…</span>}
-          </>
-        )}
-
-        {pages.map((p) => (
-          <PageBtn key={p} onClick={() => go(p)} active={p === current}>
-            {p}
-          </PageBtn>
-        ))}
-
-        {to < totalPages && (
-          <>
-            {to < totalPages - 1 && <span className="px-1 text-muted-foreground">…</span>}
-            <PageBtn onClick={() => go(totalPages)}>{totalPages}</PageBtn>
-          </>
-        )}
-
-        <PageBtn
-          onClick={() => go(current + 1)}
-          disabled={current >= totalPages}
-          aria-label="Página siguiente"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </PageBtn>
+          {PER_PAGE_OPTIONS.map((n) => (
+            <option key={n} value={String(n)}>
+              {n} / pág
+            </option>
+          ))}
+        </select>
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex items-center gap-1">
+          <PageBtn
+            onClick={() => go(current - 1)}
+            disabled={current <= 1}
+            aria-label="Página anterior"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </PageBtn>
+
+          {from > 1 && (
+            <>
+              <PageBtn onClick={() => go(1)}>1</PageBtn>
+              {from > 2 && <span className="px-1 text-muted-foreground">…</span>}
+            </>
+          )}
+
+          {pages.map((p) => (
+            <PageBtn key={p} onClick={() => go(p)} active={p === current}>
+              {p}
+            </PageBtn>
+          ))}
+
+          {to < totalPages && (
+            <>
+              {to < totalPages - 1 && <span className="px-1 text-muted-foreground">…</span>}
+              <PageBtn onClick={() => go(totalPages)}>{totalPages}</PageBtn>
+            </>
+          )}
+
+          <PageBtn
+            onClick={() => go(current + 1)}
+            disabled={current >= totalPages}
+            aria-label="Página siguiente"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </PageBtn>
+        </div>
+      )}
     </nav>
   );
 }

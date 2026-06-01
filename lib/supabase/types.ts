@@ -102,13 +102,16 @@ export type Database = {
           github_url: string | null; has_nie: boolean | null; has_tie: boolean | null
           headline: string | null
           homologation: Database["public"]["Enums"]["homologation_status"] | null
+          document_number: string | null; document_type: string | null
+          email: string | null; full_name: string | null
           id: string
-          intro_video_url: string | null; is_public: boolean; languages: Json | null
+          intro_video_url: string | null; is_imported: boolean; is_public: boolean; languages: Json | null
           linkedin_url: string | null; location_city: string | null; location_country: string | null
           location_lat: number | null; location_lng: number | null
           modality: Database["public"]["Enums"]["work_modality"] | null
           open_to_relocate: boolean | null; open_to_remote: boolean | null
-          portfolio_url: string | null; profile_id: string
+          phone: string | null; portfolio_url: string | null; profile_id: string | null
+          recruitment_source: string | null
           search_vector: unknown; skills: string[] | null; slug: string | null
           spanish: Database["public"]["Enums"]["spanish_level"] | null
           updated_at: string; verified: boolean | null
@@ -124,12 +127,15 @@ export type Database = {
           commute_radius_km?: number | null; created_at?: string; current_role?: string | null
           cv_url?: string | null; desired_salary_max?: number | null; desired_salary_min?: number | null
           education?: Json | null; embedding?: string | null; experience?: Json | null
+          document_number?: string | null; document_type?: string | null
+          email?: string | null; full_name?: string | null
           github_url?: string | null; headline?: string | null; id?: string
-          intro_video_url?: string | null; is_public?: boolean; languages?: Json | null
+          intro_video_url?: string | null; is_imported?: boolean; is_public?: boolean; languages?: Json | null
           linkedin_url?: string | null; location_city?: string | null; location_country?: string | null
           location_lat?: number | null; location_lng?: number | null
           modality?: Database["public"]["Enums"]["work_modality"] | null
-          open_to_remote?: boolean | null; portfolio_url?: string | null; profile_id: string
+          open_to_remote?: boolean | null; phone?: string | null; portfolio_url?: string | null; profile_id?: string | null
+          recruitment_source?: string | null
           search_vector?: unknown; skills?: string[] | null; slug?: string | null
           updated_at?: string; views_count?: number; website_url?: string | null; years_experience?: number | null
           country_of_origin?: string | null; has_nie?: boolean | null; has_tie?: boolean | null

@@ -26,6 +26,7 @@ interface PageProps {
     verified?: string;
     inSpain?: string;
     page?: string;
+    perPage?: string;
   }>;
 }
 
@@ -45,6 +46,7 @@ export default async function AdminCandidatosPage({ searchParams }: PageProps) {
     verified: params.verified === 'true',
     inSpain: params.inSpain === 'true',
     page: params.page ? Number(params.page) : 1,
+    perPage: params.perPage ? Number(params.perPage) : undefined,
     // El admin ve también los candidatos importados/privados (RLS lo limita a rol admin).
     includeNonPublic: true,
   }).catch(() => ({ items: [] as Candidate[], total: 0, perPage: 20 }));

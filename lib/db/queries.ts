@@ -135,6 +135,7 @@ export async function searchProfiles(
   // sufijos típicos en español) y aplica ILIKE sobre las columnas de texto
   // relevantes con un OR.
   if (filters.q && filters.q.trim().length > 0) {
+    const raw = filters.q.trim().toLowerCase();
     const variants = buildSearchVariants(filters.q);
     if (variants.length > 0) {
       const conditions = variants.flatMap((v) => [
@@ -142,6 +143,11 @@ export async function searchProfiles(
         `current_role.ilike.%${v}%`,
         `bio.ilike.%${v}%`,
       ]);
+      // Búsqueda directa por nombre, email y teléfono (sin variantes
+      // morfológicas: aquí el usuario busca un dato exacto/personal).
+      conditions.push(`full_name.ilike.%${raw}%`);
+      conditions.push(`email.ilike.%${raw}%`);
+      conditions.push(`phone.ilike.%${raw}%`);
       q = q.or(conditions.join(','));
     }
   }

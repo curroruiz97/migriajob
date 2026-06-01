@@ -30,6 +30,7 @@ interface PageProps {
     verified?: string;
     inSpain?: string;
     page?: string;
+    perPage?: string;
   }>;
 }
 
@@ -55,6 +56,7 @@ export default async function PerfilesPage({ searchParams }: PageProps) {
     verified: params.verified === 'true',
     inSpain: params.inSpain === 'true',
     page: params.page ? Number(params.page) : 1,
+    perPage: params.perPage ? Number(params.perPage) : undefined,
   }).catch(() => ({ items: [], total: 0, perPage: 20 }));
 
   // Chips de filtros activos

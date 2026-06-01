@@ -57,6 +57,8 @@ export async function updateProfileAction(_prev: unknown, formData: FormData) {
 
     // candidates (todos los campos del PASO 3; columnas nuevas vienen de la migración 0005)
     const candidateData = {
+      full_name: fullName || null,
+      phone: phone || null,
       headline: str('headline'),
       current_role: str('currentRole'),
       bio: str('bio'),
