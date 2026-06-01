@@ -84,7 +84,7 @@ export default async function AdminCandidatosPage({ searchParams }: PageProps) {
                 className={
                   view === 'grid'
                     ? 'mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3'
-                    : 'mt-6 space-y-3'
+                    : 'mt-6 w-full max-w-full space-y-2 overflow-hidden'
                 }
               >
                 {profiles.map((p) => (

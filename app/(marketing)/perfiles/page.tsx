@@ -178,7 +178,7 @@ export default async function PerfilesPage({ searchParams }: PageProps) {
                   className={
                     view === 'grid'
                       ? 'mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3'
-                      : 'mt-6 flex flex-col gap-3'
+                      : 'mt-6 flex w-full max-w-full flex-col gap-2 overflow-hidden'
                   }
                 >
                   {profiles.map((p) => (

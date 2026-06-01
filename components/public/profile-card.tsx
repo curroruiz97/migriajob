@@ -53,71 +53,63 @@ export function ProfileCard({ profile, view = 'grid', highlighted, hrefPrefix = 
       <Link
         href={href}
         className={cn(
-          'card-hover flex items-start gap-3 overflow-hidden rounded-xl border border-border bg-surface p-3 sm:gap-4 sm:p-4',
+          'card-hover block w-full overflow-hidden rounded-xl border border-border bg-surface p-3',
           highlighted && 'ring-2 ring-primary ring-offset-2'
         )}
       >
-        <Avatar className="h-10 w-10 shrink-0 ring-2 ring-background sm:h-14 sm:w-14">
-          {profile.avatar_url && <AvatarImage src={profile.avatar_url} alt="" />}
-          <AvatarFallback className="bg-primary-soft text-primary">{initials}</AvatarFallback>
-        </Avatar>
-        <div className="flex-1 min-w-0 overflow-hidden">
-          <div className="flex items-start justify-between gap-2 sm:gap-3">
-            <div className="min-w-0 flex-1">
-              {profile.full_name && (
-                <div className="flex items-center gap-1.5">
-                  <h3 className="truncate font-semibold text-foreground">
-                    {profile.full_name}
-                  </h3>
-                  {profile.verified && <VerifiedBadge size="sm" />}
-                </div>
-              )}
-              <div className="flex items-center gap-1.5">
-                {!profile.full_name && profile.verified && <VerifiedBadge size="sm" />}
-                <p className={cn(
-                  'truncate',
-                  profile.full_name
-                    ? 'text-sm text-muted-foreground'
-                    : 'font-semibold text-foreground'
-                )}>
-                  {profile.headline ?? profile.current_role ?? 'Profesional'}
-                </p>
-              </div>
-              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                {profile.country_of_origin && (
-                  <span className="flex items-center gap-1">
-                    <CountryFlag code={profile.country_of_origin} size="sm" />
-                    {countryName(profile.country_of_origin)}
-                  </span>
-                )}
-                {location && (
-                  <span className="flex items-center gap-1">
-                    <MapPin className="h-3 w-3" />
-                    {location}
-                  </span>
-                )}
-                {profile.years_experience != null && (
-                  <span className="flex items-center gap-1">
-                    <Briefcase className="h-3 w-3" />
-                    {profile.years_experience} {profile.years_experience === 1 ? 'año' : 'años'}
-                  </span>
-                )}
-              </div>
+        {/* Fila 1: avatar + nombre + badge */}
+        <div className="flex items-center gap-2.5">
+          <Avatar className="h-9 w-9 shrink-0 ring-2 ring-background">
+            {profile.avatar_url && <AvatarImage src={profile.avatar_url} alt="" />}
+            <AvatarFallback className="bg-primary-soft text-primary text-xs">{initials}</AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1">
+              <h3 className="truncate text-sm font-semibold text-foreground">
+                {profile.full_name ?? profile.headline ?? profile.current_role ?? 'Profesional'}
+              </h3>
+              {profile.verified && <VerifiedBadge size="sm" />}
             </div>
-            <Badge className={cn('shrink-0', AVAILABILITY_STYLES[profile.availability])}>
-              {AVAILABILITY_LABELS[profile.availability]}
-            </Badge>
+            {profile.full_name && (profile.headline || profile.current_role) && (
+              <p className="truncate text-xs text-muted-foreground">
+                {profile.headline ?? profile.current_role}
+              </p>
+            )}
           </div>
+          <Badge className={cn('shrink-0 text-[10px]', AVAILABILITY_STYLES[profile.availability])}>
+            {AVAILABILITY_LABELS[profile.availability]}
+          </Badge>
+        </div>
 
-          <div className="mt-2 flex flex-wrap gap-1 sm:gap-1.5">
-            <WorkPermitBadge status={profile.work_permit as never} />
-            <NieBadge has={profile.has_nie ?? false} />
-            {skills.slice(0, 3).map((s) => (
-              <Badge key={s} variant="outline" className="max-w-[120px] truncate text-xs font-normal">
-                {s}
-              </Badge>
-            ))}
-          </div>
+        {/* Fila 2: info compacta */}
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[11px] text-muted-foreground">
+          {profile.country_of_origin && (
+            <span className="flex items-center gap-0.5">
+              <CountryFlag code={profile.country_of_origin} size="sm" />
+              {countryName(profile.country_of_origin)}
+            </span>
+          )}
+          {location && (
+            <span className="flex items-center gap-0.5">
+              <MapPin className="h-2.5 w-2.5" /> {location}
+            </span>
+          )}
+          {profile.years_experience != null && (
+            <span className="flex items-center gap-0.5">
+              <Briefcase className="h-2.5 w-2.5" /> {profile.years_experience} {profile.years_experience === 1 ? 'año' : 'años'}
+            </span>
+          )}
+        </div>
+
+        {/* Fila 3: badges */}
+        <div className="mt-1.5 flex flex-wrap gap-1">
+          <WorkPermitBadge status={profile.work_permit as never} />
+          <NieBadge has={profile.has_nie ?? false} />
+          {skills.slice(0, 2).map((s) => (
+            <Badge key={s} variant="outline" className="max-w-[100px] truncate text-[10px] font-normal px-1.5 py-0">
+              {s}
+            </Badge>
+          ))}
         </div>
       </Link>
     );
