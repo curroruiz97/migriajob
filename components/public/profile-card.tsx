@@ -53,16 +53,16 @@ export function ProfileCard({ profile, view = 'grid', highlighted, hrefPrefix = 
       <Link
         href={href}
         className={cn(
-          'card-hover flex items-start gap-4 rounded-xl border border-border bg-surface p-4',
+          'card-hover flex items-start gap-3 overflow-hidden rounded-xl border border-border bg-surface p-3 sm:gap-4 sm:p-4',
           highlighted && 'ring-2 ring-primary ring-offset-2'
         )}
       >
-        <Avatar className="h-14 w-14 shrink-0 ring-2 ring-background">
+        <Avatar className="h-10 w-10 shrink-0 ring-2 ring-background sm:h-14 sm:w-14">
           {profile.avatar_url && <AvatarImage src={profile.avatar_url} alt="" />}
           <AvatarFallback className="bg-primary-soft text-primary">{initials}</AvatarFallback>
         </Avatar>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0 overflow-hidden">
+          <div className="flex items-start justify-between gap-2 sm:gap-3">
             <div className="min-w-0 flex-1">
               {profile.full_name && (
                 <div className="flex items-center gap-1.5">
@@ -109,11 +109,11 @@ export function ProfileCard({ profile, view = 'grid', highlighted, hrefPrefix = 
             </Badge>
           </div>
 
-          <div className="mt-2 flex flex-wrap gap-1.5">
+          <div className="mt-2 flex flex-wrap gap-1 sm:gap-1.5">
             <WorkPermitBadge status={profile.work_permit as never} />
             <NieBadge has={profile.has_nie ?? false} />
-            {skills.slice(0, 4).map((s) => (
-              <Badge key={s} variant="outline" className="text-xs font-normal">
+            {skills.slice(0, 3).map((s) => (
+              <Badge key={s} variant="outline" className="max-w-[120px] truncate text-xs font-normal">
                 {s}
               </Badge>
             ))}
