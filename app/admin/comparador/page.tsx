@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { CompareRedirect } from '@/components/admin/compare-redirect';
 import type { Database } from '@/lib/supabase/types';
 
 type Candidate = Database['public']['Tables']['candidates']['Row'];
@@ -60,6 +61,7 @@ export default async function ComparadorPage({
   if (profiles.length === 0) {
     return (
       <div className="space-y-6">
+        <CompareRedirect />
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Comparador de candidatos</h1>
           <p className="mt-1 text-sm text-muted-foreground">Compara hasta 4 candidatos en paralelo.</p>
