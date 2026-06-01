@@ -2,11 +2,14 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   typescript: {
-    // Permite que `next build` termine aunque haya errores de TS.
-    // Útil mientras se completa la migración Bordful → marketplace.
-    ignoreBuildErrors: true,
+    // El typecheck vuelve a bloquear el build: `next build` falla si hay
+    // errores de TS. (Reactivado tras la puesta a punto — typecheck en verde.)
+    ignoreBuildErrors: false,
   },
   eslint: {
+    // El linting se gestiona con Biome/ultracite (ver biome.jsonc), no con
+    // ESLint, que no está instalado. Mantener ESLint fuera del build evita
+    // un paso roto; ejecuta `bunx ultracite check` para lint.
     ignoreDuringBuilds: true,
   },
   async redirects() {

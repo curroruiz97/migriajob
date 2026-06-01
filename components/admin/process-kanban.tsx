@@ -56,7 +56,9 @@ export function ProcessKanban({ items: initial }: { items: ProcessItem[] }) {
     if (!item || item.stage === newStage) return;
 
     setItems((prev) => prev.map((i) => (i.id === itemId ? { ...i, stage: newStage } : i)));
-    startTransition(() => updateProcessStageAction(itemId, newStage));
+    startTransition(() => {
+      updateProcessStageAction(itemId, newStage);
+    });
   };
 
   return (

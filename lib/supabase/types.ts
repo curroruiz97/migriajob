@@ -2,8 +2,11 @@
  * Tipos generados de la base de datos Supabase del proyecto MigriaJob
  * (project_id: pagxshxrvkoeyjwzxqrl).
  *
- * Para regenerar tras cambios en el schema:
- *   npx supabase gen types typescript --project-id pagxshxrvkoeyjwzxqrl > lib/supabase/types.ts
+ * Para regenerar tras cambios en el schema (requiere login o
+ * SUPABASE_ACCESS_TOKEN; NO uses `>` para sobrescribir este archivo, usa un
+ * temporal y revísalo antes):
+ *   npx supabase login
+ *   npx supabase gen types typescript --project-id pagxshxrvkoeyjwzxqrl > lib/supabase/types.new.ts
  */
 
 export type Json =
@@ -32,6 +35,30 @@ export type Database = {
           status?: Database["public"]["Enums"]["application_status"]
         }
         Update: Partial<Database["public"]["Tables"]["applications"]["Insert"]>
+        Relationships: []
+      }
+      candidate_journey: {
+        Row: {
+          id: string; candidate_id: string; start_date: string | null; position: string | null
+          employer_company: string | null; salary: number | null; destination_city: string | null
+          doc_dni: boolean; doc_passport: boolean; doc_criminal_record: boolean; doc_medical: boolean
+          doc_precontract: boolean; doc_contract: boolean; doc_social_security: boolean
+          mig_file_submitted: boolean; mig_resolution: boolean; mig_visa_started: boolean; mig_visa_approved: boolean
+          inc_flight_confirmed: boolean; inc_housing_coordinated: boolean
+          inc_travel_date: string | null; inc_arrival_date: string | null; inc_effective_start: string | null
+          notes: string | null; created_at: string; updated_at: string
+        }
+        Insert: {
+          id?: string; candidate_id: string; start_date?: string | null; position?: string | null
+          employer_company?: string | null; salary?: number | null; destination_city?: string | null
+          doc_dni?: boolean; doc_passport?: boolean; doc_criminal_record?: boolean; doc_medical?: boolean
+          doc_precontract?: boolean; doc_contract?: boolean; doc_social_security?: boolean
+          mig_file_submitted?: boolean; mig_resolution?: boolean; mig_visa_started?: boolean; mig_visa_approved?: boolean
+          inc_flight_confirmed?: boolean; inc_housing_coordinated?: boolean
+          inc_travel_date?: string | null; inc_arrival_date?: string | null; inc_effective_start?: string | null
+          notes?: string | null; created_at?: string; updated_at?: string
+        }
+        Update: Partial<Database["public"]["Tables"]["candidate_journey"]["Insert"]>
         Relationships: []
       }
       candidate_languages: {
@@ -88,6 +115,8 @@ export type Database = {
           views_count: number; website_url: string | null
           work_permit: Database["public"]["Enums"]["work_permit_status"] | null
           years_experience: number | null; years_in_spain: number | null
+          date_of_birth: string | null; preferred_locations: string[] | null
+          willing_to_relocate: boolean | null; start_availability: string | null
         }
         Insert: {
           availability?: Database["public"]["Enums"]["availability_status"]
@@ -103,13 +132,22 @@ export type Database = {
           open_to_remote?: boolean | null; portfolio_url?: string | null; profile_id: string
           search_vector?: unknown; skills?: string[] | null; slug?: string | null
           updated_at?: string; views_count?: number; website_url?: string | null; years_experience?: number | null
+          country_of_origin?: string | null; has_nie?: boolean | null; has_tie?: boolean | null
+          homologation?: Database["public"]["Enums"]["homologation_status"] | null
+          open_to_relocate?: boolean | null
+          spanish?: Database["public"]["Enums"]["spanish_level"] | null
+          verified?: boolean | null
+          work_permit?: Database["public"]["Enums"]["work_permit_status"] | null
+          years_in_spain?: number | null; date_of_birth?: string | null
+          preferred_locations?: string[] | null; willing_to_relocate?: boolean | null
+          start_availability?: string | null
         }
         Update: Partial<Database["public"]["Tables"]["candidates"]["Insert"]>
         Relationships: []
       }
       companies: {
-        Row: { created_at: string; description: string | null; id: string; industry: string | null; location: string | null; logo_url: string | null; name: string; owner_id: string; size: string | null; slug: string; verified: boolean; website: string | null }
-        Insert: { created_at?: string; description?: string | null; id?: string; industry?: string | null; location?: string | null; logo_url?: string | null; name: string; owner_id: string; size?: string | null; slug: string; verified?: boolean; website?: string | null }
+        Row: { created_at: string; description: string | null; id: string; industry: string | null; location: string | null; logo_url: string | null; name: string; owner_id: string; size: string | null; slug: string; verified: boolean; website: string | null; legal_name: string | null; tax_id: string | null; founded_year: number | null; contact_name: string | null; contact_email: string | null; contact_phone: string | null; cover_image_url: string | null; billing_email: string | null; billing_address: string | null; billing_tax_id: string | null; contact_role: string | null; address_province: string | null }
+        Insert: { created_at?: string; description?: string | null; id?: string; industry?: string | null; location?: string | null; logo_url?: string | null; name: string; owner_id: string; size?: string | null; slug: string; verified?: boolean; website?: string | null; legal_name?: string | null; tax_id?: string | null; founded_year?: number | null; contact_name?: string | null; contact_email?: string | null; contact_phone?: string | null; cover_image_url?: string | null; billing_email?: string | null; billing_address?: string | null; billing_tax_id?: string | null; contact_role?: string | null; address_province?: string | null }
         Update: Partial<Database["public"]["Tables"]["companies"]["Insert"]>
         Relationships: []
       }
@@ -144,8 +182,8 @@ export type Database = {
         Relationships: []
       }
       jobs: {
-        Row: { applications_count: number | null; benefits: string | null; company_id: string; created_at: string; currency: string | null; description: string; embedding: string | null; experience_level: Database["public"]["Enums"]["experience_level"] | null; expires_at: string | null; featured: boolean | null; id: string; job_type: Database["public"]["Enums"]["job_type"]; location: string | null; published_at: string | null; requirements: string | null; salary_max: number | null; salary_min: number | null; search_vector: unknown; skills: string[] | null; slug: string; status: Database["public"]["Enums"]["job_status"]; title: string; updated_at: string; views_count: number | null; work_mode: Database["public"]["Enums"]["work_mode"] }
-        Insert: { applications_count?: number | null; benefits?: string | null; company_id: string; created_at?: string; currency?: string | null; description: string; embedding?: string | null; experience_level?: Database["public"]["Enums"]["experience_level"] | null; expires_at?: string | null; featured?: boolean | null; id?: string; job_type: Database["public"]["Enums"]["job_type"]; location?: string | null; published_at?: string | null; requirements?: string | null; salary_max?: number | null; salary_min?: number | null; search_vector?: unknown; skills?: string[] | null; slug: string; status?: Database["public"]["Enums"]["job_status"]; title: string; updated_at?: string; views_count?: number | null; work_mode: Database["public"]["Enums"]["work_mode"] }
+        Row: { applications_count: number | null; benefits: string | null; company_id: string; created_at: string; currency: string | null; description: string; embedding: string | null; experience_level: Database["public"]["Enums"]["experience_level"] | null; expires_at: string | null; featured: boolean | null; id: string; job_type: Database["public"]["Enums"]["job_type"]; location: string | null; published_at: string | null; requirements: string | null; salary_max: number | null; salary_min: number | null; search_vector: unknown; skills: string[] | null; slug: string; status: Database["public"]["Enums"]["job_status"]; title: string; updated_at: string; views_count: number | null; work_mode: Database["public"]["Enums"]["work_mode"]; category: string | null; country: string | null; start_date: string | null }
+        Insert: { applications_count?: number | null; benefits?: string | null; company_id: string; created_at?: string; currency?: string | null; description: string; embedding?: string | null; experience_level?: Database["public"]["Enums"]["experience_level"] | null; expires_at?: string | null; featured?: boolean | null; id?: string; job_type: Database["public"]["Enums"]["job_type"]; location?: string | null; published_at?: string | null; requirements?: string | null; salary_max?: number | null; salary_min?: number | null; search_vector?: unknown; skills?: string[] | null; slug: string; status?: Database["public"]["Enums"]["job_status"]; title: string; updated_at?: string; views_count?: number | null; work_mode: Database["public"]["Enums"]["work_mode"]; category?: string | null; country?: string | null; start_date?: string | null }
         Update: Partial<Database["public"]["Tables"]["jobs"]["Insert"]>
         Relationships: []
       }

@@ -14,8 +14,19 @@ export default async function MensajesPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
+  type Participant = { id: string; full_name: string | null; avatar_url: string | null } | null;
+  type ConversationRow = {
+    id: string;
+    last_message_at: string;
+    employer_id: string;
+    candidate_id: string;
+    employer: Participant;
+    candidate: Participant;
+    messages: Array<{ id: string; body: string; sender_id: string; created_at: string; read_at: string | null }>;
+  };
+
   // Trae conversaciones + interlocutor + último mensaje
-  const { data: conversations } = await supabase
+  const { data } = await supabase
     .from('conversations')
     .select(`
       id, last_message_at, employer_id, candidate_id,
@@ -26,7 +37,9 @@ export default async function MensajesPage() {
     .or(`employer_id.eq.${user.id},candidate_id.eq.${user.id}`)
     .order('last_message_at', { ascending: false });
 
-  const items = (conversations ?? []).map((c) => {
+  const conversations = (data ?? []) as unknown as ConversationRow[];
+
+  const items = conversations.map((c) => {
     const isEmployer = c.employer_id === user.id;
     const other = isEmployer ? c.candidate : c.employer;
     const messages = (c.messages ?? []).sort(

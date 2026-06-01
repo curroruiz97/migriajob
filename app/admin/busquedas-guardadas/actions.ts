@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { safeAction } from '@/lib/actions/safe';
+import type { Json } from '@/lib/supabase/types';
 
 type Frequency = 'off' | 'daily' | 'weekly' | 'instant';
 
@@ -21,7 +22,7 @@ export async function saveSearchAction(input: {
     await supabase.from('saved_searches').insert({
       user_id: user.id,
       name: input.name.trim(),
-      filters: input.filters,
+      filters: input.filters as Json,
       alert_frequency: input.alertFrequency ?? 'off',
     });
     revalidatePath('/admin/busquedas-guardadas');

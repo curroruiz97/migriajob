@@ -70,10 +70,10 @@ export default async function BusquedasGuardadasPage() {
                   </Link>
                   <p className="mt-0.5 text-xs text-muted-foreground">
                     Creada{' '}
-                    {formatDistanceToNow(new Date(s.createdAt), { locale: es, addSuffix: true })}
+                    {formatDistanceToNow(new Date(s.created_at), { locale: es, addSuffix: true })}
                   </p>
                 </div>
-                <Badge variant="soft">{FREQUENCY_LABEL[s.alertFrequency]}</Badge>
+                <Badge variant="soft">{FREQUENCY_LABEL[s.alert_frequency]}</Badge>
               </li>
             );
           })}

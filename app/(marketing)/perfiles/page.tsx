@@ -4,6 +4,7 @@ import { searchProfiles } from '@/lib/db/queries';
 import { ProfilesToolbar } from '@/components/public/profiles-toolbar';
 import { ProfileFilters } from '@/components/public/profile-filters';
 import { ProfileCard } from '@/components/public/profile-card';
+import { ProfilesPagination } from '@/components/public/profiles-pagination';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -28,6 +29,7 @@ interface PageProps {
     hasNie?: string;
     verified?: string;
     inSpain?: string;
+    page?: string;
   }>;
 }
 
@@ -41,7 +43,7 @@ export default async function PerfilesPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const view = params.view === 'list' ? 'list' : 'grid';
 
-  const profiles = await searchProfiles({
+  const { items: profiles, total, perPage } = await searchProfiles({
     q: params.q,
     availability: params.availability,
     city: params.city,
@@ -52,7 +54,8 @@ export default async function PerfilesPage({ searchParams }: PageProps) {
     hasNie: params.hasNie === 'true',
     verified: params.verified === 'true',
     inSpain: params.inSpain === 'true',
-  }).catch(() => []);
+    page: params.page ? Number(params.page) : 1,
+  }).catch(() => ({ items: [], total: 0, perPage: 20 }));
 
   // Chips de filtros activos
   const activeChips: Array<{ key: string; label: string }> = [];
@@ -77,7 +80,7 @@ export default async function PerfilesPage({ searchParams }: PageProps) {
             <div>
               <Badge variant="soft" className="mb-5">
                 <Users className="mr-1 h-3 w-3" />
-                {profiles.length} perfiles disponibles
+                {total.toLocaleString('es-ES')} perfiles disponibles
               </Badge>
               <h1 className="font-display text-5xl leading-[1.05] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
                 Talento latino{' '}
@@ -114,7 +117,7 @@ export default async function PerfilesPage({ searchParams }: PageProps) {
             {/* Mini stats column */}
             <div className="hidden shrink-0 grid-cols-3 divide-x divide-border rounded-2xl border border-border bg-surface/60 backdrop-blur-sm lg:grid">
               {[
-                { value: profiles.length, label: 'Perfiles' },
+                { value: total.toLocaleString('es-ES'), label: 'Perfiles' },
                 {
                   value: new Set(profiles.map((p) => p.country_of_origin).filter(Boolean)).size,
                   label: 'Países',
@@ -144,7 +147,7 @@ export default async function PerfilesPage({ searchParams }: PageProps) {
           </aside>
 
           <div>
-            <ProfilesToolbar count={profiles.length} />
+            <ProfilesToolbar count={total} />
 
             {/* Chips de filtros activos */}
             {activeChips.length > 0 && (
@@ -168,17 +171,20 @@ export default async function PerfilesPage({ searchParams }: PageProps) {
                 className="mt-6"
               />
             ) : (
-              <div
-                className={
-                  view === 'grid'
-                    ? 'mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3'
-                    : 'mt-6 flex flex-col gap-3'
-                }
-              >
-                {profiles.map((p) => (
-                  <ProfileCard key={p.id} profile={p} view={view} />
-                ))}
-              </div>
+              <>
+                <div
+                  className={
+                    view === 'grid'
+                      ? 'mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3'
+                      : 'mt-6 flex flex-col gap-3'
+                  }
+                >
+                  {profiles.map((p) => (
+                    <ProfileCard key={p.id} profile={p} view={view} />
+                  ))}
+                </div>
+                <ProfilesPagination total={total} perPage={perPage} />
+              </>
             )}
           </div>
         </div>

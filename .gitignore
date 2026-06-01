@@ -27,6 +27,14 @@ npm-debug.log*
 # vercel
 .vercel
 
+# datos privados de postulantes (PII) y scratch de importación — NUNCA subir a repo público
+/.legacy-backup/
+/supabase/seed_postulantes.sql
+
+# editores / IDE local
+.idea/
+.claude/settings.local.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

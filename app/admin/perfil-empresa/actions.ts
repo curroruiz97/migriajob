@@ -46,9 +46,9 @@ export async function updateCompanyAction(_prev: unknown, formData: FormData) {
     const core = {
       name, industry, size, location, website, description, logo_url,
       tax_id, founded_year, contact_name, contact_email, contact_phone,
-    } as Record<string, unknown>;
+    };
     // Columnas de 0006 (se aplican aparte para no romper el guardado si aún no existen).
-    const v6 = { contact_role, address_province } as Record<string, unknown>;
+    const v6 = { contact_role, address_province };
 
     const { data: existing } = await supabase
       .from('companies')

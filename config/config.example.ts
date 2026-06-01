@@ -21,8 +21,24 @@
  */
 
 import type { ScriptProps } from 'next/script';
-import type { BadgeType } from '@/components/ui/job-badge';
 import type { CurrencyCode } from '@/lib/constants/currencies';
+
+// Tipo de badge para ofertas (antes en components/ui/job-badge, eliminado en la
+// limpieza de código muerto de Bordful; se conserva el tipo para compatibilidad).
+type BadgeType =
+  | 'new'
+  | 'remote'
+  | 'onsite'
+  | 'hybrid'
+  | 'featured'
+  | 'default'
+  | 'not specified'
+  | 'visa-yes'
+  | 'visa-no'
+  | 'visa-not-specified'
+  | 'career-level'
+  | 'language'
+  | 'currency';
 
 // Available font options
 export type FontFamily = 'geist' | 'inter' | 'ibm-plex-serif';

@@ -157,7 +157,7 @@ export async function processJobsForFeed(
   for (const job of jobs) {
     // Only include active jobs
     if (job.status === 'active') {
-      addJobToFeed(feed, job, baseUrl, descriptionLength);
+      addJobToFeed(feed, job as unknown as JobItem, baseUrl, descriptionLength);
     }
   }
 }

@@ -1,4 +1,6 @@
-import type { Candidate } from '@/lib/db/schema';
+import type { Database } from '@/lib/supabase/types';
+
+type Candidate = Database['public']['Tables']['candidates']['Row'];
 
 /**
  * Schema.org Person JSON-LD para perfiles públicos.
@@ -12,39 +14,39 @@ export function ProfileJsonLd({
     Candidate,
     | 'slug'
     | 'headline'
-    | 'currentRole'
+    | 'current_role'
     | 'bio'
-    | 'avatarUrl'
-    | 'locationCity'
-    | 'locationCountry'
-    | 'linkedinUrl'
-    | 'githubUrl'
-    | 'portfolioUrl'
-    | 'websiteUrl'
+    | 'avatar_url'
+    | 'location_city'
+    | 'location_country'
+    | 'linkedin_url'
+    | 'github_url'
+    | 'portfolio_url'
+    | 'website_url'
     | 'skills'
   >;
   baseUrl: string;
 }) {
   const url = `${baseUrl}/perfiles/${profile.slug}`;
   const sameAs = [
-    profile.linkedinUrl,
-    profile.githubUrl,
-    profile.portfolioUrl,
-    profile.websiteUrl,
+    profile.linkedin_url,
+    profile.github_url,
+    profile.portfolio_url,
+    profile.website_url,
   ].filter(Boolean) as string[];
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: profile.headline ?? 'Profesional Migria',
-    jobTitle: profile.currentRole,
+    jobTitle: profile.current_role,
     description: profile.bio,
-    image: profile.avatarUrl,
+    image: profile.avatar_url,
     url,
     address: {
       '@type': 'PostalAddress',
-      addressLocality: profile.locationCity,
-      addressCountry: profile.locationCountry,
+      addressLocality: profile.location_city,
+      addressCountry: profile.location_country,
     },
     knowsAbout: profile.skills,
     sameAs: sameAs.length > 0 ? sameAs : undefined,

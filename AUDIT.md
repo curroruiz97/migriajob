@@ -78,3 +78,115 @@
 - 4 altos corregidos (server actions seguras, lazy db, índices, error boundaries).
 - 3 medios documentados, 2 deuda técnica explícita.
 - 3 bajos corregidos (error.tsx, not-found, redirect-in-action).
+
+---
+
+# AUDIT — Fase 2 (puesta a punto)
+
+> Estado inicial: `next build` y `tsc` pasaban en falso porque
+> `next.config.ts` tenía `typescript.ignoreBuildErrors: true`. Al activar el
+> typecheck real aparecían **81 errores de TypeScript**. Objetivo de la fase:
+> dejar el typecheck en **0 errores** y reactivar el build estricto.
+
+## Resultado
+- ✅ `npx tsc --noEmit` → **0 errores** (antes 81).
+- ✅ `npx next build` → **exit 0 con `ignoreBuildErrors: false`** (typecheck vuelve a bloquear el build).
+
+## Crítico
+
+### `lib/supabase/types.ts` desincronizado del schema real
+**Problema:** el tipo `Database` se mantiene a mano y se había quedado atrás
+respecto a las migraciones. Faltaban columnas en `Insert`/`Row`, lo que rompía
+las server actions con error `type 'never'`:
+- `candidates`: `country_of_origin`, `has_nie`, `has_tie`, `homologation`,
+  `open_to_relocate`, `spanish`, `verified`, `work_permit`, `years_in_spain`
+  estaban en `Row` pero no en `Insert`; faltaban del todo `date_of_birth`,
+  `preferred_locations`, `willing_to_relocate`, `start_availability` (0005).
+- `companies`: faltaban las 10 columnas de 0004 + `contact_role`,
+  `address_province` (0006).
+- `jobs`: faltaban `category`, `country`, `start_date` (0007).
+- `candidate_journey` (0011): la tabla no existía en los tipos.
+**Solución:** añadidas todas las columnas/tabla a `lib/supabase/types.ts`,
+reconstruidas desde las migraciones SQL (fuente de verdad).
+**Estado:** ✅ corregido. ⚠️ Acción recomendada: regenerar con
+`npx supabase gen types typescript --project-id pagxshxrvkoeyjwzxqrl > lib/supabase/types.ts`
+para que dejen de mantenerse a mano (incluiría además los `Relationships`).
+
+## Alto
+
+### Código muerto heredado de Bordful (eliminado)
+**Problema:** ~45 de los 81 errores vivían en un clúster de componentes/utils
+que NINGUNA ruta `app/` importaba (solo se referenciaban entre sí).
+**Solución:** eliminados (backup en `.legacy-backup/`):
+`components/home/`, `components/jobs/`, `components/contact/`,
+`components/ui/{job-schema,similar-jobs,job-details-sidebar,job-filters,jobs-per-page-select,job-badge,job-search-input,post-job-banner}.tsx`,
+`lib/utils/markdown.ts`, `lib/utils/rss.ts`. `BadgeType` se inlinó en
+`config/config.example.ts` (era su único uso vivo).
+**Estado:** ✅ corregido.
+
+### Joins anidados de Supabase tipados como `SelectQueryError`
+**Problema:** `types.ts` tiene `Relationships: []`, así que los `select`
+con recursos embebidos (`candidate:candidates(*)`, `messages(...)`) se infieren
+como error. Rompía `lib/db/queries.ts` (favoritos, procesos) y
+`app/admin/mensajes/page.tsx`.
+**Solución:** cast vía `unknown` a la forma real en queries.ts; tipo explícito
+`ConversationRow` en mensajes. (La solución de fondo es regenerar los tipos con
+sus `Relationships`.)
+**Estado:** ✅ corregido (puntual).
+
+## Medio
+
+### `ProfileJsonLd` usaba el tipo Drizzle camelCase
+**Problema:** `components/public/profile-jsonld.tsx` tipaba `profile` con el
+`Candidate` de Drizzle (`@/lib/db/schema`, camelCase) pero recibía una fila
+Supabase (snake_case). 8 props inexistentes.
+**Solución:** reescrito a snake_case usando `Database[...]['candidates']['Row']`.
+**Estado:** ✅ corregido.
+
+### Uniones discriminadas de server actions mal estrechadas
+**Problema:** `{ ok } | { error }` accedido sin narrowing en
+`profile-form.tsx`, `favorite-button.tsx`; retorno de action pasado a
+`startTransition` en `process-kanban.tsx`.
+**Solución:** guardas `'ok' in state`, init `null` en `useActionState`, y
+bloque que descarta el retorno en la transición.
+**Estado:** ✅ corregido.
+
+### Otros arreglos puntuales (código vivo)
+- `Container` no aceptaba `id` → añadida prop y forward (`perfiles/page.tsx`).
+- `saved_searches`: `s.createdAt`/`s.alertFrequency` → snake_case en la page.
+- `saveSearchAction`: `filters` casteado a `Json`.
+- `perfil-empresa/actions.ts`: quitados los casts `Record<string,unknown>`
+  (impedían el narrowing del literal contra el tipo de la tabla).
+**Estado:** ✅ corregido.
+
+## Deuda técnica pendiente (documentada, NO tocada)
+
+### Subsistema RSS/OG-jobs cableado a Airtable (Bordful)
+`app/{atom.xml,feed.xml,feed.json}/route.ts`, `app/api/og/jobs/[slug]/route.tsx`,
+`lib/utils/feed-utils.ts`, `lib/utils/og-job-helpers.tsx`, `lib/db/airtable*.ts`
+sirven ofertas desde **Airtable**, origen que este producto (Supabase) ya no
+usa → **no funcionales**. En esta fase solo se corrigieron sus tipos (casts
+mínimos) para no romper el build. **Recomendación:** eliminar el subsistema o
+recablearlo a Supabase (`jobs`). Mantener `app/api/og/route.tsx` (OG general, sí vivo).
+
+### Páginas legacy de Bordful aún presentes
+`/jobs/*`, `/job-alerts`, `/about`, `/contact`, `/faq`, `/pricing` siguen como
+`page.tsx` (algunas redirigidas vía `next.config.ts`). Compilan (236 B) pero son
+herencia; revisar si se borran o se consolidan con sus equivalentes en español.
+
+### Linting
+No hay ESLint instalado; el proyecto usa Biome/ultracite (`biome.jsonc`). El
+script `package.json:lint` (`next lint`) no funciona → usar `bunx ultracite check`.
+`eslint.ignoreDuringBuilds` se deja en `true` a propósito (reactivarlo rompería
+el build al no existir config ESLint).
+
+### `.env.example` desactualizado
+Referencia Airtable/Encharge (Bordful), no las claves de Supabase que la app
+realmente necesita (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
+`DEMO_AUTH`). Conviene reescribirlo.
+
+## Resumen Fase 2
+- 81 → 0 errores de TypeScript; build estricto reactivado y en verde.
+- 1 crítico (tipos desincronizados), 3 altos (código muerto, joins, …),
+  varios medios corregidos.
+- 4 bloques de deuda técnica documentados para decisión posterior.

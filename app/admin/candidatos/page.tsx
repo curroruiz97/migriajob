@@ -3,6 +3,7 @@ import { searchProfiles } from '@/lib/db/queries';
 import { ProfileFilters } from '@/components/public/profile-filters';
 import { ProfilesToolbar } from '@/components/public/profiles-toolbar';
 import { ProfileCard } from '@/components/public/profile-card';
+import { ProfilesPagination } from '@/components/public/profiles-pagination';
 import { SaveSearchButton } from '@/components/admin/save-search-button';
 import { EmptyState } from '@/components/ui/empty-state';
 import type { Database } from '@/lib/supabase/types';
@@ -32,7 +33,7 @@ export default async function AdminCandidatosPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const view = params.view === 'list' ? 'list' : 'grid';
 
-  const profiles = (await searchProfiles({
+  const { items: profiles, total, perPage } = await searchProfiles({
     q: params.q,
     availability: params.availability,
     city: params.city,
@@ -44,7 +45,9 @@ export default async function AdminCandidatosPage({ searchParams }: PageProps) {
     verified: params.verified === 'true',
     inSpain: params.inSpain === 'true',
     page: params.page ? Number(params.page) : 1,
-  }).catch(() => [])) as Candidate[];
+    // El admin ve también los candidatos importados/privados (RLS lo limita a rol admin).
+    includeNonPublic: true,
+  }).catch(() => ({ items: [] as Candidate[], total: 0, perPage: 20 }));
 
   return (
     <div className="space-y-6">
@@ -64,7 +67,7 @@ export default async function AdminCandidatosPage({ searchParams }: PageProps) {
         </aside>
 
         <div>
-          <ProfilesToolbar count={profiles.length} />
+          <ProfilesToolbar count={total} />
 
           {profiles.length === 0 ? (
             <EmptyState
@@ -74,17 +77,20 @@ export default async function AdminCandidatosPage({ searchParams }: PageProps) {
               className="mt-6"
             />
           ) : (
-            <div
-              className={
-                view === 'grid'
-                  ? 'mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3'
-                  : 'mt-6 space-y-3'
-              }
-            >
-              {profiles.map((p) => (
-                <ProfileCard key={p.id} profile={p} view={view} />
-              ))}
-            </div>
+            <>
+              <div
+                className={
+                  view === 'grid'
+                    ? 'mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3'
+                    : 'mt-6 space-y-3'
+                }
+              >
+                {profiles.map((p) => (
+                  <ProfileCard key={p.id} profile={p} view={view} />
+                ))}
+              </div>
+              <ProfilesPagination total={total} perPage={perPage} />
+            </>
           )}
         </div>
       </div>

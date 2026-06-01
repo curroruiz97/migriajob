@@ -16,15 +16,16 @@ interface ContainerProps {
   size?: Size;
   className?: string;
   as?: ElementType;
+  id?: string;
 }
 
 /**
  * Contenedor uniforme para garantizar el mismo ancho en toda la web.
  * Usar siempre en lugar de los `mx-auto max-w-... px-... sueltos.
  */
-export function Container({ children, size = 'xl', className, as: Tag = 'div' }: ContainerProps) {
+export function Container({ children, size = 'xl', className, as: Tag = 'div', id }: ContainerProps) {
   return (
-    <Tag className={cn('mx-auto w-full px-4 sm:px-6 lg:px-8', SIZES[size], className)}>
+    <Tag id={id} className={cn('mx-auto w-full px-4 sm:px-6 lg:px-8', SIZES[size], className)}>
       {children}
     </Tag>
   );

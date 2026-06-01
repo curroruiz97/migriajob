@@ -41,6 +41,12 @@ export type ProfileFilters = {
   homologation?: 'verified' | 'in_progress' | 'not_required' | 'not_started';
   verified?: boolean;
   inSpain?: boolean;
+  /**
+   * Incluir candidatos no públicos (privados / importados). Solo tiene efecto
+   * real para usuarios con rol `admin` (la RLS bloquea el resto). Lo usa el
+   * panel /admin/candidatos para mostrar los leads importados.
+   */
+  includeNonPublic?: boolean;
 };
 
 /**
@@ -97,12 +103,17 @@ function buildSearchVariants(input: string): string[] {
   return [...variants];
 }
 
-export async function searchProfiles(filters: ProfileFilters = {}): Promise<Candidate[]> {
+export type ProfileSearchResult = { items: Candidate[]; total: number; perPage: number };
+
+export async function searchProfiles(
+  filters: ProfileFilters = {}
+): Promise<ProfileSearchResult> {
   const supabase = await createClient();
   const perPage = Math.min(filters.perPage ?? 20, 100);
   const offset = ((filters.page ?? 1) - 1) * perPage;
 
-  let q = supabase.from('candidates').select('*').eq('is_public', true);
+  let q = supabase.from('candidates').select('*', { count: 'exact' });
+  if (!filters.includeNonPublic) q = q.eq('is_public', true);
 
   if (filters.availability) q = q.eq('availability', filters.availability);
   if (filters.experienceMin != null) q = q.gte('years_experience', filters.experienceMin);
@@ -135,11 +146,11 @@ export async function searchProfiles(filters: ProfileFilters = {}): Promise<Cand
     }
   }
 
-  const { data } = await q
+  const { data, count } = await q
     .order('updated_at', { ascending: false })
     .range(offset, offset + perPage - 1);
 
-  return (data ?? []) as Candidate[];
+  return { items: (data ?? []) as Candidate[], total: count ?? 0, perPage };
 }
 
 export async function getProfileBySlug(slug: string): Promise<Candidate | null> {
@@ -201,7 +212,7 @@ export async function getEmployerFavorites(employerId: string) {
     .select('*, candidate:candidates(*)')
     .eq('employer_id', employerId)
     .order('created_at', { ascending: false });
-  return ((data ?? []) as Array<{ id: string; candidate_id: string; employer_id: string; created_at: string; candidate: Candidate }>).map(
+  return ((data ?? []) as unknown as Array<{ id: string; candidate_id: string; employer_id: string; created_at: string; candidate: Candidate }>).map(
     (r) => ({
       favorite: { id: r.id, candidateId: r.candidate_id, employerId: r.employer_id, createdAt: r.created_at },
       candidate: r.candidate,
@@ -252,7 +263,7 @@ export async function getEmployerProcesses(employerId: string) {
     .select('*, candidate:candidates(*)')
     .eq('employer_id', employerId)
     .order('updated_at', { ascending: false });
-  return ((data ?? []) as Array<Database['public']['Tables']['selection_processes']['Row'] & { candidate: Candidate }>).map(
+  return ((data ?? []) as unknown as Array<Database['public']['Tables']['selection_processes']['Row'] & { candidate: Candidate }>).map(
     (r) => ({
       process: {
         id: r.id,

@@ -24,7 +24,7 @@ export function FavoriteButton({
       onClick={() =>
         startTransition(async () => {
           const r = await toggleFavoriteAction(candidateId);
-          if (r.ok) setFavorited(r.favorited);
+          if ('ok' in r) setFavorited(r.favorited);
         })
       }
     >

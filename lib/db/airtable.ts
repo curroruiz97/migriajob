@@ -58,7 +58,7 @@ export type Job = {
   languages: string[];
 };
 
-export function formatSalary(): string {
+export function formatSalary(_salary?: Salary | null, _showCurrencyCode?: boolean): string {
   return 'Not specified';
 }
 export function formatUSDApproximation(): string | null {
