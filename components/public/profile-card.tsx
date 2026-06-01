@@ -31,7 +31,7 @@ interface ProfileCardProps {
 }
 
 function getInitials(profile: Candidate): string {
-  const text = profile.headline ?? profile.current_role ?? 'M';
+  const text = profile.full_name ?? profile.headline ?? profile.current_role ?? 'M';
   return text
     .split(' ')
     .map((s) => s[0])
@@ -61,11 +61,24 @@ export function ProfileCard({ profile, view = 'grid', highlighted }: ProfileCard
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
+              {profile.full_name && (
+                <div className="flex items-center gap-1.5">
+                  <h3 className="truncate font-semibold text-foreground">
+                    {profile.full_name}
+                  </h3>
+                  {profile.verified && <VerifiedBadge size="sm" />}
+                </div>
+              )}
               <div className="flex items-center gap-1.5">
-                <h3 className="truncate font-semibold text-foreground">
+                {!profile.full_name && profile.verified && <VerifiedBadge size="sm" />}
+                <p className={cn(
+                  'truncate',
+                  profile.full_name
+                    ? 'text-sm text-muted-foreground'
+                    : 'font-semibold text-foreground'
+                )}>
                   {profile.headline ?? profile.current_role ?? 'Profesional'}
-                </h3>
-                {profile.verified && <VerifiedBadge size="sm" />}
+                </p>
               </div>
               <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                 {profile.country_of_origin && (
@@ -140,13 +153,26 @@ export function ProfileCard({ profile, view = 'grid', highlighted }: ProfileCard
         </div>
       </div>
 
-      <div className="mt-4 flex items-center gap-1.5">
-        <h3 className="text-base font-semibold text-foreground line-clamp-1">
+      {profile.full_name && (
+        <div className="mt-4 flex items-center gap-1.5">
+          <h3 className="text-base font-semibold text-foreground line-clamp-1">
+            {profile.full_name}
+          </h3>
+          {profile.verified && <VerifiedBadge size="sm" />}
+        </div>
+      )}
+      <div className={cn('flex items-center gap-1.5', profile.full_name ? 'mt-0.5' : 'mt-4')}>
+        {!profile.full_name && profile.verified && <VerifiedBadge size="sm" />}
+        <p className={cn(
+          'line-clamp-1',
+          profile.full_name
+            ? 'text-sm text-muted-foreground'
+            : 'text-base font-semibold text-foreground'
+        )}>
           {profile.headline ?? profile.current_role ?? 'Profesional'}
-        </h3>
-        {profile.verified && <VerifiedBadge size="sm" />}
+        </p>
       </div>
-      {profile.current_role && profile.headline && (
+      {!profile.full_name && profile.current_role && profile.headline && (
         <p className="mt-0.5 text-sm text-muted-foreground line-clamp-1">{profile.current_role}</p>
       )}
 
