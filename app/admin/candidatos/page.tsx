@@ -88,7 +88,7 @@ export default async function AdminCandidatosPage({ searchParams }: PageProps) {
                 }
               >
                 {profiles.map((p) => (
-                  <ProfileCard key={p.id} profile={p} view={view} />
+                  <ProfileCard key={p.id} profile={p} view={view} hrefPrefix="/admin/candidatos" />
                 ))}
               </div>
               <ProfilesPagination total={total} perPage={perPage} />

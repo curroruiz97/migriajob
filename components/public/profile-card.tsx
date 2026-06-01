@@ -28,6 +28,8 @@ interface ProfileCardProps {
   profile: Candidate;
   view?: 'grid' | 'list';
   highlighted?: boolean;
+  /** Prefijo de ruta para el enlace. Default: '/perfiles' */
+  hrefPrefix?: string;
 }
 
 function getInitials(profile: Candidate): string {
@@ -40,15 +42,16 @@ function getInitials(profile: Candidate): string {
     .toUpperCase();
 }
 
-export function ProfileCard({ profile, view = 'grid', highlighted }: ProfileCardProps) {
+export function ProfileCard({ profile, view = 'grid', highlighted, hrefPrefix = '/perfiles' }: ProfileCardProps) {
   const skills = (profile.skills ?? []).slice(0, 5);
   const initials = getInitials(profile);
   const location = [profile.location_city, profile.location_country].filter(Boolean).join(', ');
+  const href = profile.slug ? `${hrefPrefix}/${profile.slug}` : '#';
 
   if (view === 'list') {
     return (
       <Link
-        href={profile.slug ? `/perfiles/${profile.slug}` : '#'}
+        href={href}
         className={cn(
           'card-hover flex items-start gap-4 rounded-xl border border-border bg-surface p-4',
           highlighted && 'ring-2 ring-primary ring-offset-2'
@@ -123,7 +126,7 @@ export function ProfileCard({ profile, view = 'grid', highlighted }: ProfileCard
   // GRID view
   return (
     <Link
-      href={profile.slug ? `/perfiles/${profile.slug}` : '#'}
+      href={href}
       className={cn(
         'card-hover group flex flex-col rounded-xl border border-border bg-surface p-5',
         highlighted && 'ring-2 ring-primary ring-offset-2'
