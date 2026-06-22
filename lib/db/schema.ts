@@ -525,6 +525,147 @@ export const jobViews = pgTable('job_views', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
+// ============ JOURNEY STAGES ============
+export const journeyStage = pgEnum('journey_stage', [
+  'seleccionado',
+  'inicio_proceso',
+  'expediente_presentado',
+  'revision_administrativa',
+  'evaluacion_expediente',
+  'coordinacion_incorporacion',
+  'esperando_resolucion',
+  'resolucion_favorable',
+  'gestion_consular',
+  'preparando_viaje',
+  'bienvenido',
+]);
+
+export const candidateJourney = pgTable('candidate_journey', {
+  id: uuid('id').primaryKey().default(sql`uuid_generate_v4()`),
+  candidateId: uuid('candidate_id')
+    .notNull()
+    .unique()
+    .references(() => candidates.id, { onDelete: 'cascade' }),
+  startDate: date('start_date'),
+  position: text('position'),
+  employerCompany: text('employer_company'),
+  salary: integer('salary'),
+  destinationCity: text('destination_city'),
+  docDni: boolean('doc_dni').notNull().default(false),
+  docPassport: boolean('doc_passport').notNull().default(false),
+  docCriminalRecord: boolean('doc_criminal_record').notNull().default(false),
+  docMedical: boolean('doc_medical').notNull().default(false),
+  docPrecontract: boolean('doc_precontract').notNull().default(false),
+  docContract: boolean('doc_contract').notNull().default(false),
+  docSocialSecurity: boolean('doc_social_security').notNull().default(false),
+  migFileSubmitted: boolean('mig_file_submitted').notNull().default(false),
+  migResolution: boolean('mig_resolution').notNull().default(false),
+  migVisaStarted: boolean('mig_visa_started').notNull().default(false),
+  migVisaApproved: boolean('mig_visa_approved').notNull().default(false),
+  incFlightConfirmed: boolean('inc_flight_confirmed').notNull().default(false),
+  incHousingCoordinated: boolean('inc_housing_coordinated').notNull().default(false),
+  incTravelDate: date('inc_travel_date'),
+  incArrivalDate: date('inc_arrival_date'),
+  incEffectiveStart: date('inc_effective_start'),
+  notes: text('notes'),
+  currentStage: journeyStage('current_stage').notNull().default('seleccionado'),
+  stageUpdatedAt: timestamp('stage_updated_at', { withTimezone: true }).notNull().defaultNow(),
+  stageMessage: text('stage_message'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const journeyStageHistory = pgTable(
+  'journey_stage_history',
+  {
+    id: uuid('id').primaryKey().default(sql`uuid_generate_v4()`),
+    journeyId: uuid('journey_id')
+      .notNull()
+      .references(() => candidateJourney.id, { onDelete: 'cascade' }),
+    stage: journeyStage('stage').notNull(),
+    notes: text('notes'),
+    changedBy: uuid('changed_by').references(() => profiles.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    journeyIdx: index('journey_stage_history_journey_idx').on(table.journeyId, table.createdAt),
+  })
+);
+
+// ============ INTERNAL CONTROL (Migria admin) ============
+export const paymentStatus = pgEnum('payment_status', ['pendiente', 'parcial', 'completado', 'reembolsado']);
+export const paymentConcept = pgEnum('payment_concept', [
+  'tasa_extranjeria', 'honorarios_migria', 'tasa_consular', 'seguro_medico', 'vuelo', 'alojamiento', 'otros',
+]);
+export const observationCategory = pgEnum('observation_category', [
+  'administrativo', 'comercial', 'legal', 'operativo', 'incidencia', 'general',
+]);
+
+export const expedientePayments = pgTable(
+  'expediente_payments',
+  {
+    id: uuid('id').primaryKey().default(sql`uuid_generate_v4()`),
+    journeyId: uuid('journey_id')
+      .notNull()
+      .references(() => candidateJourney.id, { onDelete: 'cascade' }),
+    concept: paymentConcept('concept').notNull().default('otros'),
+    description: text('description'),
+    amount: doublePrecision('amount').notNull(),
+    currency: text('currency').notNull().default('EUR'),
+    status: paymentStatus('status').notNull().default('pendiente'),
+    dueDate: date('due_date'),
+    paidAt: timestamp('paid_at', { withTimezone: true }),
+    paymentMethod: text('payment_method'),
+    referenceNumber: text('reference_number'),
+    createdBy: uuid('created_by').references(() => profiles.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    journeyIdx: index('expediente_payments_journey_idx').on(table.journeyId),
+  })
+);
+
+export const expedienteReceipts = pgTable(
+  'expediente_receipts',
+  {
+    id: uuid('id').primaryKey().default(sql`uuid_generate_v4()`),
+    journeyId: uuid('journey_id')
+      .notNull()
+      .references(() => candidateJourney.id, { onDelete: 'cascade' }),
+    paymentId: uuid('payment_id').references(() => expedientePayments.id, { onDelete: 'set null' }),
+    fileName: text('file_name').notNull(),
+    fileUrl: text('file_url').notNull(),
+    fileType: text('file_type'),
+    fileSize: integer('file_size'),
+    description: text('description'),
+    uploadedBy: uuid('uploaded_by').references(() => profiles.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    journeyIdx: index('expediente_receipts_journey_idx').on(table.journeyId),
+  })
+);
+
+export const expedienteObservations = pgTable(
+  'expediente_observations',
+  {
+    id: uuid('id').primaryKey().default(sql`uuid_generate_v4()`),
+    journeyId: uuid('journey_id')
+      .notNull()
+      .references(() => candidateJourney.id, { onDelete: 'cascade' }),
+    category: observationCategory('category').notNull().default('general'),
+    body: text('body').notNull(),
+    isPinned: boolean('is_pinned').notNull().default(false),
+    createdBy: uuid('created_by').references(() => profiles.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    journeyIdx: index('expediente_observations_journey_idx').on(table.journeyId),
+  })
+);
+
 // ============ TIPOS INFERIDOS ============
 export type Profile = typeof profiles.$inferSelect;
 export type Company = typeof companies.$inferSelect;
@@ -546,3 +687,8 @@ export type MessageTemplate = typeof messageTemplates.$inferSelect;
 export type PipelineStage = typeof pipelineStages.$inferSelect;
 export type CandidateRating = typeof candidateRatings.$inferSelect;
 export type CompanyReview = typeof companyReviews.$inferSelect;
+export type CandidateJourney = typeof candidateJourney.$inferSelect;
+export type JourneyStageHistoryRow = typeof journeyStageHistory.$inferSelect;
+export type ExpedientePayment = typeof expedientePayments.$inferSelect;
+export type ExpedienteReceipt = typeof expedienteReceipts.$inferSelect;
+export type ExpedienteObservation = typeof expedienteObservations.$inferSelect;

@@ -16,17 +16,19 @@ import {
   BookmarkCheck,
   FileText,
   Inbox,
+  FolderOpen,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 import { cn } from '@/lib/utils';
 
-const NAV: Array<{ href: string; label: string; icon: typeof Megaphone; exact?: boolean }> = [
+const NAV: Array<{ href: string; label: string; icon: typeof Megaphone; exact?: boolean; adminOnly?: boolean }> = [
   { href: '/admin/ofertas', label: 'Ofertas', icon: Megaphone },
   { href: '/admin/solicitudes', label: 'Solicitudes', icon: Inbox },
   { href: '/admin/mensajes', label: 'Mensajes', icon: MessageSquare },
   { href: '/admin/perfil-empresa', label: 'Perfil de empresa', icon: Building2 },
   { href: '/admin/candidatos', label: 'Buscar candidatos', icon: Users },
   { href: '/admin/procesos', label: 'Mis procesos', icon: Workflow },
+  { href: '/admin/expedientes', label: 'Expedientes', icon: FolderOpen, adminOnly: true },
   { href: '/admin/busqueda-avanzada', label: 'Búsqueda avanzada', icon: Search },
   { href: '/admin/busquedas-guardadas', label: 'Búsquedas guardadas', icon: BookmarkCheck },
   { href: '/admin/favoritos', label: 'Favoritos', icon: Heart },
@@ -36,7 +38,7 @@ const NAV: Array<{ href: string; label: string; icon: typeof Megaphone; exact?: 
   { href: '/admin/facturacion', label: 'Facturación', icon: CreditCard },
 ];
 
-export function AdminSidebar() {
+export function AdminSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
 
   return (
@@ -46,7 +48,7 @@ export function AdminSidebar() {
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {NAV.map((item) => {
+        {NAV.filter((item) => !item.adminOnly || isAdmin).map((item) => {
           const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
           return (
             <Link

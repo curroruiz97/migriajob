@@ -3,60 +3,58 @@ import {
   CheckCircle2,
   Circle,
   ListChecks,
-  IdCard,
-  FileSignature,
-  PlaneTakeoff,
-  Globe2,
-  ClipboardList,
+  Trophy,
+  FileText,
+  Send,
+  ClipboardCheck,
+  Search,
+  Handshake,
+  Clock,
+  CheckCircle,
+  Building,
+  Plane,
+  PartyPopper,
   Briefcase,
   Building2,
   MapPin,
   Wallet,
   Calendar,
+  ChevronDown,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { cn } from '@/lib/utils';
+import { JOURNEY_STAGES, getStageIndex, getStageProgress } from '@/lib/journey-stages';
 
 export const metadata = { title: 'Mi proceso' };
 
-// Definición de los 5 bloques del PDF interno con sus checks. Cada check
-// apunta a una columna booleana o de fecha de la tabla `candidate_journey`.
-interface Check {
-  key: string;
-  label: string;
-  /** true si está completado; null si la columna es fecha y devuelve la fecha en label */
-  done?: boolean;
-  /** Si es fecha, mostramos la fecha como label en vez de check. */
-  date?: string | null;
-}
+const STAGE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  Trophy, FileText, Send, ClipboardCheck, Search,
+  Handshake, Clock, CheckCircle, Building, Plane, PartyPopper,
+};
 
 interface JourneyRow {
+  id: string;
+  candidate_id: string;
   start_date: string | null;
   position: string | null;
   employer_company: string | null;
   salary: number | null;
   destination_city: string | null;
-  doc_dni: boolean;
-  doc_passport: boolean;
-  doc_criminal_record: boolean;
-  doc_medical: boolean;
-  doc_precontract: boolean;
-  doc_contract: boolean;
-  doc_social_security: boolean;
-  mig_file_submitted: boolean;
-  mig_resolution: boolean;
-  mig_visa_started: boolean;
-  mig_visa_approved: boolean;
-  inc_flight_confirmed: boolean;
-  inc_housing_coordinated: boolean;
-  inc_travel_date: string | null;
-  inc_arrival_date: string | null;
-  inc_effective_start: string | null;
+  current_stage: string;
+  stage_updated_at: string;
+  stage_message: string | null;
   notes: string | null;
   updated_at: string;
+}
+
+interface StageHistoryRow {
+  id: string;
+  stage: string;
+  notes: string | null;
+  created_at: string;
 }
 
 export default async function MiProcesoPage() {
@@ -66,7 +64,6 @@ export default async function MiProcesoPage() {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  // Resuelve el candidato del usuario actual.
   const { data: candidate } = await supabase
     .from('candidates')
     .select('id')
@@ -75,13 +72,24 @@ export default async function MiProcesoPage() {
   const candidateId = (candidate as { id?: string } | null)?.id;
 
   let journey: JourneyRow | null = null;
+  let stageHistory: StageHistoryRow[] = [];
+
   if (candidateId) {
     const { data } = await supabase
       .from('candidate_journey')
-      .select('*')
+      .select('id, candidate_id, start_date, position, employer_company, salary, destination_city, current_stage, stage_updated_at, stage_message, notes, updated_at')
       .eq('candidate_id', candidateId)
       .maybeSingle();
     journey = (data as JourneyRow | null) ?? null;
+
+    if (journey) {
+      const { data: history } = await supabase
+        .from('journey_stage_history')
+        .select('id, stage, notes, created_at')
+        .eq('journey_id', journey.id)
+        .order('created_at', { ascending: true });
+      stageHistory = (history as StageHistoryRow[] | null) ?? [];
+    }
   }
 
   return (
@@ -91,8 +99,8 @@ export default async function MiProcesoPage() {
           Mi proceso
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Seguimiento paso a paso de tu candidatura y de la documentación legal para trabajar
-          en España. El equipo de Migria actualiza esta información a medida que avanzas.
+          Seguimiento en tiempo real de tu proceso migratorio. El equipo de Migria actualiza
+          cada etapa a medida que avanzas.
         </p>
       </div>
 
@@ -100,7 +108,7 @@ export default async function MiProcesoPage() {
         <EmptyState
           icon={ListChecks}
           title="Aún no tienes proceso abierto"
-          description="Cuando una empresa te seleccione y empecemos a tramitar tu incorporación, este apartado mostrará el estado de cada paso (documentación, visado, viaje…)."
+          description="Cuando una empresa te seleccione y empecemos a tramitar tu incorporación, este apartado mostrará el estado de cada etapa."
           action={
             <Button asChild>
               <Link href="/dashboard/ofertas">Ver ofertas</Link>
@@ -109,93 +117,54 @@ export default async function MiProcesoPage() {
         />
       ) : (
         <>
-          {/* Resumen global */}
-          <SummaryCard journey={journey} />
+          {/* Progress bar global */}
+          <ProgressHeader journey={journey} />
 
-          {/* Bloque 1 — Información base */}
-          <BlockCard
-            title="Información de la oferta"
-            subtitle="Datos del puesto al que has sido seleccionado"
-            icon={Briefcase}
-            tone="primary"
-          >
-            <InfoGrid
-              items={[
-                { icon: Calendar, label: 'Inicio de gestión', value: fmtDate(journey.start_date) },
-                { icon: Briefcase, label: 'Puesto', value: journey.position },
-                { icon: Building2, label: 'Empresa', value: journey.employer_company },
-                {
-                  icon: Wallet,
-                  label: 'Salario',
-                  value: journey.salary != null ? `${journey.salary.toLocaleString('es-ES')} €/año` : null,
-                },
-                { icon: MapPin, label: 'Ciudad destino', value: journey.destination_city },
-              ]}
-            />
-          </BlockCard>
+          {/* Info de la oferta */}
+          {(journey.position || journey.employer_company) && (
+            <section className="rounded-2xl border border-border bg-surface p-5">
+              <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
+                <Briefcase className="h-4 w-4 text-primary" />
+                Tu oferta
+              </h2>
+              <dl className="grid gap-3 sm:grid-cols-2">
+                {[
+                  { icon: Calendar, label: 'Inicio de gestión', value: fmtDate(journey.start_date) },
+                  { icon: Briefcase, label: 'Puesto', value: journey.position },
+                  { icon: Building2, label: 'Empresa', value: journey.employer_company },
+                  {
+                    icon: Wallet,
+                    label: 'Salario',
+                    value: journey.salary != null ? `${journey.salary.toLocaleString('es-ES')} €/año` : null,
+                  },
+                  { icon: MapPin, label: 'Ciudad destino', value: journey.destination_city },
+                ].map((it) => (
+                  <div key={it.label} className="flex items-start gap-2 rounded-xl border border-border bg-surface-muted/30 p-3">
+                    <it.icon className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                    <div className="min-w-0 flex-1">
+                      <dt className="text-[11px] uppercase tracking-wider text-muted-foreground">{it.label}</dt>
+                      <dd className={cn('mt-0.5 text-sm', it.value ? 'font-medium text-foreground' : 'text-muted-foreground/60')}>
+                        {it.value ?? '—'}
+                      </dd>
+                    </div>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          )}
 
-          {/* Bloque 2 */}
-          <BlockCard
-            title="Documentación personal"
-            subtitle="Documentos básicos para iniciar el expediente"
-            icon={IdCard}
-            tone="warning"
-            checks={[
-              { key: 'doc_dni', label: 'DNI', done: journey.doc_dni },
-              { key: 'doc_passport', label: 'Pasaporte', done: journey.doc_passport },
-              { key: 'doc_criminal_record', label: 'Certificado de antecedentes penales', done: journey.doc_criminal_record },
-              { key: 'doc_medical', label: 'Evaluación médica', done: journey.doc_medical },
-            ]}
-          />
+          {/* Timeline de 11 etapas */}
+          <section className="rounded-2xl border border-border bg-surface p-5">
+            <h2 className="mb-5 text-sm font-semibold text-foreground">Etapas del proceso</h2>
+            <Timeline currentStage={journey.current_stage} stageMessage={journey.stage_message} stageHistory={stageHistory} />
+          </section>
 
-          {/* Bloque 3 */}
-          <BlockCard
-            title="Documentación contractual"
-            subtitle="Compromiso laboral con la empresa española"
-            icon={FileSignature}
-            tone="info"
-            checks={[
-              { key: 'doc_precontract', label: 'Precontrato', done: journey.doc_precontract },
-              { key: 'doc_contract', label: 'Contrato legal firmado', done: journey.doc_contract },
-              { key: 'doc_social_security', label: 'Alta en Seguridad Social', done: journey.doc_social_security },
-            ]}
-          />
-
-          {/* Bloque 4 */}
-          <BlockCard
-            title="Proceso migratorio"
-            subtitle="Visado y autorización de residencia y trabajo"
-            icon={Globe2}
-            tone="accent"
-            checks={[
-              { key: 'mig_file_submitted', label: 'Expediente ingresado en extranjería', done: journey.mig_file_submitted },
-              { key: 'mig_resolution', label: 'Resolución de extranjería', done: journey.mig_resolution },
-              { key: 'mig_visa_started', label: 'Visado iniciado', done: journey.mig_visa_started },
-              { key: 'mig_visa_approved', label: 'Visado aprobado', done: journey.mig_visa_approved },
-            ]}
-          />
-
-          {/* Bloque 5 */}
-          <BlockCard
-            title="Incorporación"
-            subtitle="Llegada a España y comienzo del puesto"
-            icon={PlaneTakeoff}
-            tone="success"
-            checks={[
-              { key: 'inc_flight_confirmed', label: 'Vuelo confirmado', done: journey.inc_flight_confirmed },
-              { key: 'inc_housing_coordinated', label: 'Vivienda coordinada', done: journey.inc_housing_coordinated },
-              { key: 'inc_travel_date', label: 'Fecha de viaje', date: journey.inc_travel_date },
-              { key: 'inc_arrival_date', label: 'Fecha de llegada', date: journey.inc_arrival_date },
-              { key: 'inc_effective_start', label: 'Incorporación efectiva', date: journey.inc_effective_start },
-            ]}
-          />
-
-          {/* Observaciones */}
+          {/* Observaciones del equipo */}
           {journey.notes && (
             <section className="rounded-2xl border border-border bg-surface p-5">
               <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <ClipboardList className="h-4 w-4 text-primary" />
-                Observaciones del equipo Migria
+                <FileText className="h-4 w-4 text-primary" />
+                Mensaje del equipo Migria
               </h2>
               <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-foreground">
                 {journey.notes}
@@ -218,43 +187,42 @@ function fmtDate(iso: string | null): string | null {
   if (!iso) return null;
   try {
     return new Date(iso).toLocaleDateString('es-ES', {
-      day: '2-digit', month: 'long', year: 'numeric',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
     });
   } catch {
     return iso;
   }
 }
 
-function SummaryCard({ journey }: { journey: JourneyRow }) {
-  const checks = [
-    journey.doc_dni, journey.doc_passport, journey.doc_criminal_record, journey.doc_medical,
-    journey.doc_precontract, journey.doc_contract, journey.doc_social_security,
-    journey.mig_file_submitted, journey.mig_resolution, journey.mig_visa_started, journey.mig_visa_approved,
-    journey.inc_flight_confirmed, journey.inc_housing_coordinated,
-  ];
-  const dateChecks = [journey.inc_travel_date, journey.inc_arrival_date, journey.inc_effective_start];
-  const totalSteps = checks.length + dateChecks.length;
-  const done = checks.filter(Boolean).length + dateChecks.filter((d) => !!d).length;
-  const pct = totalSteps > 0 ? Math.round((done / totalSteps) * 100) : 0;
+function ProgressHeader({ journey }: { journey: JourneyRow }) {
+  const currentIdx = getStageIndex(journey.current_stage);
+  const pct = getStageProgress(journey.current_stage);
+  const currentDef = JOURNEY_STAGES[currentIdx];
+  const isComplete = journey.current_stage === 'bienvenido';
 
   return (
     <section className="rounded-2xl border border-border bg-surface p-5">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-sm font-semibold text-foreground">Progreso general</h2>
+          <h2 className="text-sm font-semibold text-foreground">
+            {isComplete ? '¡Proceso completado!' : 'Progreso general'}
+          </h2>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            {done} de {totalSteps} pasos completados
+            Etapa {currentDef?.number ?? 1} de {JOURNEY_STAGES.length}
+            {currentDef && ` — ${currentDef.title}`}
           </p>
         </div>
-        <Badge variant={pct >= 80 ? 'success' : pct >= 40 ? 'warning' : 'soft'}>
+        <Badge variant={isComplete ? 'success' : pct >= 50 ? 'warning' : 'soft'}>
           {pct}%
         </Badge>
       </div>
-      <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
+      <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-muted">
         <div
           className={cn(
-            'h-full transition-all duration-500',
-            pct >= 80 ? 'bg-success' : pct >= 40 ? 'bg-warning' : 'bg-primary'
+            'h-full rounded-full transition-all duration-700 ease-out',
+            isComplete ? 'bg-success' : pct >= 50 ? 'bg-warning' : 'bg-primary'
           )}
           style={{ width: `${pct}%` }}
         />
@@ -263,114 +231,132 @@ function SummaryCard({ journey }: { journey: JourneyRow }) {
   );
 }
 
-function BlockCard({
-  title,
-  subtitle,
-  icon: Icon,
-  tone,
-  checks,
-  children,
+function Timeline({
+  currentStage,
+  stageMessage,
+  stageHistory,
 }: {
-  title: string;
-  subtitle?: string;
-  icon: React.ComponentType<{ className?: string }>;
-  tone: 'primary' | 'warning' | 'info' | 'accent' | 'success';
-  checks?: Check[];
-  children?: React.ReactNode;
+  currentStage: string;
+  stageMessage: string | null;
+  stageHistory: StageHistoryRow[];
 }) {
-  const toneClass = {
-    primary: 'bg-primary-soft text-primary',
-    warning: 'bg-warning-soft text-warning',
-    info: 'bg-info-soft text-info',
-    accent: 'bg-accent-warm/15 text-accent-warm',
-    success: 'bg-success-soft text-success',
-  }[tone];
-
-  const total = checks ? checks.length : 0;
-  const completed = checks
-    ? checks.filter((c) => (c.date !== undefined ? !!c.date : !!c.done)).length
-    : 0;
+  const currentIdx = getStageIndex(currentStage);
+  const historyMap = new Map<string, StageHistoryRow>();
+  for (const h of stageHistory) {
+    historyMap.set(h.stage, h);
+  }
 
   return (
-    <section className="rounded-2xl border border-border bg-surface p-5">
-      <header className="flex items-start gap-3">
-        <span className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl', toneClass)}>
-          <Icon className="h-5 w-5" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <h2 className="text-base font-semibold text-foreground">{title}</h2>
-          {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
-        </div>
-        {checks && (
-          <span className="shrink-0 text-xs font-medium text-muted-foreground">
-            {completed}/{total}
-          </span>
-        )}
-      </header>
+    <ol className="relative space-y-0">
+      {JOURNEY_STAGES.map((stage, i) => {
+        const isPast = i < currentIdx;
+        const isCurrent = i === currentIdx;
+        const isFuture = i > currentIdx;
+        const isLast = i === JOURNEY_STAGES.length - 1;
+        const IconComp = STAGE_ICONS[stage.icon] ?? Circle;
+        const historyEntry = historyMap.get(stage.key);
 
-      <div className="mt-4">
-        {checks ? (
-          <ul className="space-y-2">
-            {checks.map((c) => {
-              const done = c.date !== undefined ? !!c.date : !!c.done;
-              return (
-                <li
-                  key={c.key}
-                  className={cn(
-                    'flex items-center justify-between gap-3 rounded-xl border border-border p-3 transition-colors',
-                    done && 'border-success/30 bg-success-soft/30'
-                  )}
-                >
-                  <div className="flex items-center gap-2.5">
-                    {done ? (
-                      <CheckCircle2 className="h-5 w-5 shrink-0 text-success" />
-                    ) : (
-                      <Circle className="h-5 w-5 shrink-0 text-muted-foreground/50" />
-                    )}
+        return (
+          <li key={stage.key} className="relative flex gap-4">
+            {/* Vertical line connector */}
+            {!isLast && (
+              <div
+                className={cn(
+                  'absolute left-[19px] top-10 w-0.5 -bottom-0',
+                  isPast ? 'bg-success' : isCurrent ? 'bg-gradient-to-b from-primary to-muted' : 'bg-muted'
+                )}
+              />
+            )}
+
+            {/* Circle / icon */}
+            <div className="relative z-10 flex shrink-0">
+              <div
+                className={cn(
+                  'flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all',
+                  isPast && 'border-success bg-success text-white',
+                  isCurrent && 'border-primary bg-primary text-white shadow-lg shadow-primary/25 ring-4 ring-primary/10',
+                  isFuture && 'border-muted bg-surface text-muted-foreground/40'
+                )}
+              >
+                {isPast ? (
+                  <CheckCircle2 className="h-5 w-5" />
+                ) : (
+                  <IconComp className="h-5 w-5" />
+                )}
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className={cn('flex-1 pb-8', isLast && 'pb-0')}>
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <div className="flex items-center gap-2">
                     <span
                       className={cn(
-                        'text-sm',
-                        done ? 'text-foreground' : 'text-muted-foreground'
+                        'text-[11px] font-bold uppercase tracking-wider',
+                        isPast && 'text-success',
+                        isCurrent && 'text-primary',
+                        isFuture && 'text-muted-foreground/50'
                       )}
                     >
-                      {c.label}
+                      Etapa {stage.number}
                     </span>
+                    {isCurrent && (
+                      <Badge variant="default" className="text-[10px] px-1.5 py-0">
+                        Actual
+                      </Badge>
+                    )}
+                    {isPast && (
+                      <Badge variant="success" className="text-[10px] px-1.5 py-0">
+                        Completada
+                      </Badge>
+                    )}
                   </div>
-                  {c.date !== undefined && c.date && (
-                    <span className="shrink-0 text-xs font-medium text-success">
-                      {fmtDate(c.date)}
-                    </span>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        ) : (
-          children
-        )}
-      </div>
-    </section>
-  );
-}
+                  <h3
+                    className={cn(
+                      'mt-0.5 text-sm font-semibold',
+                      isPast && 'text-foreground',
+                      isCurrent && 'text-foreground',
+                      isFuture && 'text-muted-foreground/60'
+                    )}
+                  >
+                    {stage.title}
+                  </h3>
+                  <p
+                    className={cn(
+                      'mt-0.5 text-xs',
+                      isFuture ? 'text-muted-foreground/40' : 'text-muted-foreground'
+                    )}
+                  >
+                    {stage.subtitle}
+                  </p>
+                </div>
+                {historyEntry && (
+                  <span className="shrink-0 text-[10px] text-muted-foreground">
+                    {fmtDate(historyEntry.created_at)}
+                  </span>
+                )}
+              </div>
 
-function InfoGrid({
-  items,
-}: {
-  items: Array<{ icon: React.ComponentType<{ className?: string }>; label: string; value: string | null }>;
-}) {
-  return (
-    <dl className="grid gap-3 sm:grid-cols-2">
-      {items.map((it) => (
-        <div key={it.label} className="flex items-start gap-2 rounded-xl border border-border bg-surface-muted/30 p-3">
-          <it.icon className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-          <div className="min-w-0 flex-1">
-            <dt className="text-[11px] uppercase tracking-wider text-muted-foreground">{it.label}</dt>
-            <dd className={cn('mt-0.5 text-sm', it.value ? 'font-medium text-foreground' : 'text-muted-foreground/60')}>
-              {it.value ?? '—'}
-            </dd>
-          </div>
-        </div>
-      ))}
-    </dl>
+              {/* Expanded content for current stage */}
+              {isCurrent && (
+                <div className="mt-3 rounded-xl border border-primary/20 bg-primary-soft/30 p-4">
+                  <p className="text-sm leading-relaxed text-foreground">
+                    {stageMessage ?? stage.description}
+                  </p>
+                </div>
+              )}
+
+              {/* History note if present */}
+              {isPast && historyEntry?.notes && (
+                <p className="mt-1 text-xs italic text-muted-foreground">
+                  {historyEntry.notes}
+                </p>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ol>
   );
 }

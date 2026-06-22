@@ -50,6 +50,7 @@ const EMPLOYER_PRIMARY: NavItem[] = [
 const EMPLOYER_MENU: NavItem[] = [
   { href: '/admin/candidatos', label: 'Buscar candidatos', icon: Users },
   { href: '/admin/procesos', label: 'Mis procesos', icon: Workflow },
+  { href: '/admin/expedientes', label: 'Expedientes', icon: Workflow },
   { href: '/admin/busqueda-avanzada', label: 'Búsqueda avanzada', icon: Search },
   { href: '/admin/busquedas-guardadas', label: 'Búsquedas guardadas', icon: BookmarkCheck },
   { href: '/admin/favoritos', label: 'Favoritos', icon: Heart },

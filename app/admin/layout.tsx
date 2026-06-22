@@ -53,7 +53,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       <RealtimeMessagesToast userId={user.id} />
 
       <div className="flex min-h-screen bg-background">
-        <AdminSidebar />
+        <AdminSidebar isAdmin={role === 'admin'} />
         <div className="flex flex-1 flex-col lg:pl-64">
           <AdminTopbar
             user={{ email: user.email ?? '' }}

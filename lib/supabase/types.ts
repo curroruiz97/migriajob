@@ -47,6 +47,8 @@ export type Database = {
           inc_flight_confirmed: boolean; inc_housing_coordinated: boolean
           inc_travel_date: string | null; inc_arrival_date: string | null; inc_effective_start: string | null
           notes: string | null; created_at: string; updated_at: string
+          current_stage: Database["public"]["Enums"]["journey_stage"]
+          stage_updated_at: string; stage_message: string | null
         }
         Insert: {
           id?: string; candidate_id: string; start_date?: string | null; position?: string | null
@@ -57,8 +59,34 @@ export type Database = {
           inc_flight_confirmed?: boolean; inc_housing_coordinated?: boolean
           inc_travel_date?: string | null; inc_arrival_date?: string | null; inc_effective_start?: string | null
           notes?: string | null; created_at?: string; updated_at?: string
+          current_stage?: Database["public"]["Enums"]["journey_stage"]
+          stage_updated_at?: string; stage_message?: string | null
         }
         Update: Partial<Database["public"]["Tables"]["candidate_journey"]["Insert"]>
+        Relationships: []
+      }
+      journey_stage_history: {
+        Row: { id: string; journey_id: string; stage: Database["public"]["Enums"]["journey_stage"]; notes: string | null; changed_by: string | null; created_at: string }
+        Insert: { id?: string; journey_id: string; stage: Database["public"]["Enums"]["journey_stage"]; notes?: string | null; changed_by?: string | null; created_at?: string }
+        Update: Partial<Database["public"]["Tables"]["journey_stage_history"]["Insert"]>
+        Relationships: []
+      }
+      expediente_payments: {
+        Row: { id: string; journey_id: string; concept: Database["public"]["Enums"]["payment_concept"]; description: string | null; amount: number; currency: string; status: Database["public"]["Enums"]["payment_status"]; due_date: string | null; paid_at: string | null; payment_method: string | null; reference_number: string | null; created_by: string | null; created_at: string; updated_at: string }
+        Insert: { id?: string; journey_id: string; concept?: Database["public"]["Enums"]["payment_concept"]; description?: string | null; amount: number; currency?: string; status?: Database["public"]["Enums"]["payment_status"]; due_date?: string | null; paid_at?: string | null; payment_method?: string | null; reference_number?: string | null; created_by?: string | null; created_at?: string; updated_at?: string }
+        Update: Partial<Database["public"]["Tables"]["expediente_payments"]["Insert"]>
+        Relationships: []
+      }
+      expediente_receipts: {
+        Row: { id: string; journey_id: string; payment_id: string | null; file_name: string; file_url: string; file_type: string | null; file_size: number | null; description: string | null; uploaded_by: string | null; created_at: string }
+        Insert: { id?: string; journey_id: string; payment_id?: string | null; file_name: string; file_url: string; file_type?: string | null; file_size?: number | null; description?: string | null; uploaded_by?: string | null; created_at?: string }
+        Update: Partial<Database["public"]["Tables"]["expediente_receipts"]["Insert"]>
+        Relationships: []
+      }
+      expediente_observations: {
+        Row: { id: string; journey_id: string; category: Database["public"]["Enums"]["observation_category"]; body: string; is_pinned: boolean; created_by: string | null; created_at: string; updated_at: string }
+        Insert: { id?: string; journey_id: string; category?: Database["public"]["Enums"]["observation_category"]; body: string; is_pinned?: boolean; created_by?: string | null; created_at?: string; updated_at?: string }
+        Update: Partial<Database["public"]["Tables"]["expediente_observations"]["Insert"]>
         Relationships: []
       }
       candidate_languages: {
@@ -271,6 +299,10 @@ export type Database = {
       user_role: "candidate" | "employer" | "admin"
       work_modality: "on_site" | "remote" | "hybrid"
       work_mode: "on_site" | "hybrid" | "remote"
+      journey_stage: "seleccionado" | "inicio_proceso" | "expediente_presentado" | "revision_administrativa" | "evaluacion_expediente" | "coordinacion_incorporacion" | "esperando_resolucion" | "resolucion_favorable" | "gestion_consular" | "preparando_viaje" | "bienvenido"
+      payment_status: "pendiente" | "parcial" | "completado" | "reembolsado"
+      payment_concept: "tasa_extranjeria" | "honorarios_migria" | "tasa_consular" | "seguro_medico" | "vuelo" | "alojamiento" | "otros"
+      observation_category: "administrativo" | "comercial" | "legal" | "operativo" | "incidencia" | "general"
     }
     CompositeTypes: Record<string, never>
   }
