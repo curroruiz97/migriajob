@@ -88,8 +88,8 @@ const PLANS = [
   {
     name: 'Success Fee',
     subtitle: 'Reclutamiento por proceso',
-    price: '12%',
-    priceNote: 'del salario bruto anual del candidato contratado.',
+    price: 'Consultar',
+    priceNote: 'Honorario calculado sobre el salario bruto anual del candidato contratado.',
     description: 'El modelo más habitual para empresas con necesidades puntuales de contratación. El honorario se aplica solo en caso de contratación: trabajo a éxito.',
     features: [
       'Definición del perfil.',
@@ -120,8 +120,8 @@ const PLANS = [
   {
     name: 'Modelo Partner',
     subtitle: 'Reclutamiento recurrente',
-    price: '1.500 € – 3.000 €',
-    priceNote: '/ mes según volumen, + 900 € por candidato contratado.',
+    price: 'Consultar',
+    priceNote: 'Cuota mensual según volumen, más honorario por candidato contratado.',
     description: 'Diseñado para empresas que necesitan contratar de forma continua. MIGRIA actúa como partner externo de reclutamiento.',
     features: [
       'Gestión continua de procesos.',
