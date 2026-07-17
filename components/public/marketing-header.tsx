@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: '/empleos', label: 'Empleos' },
   { href: '/empresas', label: 'Migria para empresas' },
   { href: '/empleados', label: 'Migria para empleados' },
+  { href: '/migria-espana', label: 'Migria España' },
   { href: '/noticias', label: 'Noticias' },
   { href: '/contacto', label: 'Contacto' },
 ];

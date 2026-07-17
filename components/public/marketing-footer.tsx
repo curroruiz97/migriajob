@@ -9,6 +9,7 @@ const SECTIONS = [
       { href: '/perfiles', label: 'Perfiles' },
       { href: '/empresas', label: 'Para empresas' },
       { href: '/empleados', label: 'Para empleados' },
+      { href: '/migria-espana', label: 'Migria España' },
     ],
   },
   {
