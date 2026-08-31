@@ -3,6 +3,8 @@ import { Check, Sparkles, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { HideOnIOSApp } from '@/components/common/hide-on-ios-app';
+import { PlanesNoDisponibles } from '@/components/common/planes-no-disponibles';
 
 export const metadata = {
   title: 'Planes y precios',
@@ -89,7 +91,7 @@ const FAQ = [
   },
 ];
 
-export default function PlanesPage() {
+function PlanesContenido() {
   return (
     <div className="bg-background">
       {/* HERO */}
@@ -205,5 +207,17 @@ export default function PlanesPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+/**
+ * En la app de iPhone no se muestran precios ni planes (directriz 3.1.1 de
+ * Apple). Ver components/common/hide-on-ios-app.tsx.
+ */
+export default function PlanesPage() {
+  return (
+    <HideOnIOSApp fallback={<PlanesNoDisponibles />}>
+      <PlanesContenido />
+    </HideOnIOSApp>
   );
 }

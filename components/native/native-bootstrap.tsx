@@ -41,6 +41,13 @@ export function NativeBootstrap() {
       remove = () => {
         sub.remove();
       };
+
+      // Notificaciones push. Va al final a proposito: si algo fallara aqui, la
+      // barra de estado y el boton atras ya estan configurados.
+      const { registerPushDevice } = await import('@/lib/push/register');
+      await registerPushDevice().catch((err) => {
+        console.warn('[push] registro fallido:', err);
+      });
     })();
 
     return () => remove();

@@ -1,3 +1,4 @@
+import { createNotification } from '@/lib/notifications/create';
 import { NextResponse } from 'next/server';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { JOURNEY_STAGES, getStageIndex } from '@/lib/journey-stages';
@@ -90,14 +91,20 @@ export async function GET(request: Request) {
       ACCOMPANIMENT_MESSAGES[journey.current_stage] ??
       `Tu proceso sigue en la etapa "${stageDef?.title ?? journey.current_stage}". Estamos atentos.`;
 
-    await supabase.from('notifications').insert({
-      user_id: candidate.profile_id,
+    await createNotification({
+      supabase,
+      userId: candidate.profile_id,
       type: 'process_stage_changed',
       payload: {
         message,
         stage: journey.current_stage,
         journey_id: journey.id,
         is_accompaniment: true,
+      },
+      push: {
+        title: 'Tu proceso en Migria',
+        body: message,
+        link: '/dashboard',
       },
     });
 

@@ -1,3 +1,4 @@
+import { createNotification } from '@/lib/notifications/create';
 import { NextResponse } from 'next/server';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 
@@ -36,14 +37,21 @@ export async function GET(request: Request) {
       .gt('updated_at', since);
 
     if ((count ?? 0) > 0) {
-      await supabase.from('notifications').insert({
-        user_id: s.user_id,
+      const mensaje = `${count} ${count === 1 ? 'nuevo perfil coincide' : 'nuevos perfiles coinciden'} con tu búsqueda "${s.name}".`;
+      await createNotification({
+        supabase,
+        userId: s.user_id,
         type: 'saved_search_match',
         payload: {
-          message: `${count} ${count === 1 ? 'nuevo perfil coincide' : 'nuevos perfiles coinciden'} con tu búsqueda "${s.name}".`,
+          message: mensaje,
           search_id: s.id,
           search_name: s.name,
           count,
+        },
+        push: {
+          title: 'Nuevos perfiles para ti',
+          body: mensaje,
+          link: '/admin/candidatos',
         },
       });
       notificationsCreated++;

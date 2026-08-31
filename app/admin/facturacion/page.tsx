@@ -3,6 +3,7 @@ import { CreditCard, Receipt, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { HideOnIOSApp } from '@/components/common/hide-on-ios-app';
 
 export const metadata = { title: 'Facturación' };
 
@@ -23,9 +24,14 @@ export default function FacturacionPage() {
             <h2 className="text-xl font-semibold">Starter</h2>
             <p className="mt-1 text-sm text-zinc-500">Gratis para siempre · 0 €/mes</p>
           </div>
-          <Button asChild>
-            <Link href="/planes-y-precios">Mejorar a Pro</Link>
-          </Button>
+          {/* El boton de mejorar plan no se muestra en la app de iPhone:
+              lleva a contratar fuera de la compra integrada de Apple
+              (directriz 3.1.1). */}
+          <HideOnIOSApp>
+            <Button asChild>
+              <Link href="/planes-y-precios">Mejorar a Pro</Link>
+            </Button>
+          </HideOnIOSApp>
         </div>
 
         <Separator className="my-6" />
