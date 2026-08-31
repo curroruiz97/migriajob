@@ -179,6 +179,12 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["candidates"]["Insert"]>
         Relationships: []
       }
+      device_tokens: {
+        Row: { id: string; user_id: string; token: string; platform: string; environment: string | null; created_at: string; updated_at: string }
+        Insert: { id?: string; user_id: string; token: string; platform: string; environment?: string | null; created_at?: string; updated_at?: string }
+        Update: Partial<Database["public"]["Tables"]["device_tokens"]["Insert"]>
+        Relationships: []
+      }
       companies: {
         Row: { created_at: string; description: string | null; id: string; industry: string | null; location: string | null; logo_url: string | null; name: string; owner_id: string; size: string | null; slug: string; verified: boolean; website: string | null; legal_name: string | null; tax_id: string | null; founded_year: number | null; contact_name: string | null; contact_email: string | null; contact_phone: string | null; cover_image_url: string | null; billing_email: string | null; billing_address: string | null; billing_tax_id: string | null; contact_role: string | null; address_province: string | null }
         Insert: { created_at?: string; description?: string | null; id?: string; industry?: string | null; location?: string | null; logo_url?: string | null; name: string; owner_id: string; size?: string | null; slug: string; verified?: boolean; website?: string | null; legal_name?: string | null; tax_id?: string | null; founded_year?: number | null; contact_name?: string | null; contact_email?: string | null; contact_phone?: string | null; cover_image_url?: string | null; billing_email?: string | null; billing_address?: string | null; billing_tax_id?: string | null; contact_role?: string | null; address_province?: string | null }
