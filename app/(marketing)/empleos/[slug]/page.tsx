@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { getJobBySlug } from '@/lib/db/queries';
+import { ReportDialog } from '@/components/moderation/report-dialog';
 
 export const dynamic = 'force-dynamic';
 
@@ -155,6 +156,22 @@ export default async function JobDetailPage({
               <Button asChild size="sm" variant="outline" className="mt-2 w-full">
                 <Link href="/registro?role=candidate">Crear mi perfil</Link>
               </Button>
+            </div>
+
+            {/* Denunciar. Va aquí, junto a la oferta y no escondido en ayuda,
+                porque quien detecta una oferta falsa la detecta leyéndola. */}
+            <div className="rounded-2xl border border-border bg-surface p-5 text-sm">
+              <p className="font-semibold text-foreground">¿Algo no cuadra?</p>
+              <p className="mt-1 text-muted-foreground">
+                Si esta oferta es falsa, pide dinero o te parece engañosa, dínoslo.
+              </p>
+              <ReportDialog
+                targetType="job"
+                targetId={job.id}
+                label="Denunciar esta oferta"
+                variant="outline"
+                className="mt-3 w-full"
+              />
             </div>
 
             <div className="rounded-2xl border border-border bg-surface-muted/40 p-5 text-sm">

@@ -193,11 +193,20 @@ export async function sendMessageAction(conversationId: string, body: string) {
       return { error: 'No tienes acceso a esta conversación.' as string };
     }
 
-    await supabase.from('messages').insert({
+    // El error del insert se miraba: sin esto un mensaje rechazado por la
+    // política de bloqueo (migración 0016) se daba por enviado y desaparecía.
+    const { error: errorInsert } = await supabase.from('messages').insert({
       conversation_id: conversationId,
       sender_id: user.id,
       body: text,
     });
+    if (errorInsert) {
+      return {
+        error: (errorInsert.code === '42501'
+          ? 'No se puede enviar el mensaje en esta conversación.'
+          : errorInsert.message) as string,
+      };
+    }
     await supabase
       .from('conversations')
       .update({ last_message_at: new Date().toISOString() })

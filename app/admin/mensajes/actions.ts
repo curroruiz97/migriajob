@@ -21,7 +21,17 @@ export async function sendMessageAction(_prev: unknown, formData: FormData) {
       sender_id: user.id,
       body,
     });
-    if (error) return { error: error.message };
+    // La política de la base de datos rechaza el mensaje cuando hay un bloqueo
+    // (migración 0016). Sin esta traducción el usuario vería el error crudo de
+    // Postgres, que además delata que le han bloqueado.
+    if (error) {
+      return {
+        error:
+          error.code === '42501'
+            ? 'No se puede enviar el mensaje en esta conversación.'
+            : error.message,
+      };
+    }
 
     // Si el remitente es el empleador, asegurar que el candidato aparece en
     // el kanban "Mis procesos" como 'contacted' (no degrada si ya está más
@@ -88,7 +98,12 @@ export async function startConversationAction(candidateUserId: string) {
       .insert({ employer_id: user.id, candidate_id: candidateUserId })
       .select('id')
       .single();
-    if (error || !created) return { error: error?.message ?? 'No se pudo crear' };
+    if (error || !created) {
+      if (error?.code === '42501') {
+        return { error: 'No puedes iniciar una conversación con esta persona.' };
+      }
+      return { error: error?.message ?? 'No se pudo crear' };
+    }
 
     // El simple hecho de abrir conversación cuenta como "contacto" — añade
     // al candidato al kanban en la columna 'Contactado'.

@@ -7,6 +7,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ConversationForm } from './conversation-form';
 import { MarkReadOnLoad } from './mark-read-on-load';
+import { ReportDialog } from '@/components/moderation/report-dialog';
+import { BlockButton } from '@/components/moderation/block-button';
+import { isBlockedByMe, isBlockedBetween } from '@/lib/moderation/queries';
 
 export const metadata = { title: 'Conversación' };
 
@@ -35,6 +38,15 @@ export default async function ConversationPage({
 
   const messages = await getConversationMessages(id).catch(() => []);
 
+  const otherId = (other as { id?: string })?.id ?? '';
+  // Dos preguntas distintas: si YO he bloqueado (para ofrecer desbloquear) y si
+  // hay bloqueo en cualquier sentido (para cerrar el formulario). Cuando es el
+  // otro quien bloquea no se dice: enterarse de eso solo alimenta el conflicto.
+  const bloqueadoPorMi = otherId ? await isBlockedByMe(supabase, user.id, otherId) : false;
+  const conversacionCerrada = otherId
+    ? await isBlockedBetween(supabase, user.id, otherId)
+    : false;
+
   return (
     <div className="mx-auto flex h-[calc(100vh-7rem)] max-w-4xl flex-col">
       <MarkReadOnLoad conversationId={id} />
@@ -56,6 +68,12 @@ export default async function ConversationPage({
             {messages.length === 0 ? 'Sin mensajes aún' : `${messages.length} mensajes`}
           </p>
         </div>
+        {otherId ? (
+          <div className="flex shrink-0 items-center gap-1">
+            <ReportDialog targetType="conversation" targetId={id} />
+            <BlockButton userId={otherId} nombre={otherName} bloqueado={bloqueadoPorMi} />
+          </div>
+        ) : null}
       </div>
 
       {/* Mensajes */}
@@ -103,7 +121,15 @@ export default async function ConversationPage({
 
       {/* Form de envío */}
       <div className="border-t border-border bg-surface px-4 py-3 sm:rounded-b-2xl sm:px-6">
-        <ConversationForm conversationId={id} />
+        {conversacionCerrada ? (
+          <p className="py-2 text-center text-sm text-muted-foreground">
+            {bloqueadoPorMi
+              ? 'Has bloqueado a esta persona. Desbloquéala para volver a escribirle.'
+              : 'Esta conversación está cerrada. No se pueden enviar mensajes.'}
+          </p>
+        ) : (
+          <ConversationForm conversationId={id} />
+        )}
       </div>
     </div>
   );

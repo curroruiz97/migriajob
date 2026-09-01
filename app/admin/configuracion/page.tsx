@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { Bell, Lock, Mail, Shield } from 'lucide-react';
+import { Ban, Bell, Lock, Mail, Shield } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { DangerZone } from '@/components/employee/danger-zone';
+import { BlockedList } from '@/components/moderation/blocked-list';
 
 export const metadata = { title: 'Configuración' };
 
@@ -50,6 +51,10 @@ export default async function ConfiguracionEmpresaPage() {
           Personalizable próximamente. Por defecto recibirás un email cuando un candidato se
           inscriba a tus ofertas o te escriba un mensaje.
         </p>
+      </Card>
+
+      <Card icon={Ban} title="Personas bloqueadas">
+        <BlockedList />
       </Card>
 
       <Card icon={Shield} title="Cuenta y privacidad">

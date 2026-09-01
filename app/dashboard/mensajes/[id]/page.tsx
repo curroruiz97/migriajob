@@ -4,6 +4,9 @@ import { ArrowLeft, Building2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { getConversationMessages } from '@/lib/db/queries';
 import { MessageComposer } from '@/components/employee/message-composer';
+import { ReportDialog } from '@/components/moderation/report-dialog';
+import { BlockButton } from '@/components/moderation/block-button';
+import { isBlockedByMe, isBlockedBetween } from '@/lib/moderation/queries';
 import { cn } from '@/lib/utils';
 
 export const metadata = { title: 'Conversación' };
@@ -45,6 +48,12 @@ export default async function ConversationPage({
 
   const messages = (await getConversationMessages(id).catch(() => [])) as unknown as Msg[];
 
+  // El candidato habla siempre con el empleador de la conversación.
+  const otherId = conv.employer_id === user.id ? conv.candidate_id : conv.employer_id;
+  const empresaNombre = (company as { name: string } | null)?.name ?? 'Empresa';
+  const bloqueadoPorMi = await isBlockedByMe(supabase, user.id, otherId);
+  const conversacionCerrada = await isBlockedBetween(supabase, user.id, otherId);
+
   return (
     <div className="mx-auto flex h-[calc(100dvh-9rem)] max-w-2xl flex-col">
       <header className="flex items-center gap-3 border-b border-border pb-3">
@@ -58,10 +67,12 @@ export default async function ConversationPage({
         <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-soft text-primary">
           <Building2 className="h-4 w-4" />
         </span>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-foreground">
-            {(company as { name: string } | null)?.name ?? 'Empresa'}
-          </p>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold text-foreground">{empresaNombre}</p>
+        </div>
+        <div className="flex shrink-0 items-center gap-1">
+          <ReportDialog targetType="conversation" targetId={id} />
+          <BlockButton userId={otherId} nombre={empresaNombre} bloqueado={bloqueadoPorMi} />
         </div>
       </header>
 
@@ -91,7 +102,15 @@ export default async function ConversationPage({
         )}
       </div>
 
-      <MessageComposer conversationId={id} />
+      {conversacionCerrada ? (
+        <p className="border-t border-border py-4 text-center text-sm text-muted-foreground">
+          {bloqueadoPorMi
+            ? 'Has bloqueado a esta empresa. Desbloquéala para volver a escribirle.'
+            : 'Esta conversación está cerrada. No se pueden enviar mensajes.'}
+        </p>
+      ) : (
+        <MessageComposer conversationId={id} />
+      )}
     </div>
   );
 }

@@ -17,6 +17,7 @@ import { WorkPermitBadge, HomologationBadge, NieBadge } from '@/components/ui/do
 import { LanguageChip } from '@/components/ui/language-chip';
 import { SkillBar } from '@/components/ui/skill-bar';
 import { getProfileBySlug, incrementProfileViews } from '@/lib/db/queries';
+import { ReportDialog } from '@/components/moderation/report-dialog';
 
 export const revalidate = 120;
 
@@ -364,6 +365,25 @@ export default async function ProfileDetailPage({
                 </div>
               </Section>
             )}
+
+            {/* Denunciar este perfil. Visible sin sesión a propósito: si la
+                ficha es una suplantación, quien la reconoce suele llegar desde
+                un buscador y no tiene cuenta. */}
+            <div className="rounded-2xl border border-border bg-surface p-6">
+              <h2 className="text-base font-semibold text-foreground">
+                ¿Este perfil no es real?
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Avísanos si suplanta a alguien o la información es falsa.
+              </p>
+              <ReportDialog
+                targetType="candidate_profile"
+                targetId={profile.id}
+                label="Denunciar perfil"
+                variant="outline"
+                className="mt-3 w-full"
+              />
+            </div>
           </aside>
         </div>
       </div>
