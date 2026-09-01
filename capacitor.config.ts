@@ -31,6 +31,16 @@ const config: CapacitorConfig = {
     // layout ya reserva espacio con env(safe-area-inset-*).
     contentInset: 'never',
   },
+  plugins: {
+    PushNotifications: {
+      // SIN ESTO NO SE VE NADA CON LA APP ABIERTA. Por defecto el plugin le
+      // dice a iOS que no presente la notificación cuando la app está en primer
+      // plano: Apple la entrega, responde 200 y en pantalla no aparece nada.
+      // Es exactamente lo que nos tuvo horas persiguiendo un fallo inexistente;
+      // con la pantalla bloqueada llegaba siempre. No lo quites.
+      presentationOptions: ['badge', 'sound', 'alert'],
+    },
+  },
   android: {
     // DECISIÓN: false en release. Con true, cualquiera con el móvil en la mano
     // puede inspeccionar la WebView desde chrome://inspect.
