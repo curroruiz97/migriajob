@@ -10,17 +10,52 @@ type Candidate = Database['public']['Tables']['candidates']['Row'];
 // CANDIDATES (públicos) — foco del marketplace
 // ============================================
 
+/**
+ * Columnas que se pueden servir en las páginas públicas de perfiles.
+ *
+ * POR QUÉ ESTA LISTA EXISTE. La política de acceso de `candidates` es por
+ * FILA: quien puede leer un perfil público puede leer la fila entera. Con
+ * `select('*')` el servidor enviaba al navegador el email, el teléfono, el
+ * tipo y número de documento, la fecha de nacimiento y el enlace al CV de
+ * cada candidato. La página no los pintaba, pero viajaban en la respuesta y
+ * los podía sacar cualquiera sin tener cuenta. Eran datos identificativos de
+ * más de mil personas.
+ *
+ * Aquí van SOLO las columnas que las páginas públicas usan de verdad. Las
+ * sensibles, además, tienen revocado el permiso para la clave pública
+ * (migración 0017), así que si alguien vuelve a escribir `select('*')` en una
+ * consulta anónima, la base de datos la rechaza en lugar de filtrar.
+ *
+ * NO añadas aquí email, phone, document_type, document_number, date_of_birth
+ * ni cv_url. Las empresas con sesión los siguen viendo por otras consultas.
+ */
+const COLUMNAS_PERFIL_PUBLICO = [
+  'id', 'profile_id', 'slug', 'is_public', 'verified', 'is_imported',
+  'full_name', 'headline', 'current_role', 'bio', 'avatar_url',
+  'intro_video_url', 'skills', 'languages', 'education', 'experience',
+  'years_experience', 'availability', 'available_from', 'start_availability',
+  'desired_salary_min', 'desired_salary_max', 'modality', 'open_to_remote',
+  'open_to_relocate', 'willing_to_relocate', 'preferred_locations',
+  'commute_radius_km', 'location_city', 'location_country', 'location_lat',
+  'location_lng', 'country_of_origin', 'years_in_spain', 'work_permit',
+  'has_nie', 'has_tie', 'homologation', 'spanish',
+  'linkedin_url', 'github_url', 'portfolio_url', 'website_url',
+  'views_count', 'created_at', 'updated_at', 'recruitment_source',
+].join(', ');
+
 export async function getFeaturedProfiles(): Promise<Candidate[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from('candidates')
-    .select('*')
+    .select(COLUMNAS_PERFIL_PUBLICO)
     .eq('is_public', true)
     .eq('availability', 'open')
     .order('views_count', { ascending: false })
     .order('updated_at', { ascending: false })
     .limit(6);
-  return (data ?? []) as Candidate[];
+  // `as unknown` porque la lista de columnas se arma en tiempo de ejecución y
+  // el cliente tipado de Supabase no puede deducir la forma del resultado.
+  return (data ?? []) as unknown as Candidate[];
 }
 
 export type ProfileFilters = {
@@ -112,7 +147,7 @@ export async function searchProfiles(
   const perPage = Math.min(filters.perPage ?? 20, 100);
   const offset = ((filters.page ?? 1) - 1) * perPage;
 
-  let q = supabase.from('candidates').select('*', { count: 'exact' });
+  let q = supabase.from('candidates').select(COLUMNAS_PERFIL_PUBLICO, { count: 'exact' });
   if (!filters.includeNonPublic) q = q.eq('is_public', true);
 
   if (filters.availability) q = q.eq('availability', filters.availability);
@@ -156,18 +191,18 @@ export async function searchProfiles(
     .order('updated_at', { ascending: false })
     .range(offset, offset + perPage - 1);
 
-  return { items: (data ?? []) as Candidate[], total: count ?? 0, perPage };
+  return { items: (data ?? []) as unknown as Candidate[], total: count ?? 0, perPage };
 }
 
 export async function getProfileBySlug(slug: string): Promise<Candidate | null> {
   const supabase = await createClient();
   const { data } = await supabase
     .from('candidates')
-    .select('*')
+    .select(COLUMNAS_PERFIL_PUBLICO)
     .eq('slug', slug)
     .eq('is_public', true)
     .maybeSingle();
-  return (data as Candidate) ?? null;
+  return (data as unknown as Candidate) ?? null;
 }
 
 export async function incrementProfileViews(candidateId: string) {
