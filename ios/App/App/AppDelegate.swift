@@ -33,6 +33,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    // MARK: - Notificaciones remotas (APNs)
+    //
+    // OJO: la plantilla de AppDelegate que genera `cap add ios` NO incluye estos
+    // dos metodos. Sin ellos iOS entrega el token del dispositivo aqui y muere
+    // en este punto: nadie lo reenvia al plugin, asi que el evento
+    // 'registration' del lado JavaScript no se dispara NUNCA. Y como tampoco
+    // hay fallo, no salta 'registrationError'. El sintoma es desconcertante:
+    // register() responde bien y no llega ni token ni error. Nos costo una
+    // tarde entera de descartes (permisos, capacidad en el identificador,
+    // clave de APNs, red, reinicios) hasta mirar aqui.
+    //
+    // NO BORRAR al regenerar la carpeta ios/.
+
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
+    }
+
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
+    }
+
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         // Called when the app was launched with a url. Feel free to add additional processing here,
         // but if you want the App API to support tracking app url opens, make sure to keep this call

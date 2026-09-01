@@ -20,6 +20,33 @@
 
 let yaRegistrado = false;
 
+/**
+ * Donde guardamos un token que el servidor rechazo por falta de sesion.
+ *
+ * Pasa mas de lo que parece: iOS entrega el token nada mas abrir la app, y en
+ * ese instante el usuario todavia no ha entrado. Sin esta cola, ese token se
+ * perdia hasta el siguiente arranque y el usuario se quedaba sin avisos sin
+ * que nadie supiera por que. Tambien ocurre al cambiar de dominio: la cookie
+ * de sesion no viaja entre dominios distintos.
+ */
+const CLAVE_PENDIENTE = 'migria.push.token_pendiente';
+
+function guardarPendiente(token: string, plataforma: string) {
+  try {
+    localStorage.setItem(CLAVE_PENDIENTE, JSON.stringify({ token, plataforma }));
+  } catch {
+    /* modo privado o almacenamiento lleno: se reintentara al reabrir */
+  }
+}
+
+function olvidarPendiente() {
+  try {
+    localStorage.removeItem(CLAVE_PENDIENTE);
+  } catch {
+    /* noop */
+  }
+}
+
 async function enviarToken(token: string, plataforma: string): Promise<void> {
   try {
     const res = await fetch('/api/me/device-token', {
@@ -29,17 +56,42 @@ async function enviarToken(token: string, plataforma: string): Promise<void> {
     });
     if (res.ok) {
       console.log('[push] dispositivo guardado');
+      olvidarPendiente();
       return;
     }
-    // 401 = todavia no hay sesion. No es un error del sistema de push: el
-    // usuario aun no ha entrado. Se reintentara en el proximo arranque.
+    if (res.status === 401) {
+      // Todavia no hay sesion. No es un fallo del sistema de push: el usuario
+      // aun no ha entrado. Lo dejamos en la cola y se reintenta en cuanto la
+      // app se recargue con sesion, que es lo que ocurre al iniciarla.
+      console.warn('[push] sin sesion todavia; token en cola para reintentar');
+      guardarPendiente(token, plataforma);
+      return;
+    }
     console.warn('[push] el servidor rechazo el token:', res.status, await res.text());
   } catch (err) {
     console.warn('[push] no se pudo enviar el token (sin red?):', err);
+    guardarPendiente(token, plataforma);
   }
 }
 
 export async function registerPushDevice(): Promise<void> {
+  // Antes que nada: si quedo un token sin entregar, se intenta ahora. Esta
+  // llamada corre en cada carga de pagina, asi que en cuanto el usuario inicia
+  // sesion el token pendiente se guarda solo.
+  try {
+    const guardado = localStorage.getItem(CLAVE_PENDIENTE);
+    if (guardado) {
+      const { token, plataforma } = JSON.parse(guardado) as {
+        token: string;
+        plataforma: string;
+      };
+      console.log('[push] reintentando token pendiente');
+      await enviarToken(token, plataforma);
+    }
+  } catch {
+    /* noop */
+  }
+
   if (yaRegistrado) {
     console.log('[push] ya registrado en esta carga');
     return;
