@@ -10,7 +10,15 @@ import { Label } from '@/components/ui/label';
 
 const initial: AuthState = {};
 
-export function LoginForm({ registered, role }: { registered?: boolean; role?: string }) {
+export function LoginForm({
+  registered,
+  verificado,
+  role,
+}: {
+  registered?: boolean;
+  verificado?: boolean;
+  role?: string;
+}) {
   const [state, formAction, pending] = useActionState(signInAction, initial);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -18,6 +26,18 @@ export function LoginForm({ registered, role }: { registered?: boolean; role?: s
     <form action={formAction} className="space-y-5">
       {/* Rol elegido en la bienvenida; el server action lo aplica a la cuenta. */}
       {role && <input type="hidden" name="role" value={role} />}
+      {/* Vuelta del enlace de confirmacion del correo. Antes se caia en la
+          portada sin decir nada y la persona no sabia si su cuenta habia
+          quedado verificada. */}
+      {verificado && (
+        <div className="flex items-start gap-2 rounded-xl border border-success/30 bg-success-soft px-3 py-2.5 text-sm text-success">
+          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+          <div>
+            <p className="font-medium">Cuenta verificada</p>
+            <p className="text-xs opacity-90">Ya puedes iniciar sesión.</p>
+          </div>
+        </div>
+      )}
       {registered && (
         <div className="flex items-start gap-2 rounded-xl border border-success/30 bg-success-soft px-3 py-2.5 text-sm text-success">
           <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />

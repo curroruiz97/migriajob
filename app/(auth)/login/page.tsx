@@ -14,10 +14,11 @@ export const metadata = {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ registered?: string; redirectTo?: string; role?: string }>;
+  searchParams: Promise<{ registered?: string; verificado?: string; redirectTo?: string; role?: string }>;
 }) {
   const params = await searchParams;
   const registered = params.registered === '1';
+  const verificado = params.verificado === '1';
   const isCompany = params.role === 'employer';
   const subtitle = isCompany
     ? 'Accede a tu cuenta para gestionar tus ofertas, revisar candidatos y encontrar el talento que necesitas.'
@@ -46,7 +47,7 @@ export default async function LoginPage({
             <p className="mt-3 text-sm text-muted-foreground">{subtitle}</p>
           </header>
 
-          <LoginForm registered={registered} role={params.role} />
+          <LoginForm registered={registered} verificado={verificado} role={params.role} />
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
             ¿Aún no tienes cuenta?{' '}
