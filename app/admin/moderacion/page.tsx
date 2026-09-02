@@ -31,6 +31,12 @@ const ESTADO_LABEL: Record<string, string> = {
 
 interface Report {
   id: string;
+  /**
+   * Nulo cuando quien denuncio ha borrado su cuenta. La denuncia se queda,
+   * anonima (migracion 0019): antes se iba con la cuenta y la bandeja perdia
+   * filas en silencio.
+   */
+  reporter_id: string | null;
   target_type: string;
   target_id: string;
   reason: string;
@@ -116,7 +122,10 @@ export default async function ModeracionPage() {
               ) : null}
 
               <p className="mt-3 text-xs text-muted-foreground">
-                {r.reporter?.full_name ?? 'Usuario'} ·{' '}
+                {r.reporter_id === null
+                  ? 'Cuenta eliminada'
+                  : (r.reporter?.full_name ?? 'Usuario')}{' '}
+                ·{' '}
                 {new Date(r.created_at).toLocaleString('es-ES')}
               </p>
 
