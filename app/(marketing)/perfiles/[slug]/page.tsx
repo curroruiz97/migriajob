@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import {
   Briefcase, ExternalLink, GraduationCap, Languages as LanguagesIcon,
-  Linkedin, MapPin, Github, Globe, Heart, MessageSquare, ShieldCheck,
+  Linkedin, MapPin, Github, Globe, Heart, ShieldCheck,
   PlayCircle, Share2, Sparkles, Calendar,
 } from 'lucide-react';
 import { ProfileJsonLd } from '@/components/public/profile-jsonld';
@@ -18,6 +18,7 @@ import { LanguageChip } from '@/components/ui/language-chip';
 import { SkillBar } from '@/components/ui/skill-bar';
 import { getProfileBySlug, incrementProfileViews } from '@/lib/db/queries';
 import { ReportDialog } from '@/components/moderation/report-dialog';
+import { ContactButton } from '@/components/messaging/contact-button';
 
 export const revalidate = 120;
 
@@ -153,9 +154,14 @@ export default async function ProfileDetailPage({
 
               {/* Acciones */}
               <div className="mt-6 flex flex-wrap gap-2">
-                <Button size="lg">
-                  <MessageSquare className="mr-1.5 h-4 w-4" /> Contactar
-                </Button>
+                {/* Este boton era un `<Button>` sin onClick ni enlace: no hacia
+                    nada. Ver lib/messaging/actions.ts.
+
+                    Solo aparece si el perfil tiene cuenta detras: los perfiles
+                    importados no la tienen y no hay a quien escribir. */}
+                {profile.profile_id && (
+                  <ContactButton usuarioId={profile.profile_id} />
+                )}
                 <Button size="lg" variant="outline">
                   <Heart className="mr-1.5 h-4 w-4" /> Guardar
                 </Button>
@@ -301,9 +307,13 @@ export default async function ProfileDetailPage({
                 </div>
               </dl>
 
-              <Button className="mt-5 w-full" size="lg">
-                <MessageSquare className="mr-1.5 h-4 w-4" /> Contactar ahora
-              </Button>
+              {profile.profile_id && (
+                <ContactButton
+                  usuarioId={profile.profile_id}
+                  label="Contactar ahora"
+                  className="mt-5 w-full"
+                />
+              )}
             </div>
 
             {/* Skills */}
