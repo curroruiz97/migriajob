@@ -58,10 +58,14 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // IMPORTANTE: no añadir lógica entre createServerClient y getUser()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims valida el JWT de la cookie SIN salir a la red: con claves
+  // asimétricas lo verifica contra el JWKS que ya tiene cacheado. `getUser()`
+  // hacía una llamada a Supabase EN CADA NAVEGACIÓN, y el middleware corre
+  // antes de que la página empiece siquiera a renderizarse: era medio segundo
+  // de pantalla parada en cada toque. (Si el proyecto usara claves simétricas,
+  // getClaims cae de vuelta a getUser por dentro, así que nunca es peor.)
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const user = claimsData?.claims ? { id: claimsData.claims.sub } : null;
 
   const pathname = request.nextUrl.pathname;
   const isAdminRoute = pathname.startsWith('/admin');
@@ -75,33 +79,25 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(u);
   }
 
-  if (user && (isAdminRoute || isDashboardRoute || isAuthRoute)) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single<{ role: 'candidate' | 'employer' | 'admin' }>();
-
-    const role = profile?.role ?? 'candidate';
-    // Espacio de cada rol: candidato → /dashboard, empleador y admin → /admin.
-    // Sin acceso cruzado, ni siquiera para admin (super-admin usa /admin).
-    const isEmployerSpace = role === 'employer' || role === 'admin';
-
-    if (isAdminRoute && !isEmployerSpace) {
-      const u = request.nextUrl.clone();
-      u.pathname = '/dashboard/mi-perfil';
-      return NextResponse.redirect(u);
-    }
-    if (isDashboardRoute && isEmployerSpace) {
-      const u = request.nextUrl.clone();
-      u.pathname = '/admin';
-      return NextResponse.redirect(u);
-    }
-    if (isAuthRoute) {
-      const u = request.nextUrl.clone();
-      u.pathname = isEmployerSpace ? '/admin' : '/dashboard/mi-perfil';
-      return NextResponse.redirect(u);
-    }
+  // AQUÍ HABÍA UNA SEGUNDA CONSULTA A LA RED, a `profiles`, para leer el rol y
+  // mandar a cada uno a su espacio. Se ha quitado: los layouts de /admin y de
+  // /dashboard ya comprueban el rol y redirigen igual —lo llaman "defense in
+  // depth" en sus comentarios—, así que esto solo repetía el trabajo y sumaba
+  // otra ida y vuelta a Supabase en cada navegación. Entre las dos consultas se
+  // iba casi un segundo antes de empezar a pintar nada.
+  //
+  // No se pierde ninguna comprobación: el rol lo sigue mirando el layout, que
+  // es donde importa, y las políticas de la base de datos por debajo.
+  //
+  // El único caso que quedaba suelto es entrar a /login o /registro con sesión
+  // abierta. Sin el rol no sabemos a qué espacio mandar, así que se manda al de
+  // candidato y el layout rebota a /admin si resulta ser una empresa. Un salto
+  // de más en una pantalla que se ve una vez, a cambio de quitar una consulta
+  // de todas las demás.
+  if (user && isAuthRoute) {
+    const u = request.nextUrl.clone();
+    u.pathname = '/dashboard/mi-perfil';
+    return NextResponse.redirect(u);
   }
 
   return supabaseResponse;

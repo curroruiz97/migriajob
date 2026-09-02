@@ -26,37 +26,48 @@ export const dynamic = 'force-dynamic';
  */
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/login?redirectTo=/admin');
 
-  // Defense in depth: solo empleadores y admins. Candidatos van a /dashboard.
-  const { data: roleProfile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single<{ role: 'candidate' | 'employer' | 'admin' }>();
+  // getClaims valida el JWT localmente, sin salir a la red. El middleware ya
+  // comprobó la sesión en esta misma petición; volver a llamar a `getUser()`
+  // era otra ida y vuelta a Supabase antes de pintar nada.
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const userId = claimsData?.claims?.sub;
+  const userEmail = (claimsData?.claims?.email as string | undefined) ?? '';
+  if (!userId) redirect('/login?redirectTo=/admin');
+
+  // Las tres consultas son independientes: en serie sumaban sus tres tiempos de
+  // ida y vuelta, a la vez cuestan lo que la más lenta. El rol se comprueba
+  // aquí —defense in depth: solo empleadores y admins; los candidatos van a
+  // /dashboard— porque el middleware ya no lo mira.
+  const [{ data: roleProfile }, unreadCount, { data: companyLogo }] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .single<{ role: 'candidate' | 'employer' | 'admin' }>(),
+    getUnreadNotificationsCount(userId).catch(() => 0),
+    supabase
+      .from('companies')
+      .select('logo_url')
+      .eq('owner_id', userId)
+      .maybeSingle(),
+  ]);
+
   const role = roleProfile?.role ?? 'candidate';
   if (role === 'candidate') {
     redirect('/dashboard/mi-perfil');
   }
 
-  const unreadCount = await getUnreadNotificationsCount(user.id).catch(() => 0);
-  const { data: companyLogo } = await supabase
-    .from('companies')
-    .select('logo_url')
-    .eq('owner_id', user.id)
-    .maybeSingle();
-
   return (
     <CompareProvider>
       {/* Avisos in-app (toast + refresh) para mensajes nuevos */}
-      <RealtimeMessagesToast userId={user.id} />
+      <RealtimeMessagesToast userId={userId} />
 
       <div className="flex min-h-screen bg-background">
         <AdminSidebar isAdmin={role === 'admin'} />
         <div className="flex flex-1 flex-col lg:pl-64">
           <AdminTopbar
-            user={{ email: user.email ?? '' }}
+            user={{ email: userEmail }}
             unreadCount={unreadCount}
             avatarUrl={companyLogo?.logo_url ?? null}
           />
