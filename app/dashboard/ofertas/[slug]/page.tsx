@@ -6,6 +6,7 @@ import { getJobBySlug } from '@/lib/db/queries';
 import { Badge } from '@/components/ui/badge';
 import { ApplyButton } from '@/components/employee/apply-button';
 import { SavedJobButton } from '@/components/employee/saved-job-button';
+import { ReportDialog } from '@/components/moderation/report-dialog';
 
 const JOB_TYPE_LABELS: Record<string, string> = {
   full_time: 'Jornada completa', part_time: 'Media jornada', contract: 'Contrato',
@@ -102,6 +103,27 @@ export default async function CandidateJobDetail({
         {dbJob.description && <Section title="Descripción"><p className="whitespace-pre-line leading-relaxed text-foreground">{dbJob.description}</p></Section>}
         {dbJob.requirements && <Section title="Requisitos"><p className="whitespace-pre-line leading-relaxed text-foreground">{dbJob.requirements}</p></Section>}
         {dbJob.benefits && <Section title="Lo que ofrecen"><p className="whitespace-pre-line leading-relaxed text-foreground">{dbJob.benefits}</p></Section>}
+
+        {/* DENUNCIAR LA OFERTA.
+            Faltaba justo aqui. Estaba en la ficha publica (/empleos/[slug]),
+            pero un candidato con la sesion abierta lee las ofertas en esta
+            pantalla y nunca pasa por aquella: desde el menu, "Ofertas" lleva a
+            /dashboard/ofertas. Es decir, la persona a la que le pueden colar
+            una oferta falsa era precisamente la que no tenia como denunciarla.
+            La directriz 1.2 pide que la via este donde esta el contenido. */}
+        <div className="rounded-2xl border border-border bg-surface p-5 text-sm">
+          <p className="font-semibold text-foreground">¿Algo no cuadra?</p>
+          <p className="mt-1 text-muted-foreground">
+            Si esta oferta es falsa, pide dinero o te parece engañosa, dínoslo.
+          </p>
+          <ReportDialog
+            targetType="job"
+            targetId={dbJob.id}
+            label="Denunciar esta oferta"
+            variant="outline"
+            className="mt-3 w-full"
+          />
+        </div>
       </Shell>
     );
   }

@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { FavoriteButton } from '@/components/admin/favorite-button';
 import { StartConversationButton } from '@/components/admin/start-conversation-button';
+import { ReportDialog } from '@/components/moderation/report-dialog';
 import type { Database } from '@/lib/supabase/types';
 
 type Candidate = Database['public']['Tables']['candidates']['Row'];
@@ -197,6 +198,19 @@ export default async function CandidatoAdminPage({
             <StartConversationButton candidateUserId={candidate.profile_id} candidateName={fullName} />
           )}
           <FavoriteButton candidateId={candidate.id} initial={alreadyFavorite} />
+          {/* DENUNCIAR EL PERFIL.
+              Estaba solo en la ficha publica (/perfiles/[slug]), y una empresa
+              con la sesion abierta lee los perfiles aqui: desde el menu,
+              "Buscar candidatos" lleva a /admin/candidatos. Quien puede
+              detectar una suplantacion es justamente quien esta leyendo el
+              perfil, asi que la via tiene que estar donde se lee (directriz
+              1.2). */}
+          <ReportDialog
+            targetType="candidate_profile"
+            targetId={candidate.id}
+            label="Denunciar perfil"
+            variant="ghost"
+          />
         </div>
       </section>
 
