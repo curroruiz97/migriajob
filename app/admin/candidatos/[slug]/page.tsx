@@ -85,6 +85,9 @@ export default async function CandidatoAdminPage({
 
   // Autorización
   let alreadyFavorite = false;
+  // Datos de contacto: solo para el administrador o para la empresa a la que
+  // esta persona se ha presentado.
+  let contactoVisible = isAdmin;
 
   if (isAdmin) {
     // Admin puede ver cualquier candidato (RLS lo permite)
@@ -96,29 +99,54 @@ export default async function CandidatoAdminPage({
       .maybeSingle();
     alreadyFavorite = !!fav;
   } else {
-    // Employer: debe tener ofertas y el candidato haber aplicado
+    /*
+      AQUI HABIA UN 404 QUE ROMPIA "BUSCAR CANDIDATOS" ENTERO.
+
+      La regla era: una empresa solo puede abrir la ficha de quien haya
+      aplicado a una de sus ofertas; si no, notFound(). Pero el listado de
+      /admin/candidatos ensena todos los perfiles publicos, asi que pinchar
+      cualquiera de ellos daba pagina no encontrada. Una seccion entera del
+      panel de empresa que no llevaba a ninguna parte.
+
+      La intencion era buena y se mantiene: los datos de contacto —telefono,
+      correo, documento, CV— solo se ven si esa persona te ha escrito. Lo que
+      cambia es que ahora la ficha se abre igualmente y se ve lo mismo que
+      cualquiera puede ver en el perfil publico, que es justo para lo que sirve
+      un listado de candidatos. Sin esa distincion, o no se podia buscar
+      talento, o habia que ensenar el telefono de todo el mundo.
+
+      `contactoVisible` es lo que decide, y se usa mas abajo en los campos
+      sensibles.
+    */
     const { data: company } = await supabase
       .from('companies')
       .select('id')
       .eq('owner_id', user.id)
       .maybeSingle();
-    if (!company) notFound();
-    const companyId = (company as { id: string }).id;
 
-    const { data: jobs } = await supabase
-      .from('jobs')
-      .select('id')
-      .eq('company_id', companyId);
-    const jobIds = (jobs ?? []).map((j) => (j as { id: string }).id);
-    if (jobIds.length === 0) notFound();
+    const companyId = (company as { id: string } | null)?.id;
 
-    const { data: app } = await supabase
-      .from('applications')
-      .select('id')
-      .eq('candidate_id', candidate.id)
-      .in('job_id', jobIds)
-      .maybeSingle();
-    if (!app) notFound();
+    if (companyId) {
+      const { data: jobs } = await supabase
+        .from('jobs')
+        .select('id')
+        .eq('company_id', companyId);
+      const jobIds = (jobs ?? []).map((j) => (j as { id: string }).id);
+
+      if (jobIds.length > 0) {
+        const { data: app } = await supabase
+          .from('applications')
+          .select('id')
+          .eq('candidate_id', candidate.id)
+          .in('job_id', jobIds)
+          .maybeSingle();
+        contactoVisible = !!app;
+      }
+    }
+
+    // Si no ha aplicado, solo se abre la ficha de quien tiene el perfil
+    // publico. Un perfil privado sigue siendo privado.
+    if (!contactoVisible && !candidate.is_public) notFound();
 
     const { data: fav } = await supabase
       .from('favorites')
@@ -223,13 +251,28 @@ export default async function CandidatoAdminPage({
         </h2>
         <div className="mt-4 divide-y divide-border/50">
           <Field label="Nombre completo" value={fullName} />
-          <Field label="Fecha de nacimiento" value={fmtDate(candidate.date_of_birth)} />
           <Field label="Edad" value={age != null ? `${age} años` : null} />
-          <Field label="Tipo de documento" value={candidate.document_type} />
-          <Field label="Nro de documento" value={candidate.document_number} />
           <Field label="Nacionalidad" value={candidate.country_of_origin} />
-          <Field label="Teléfono" value={phone} />
-          <Field label="Email" value={email} />
+          {/* Datos identificativos y de contacto: solo si esta persona se ha
+              presentado a una de tus ofertas. Ver el comentario de arriba. */}
+          {contactoVisible ? (
+            <>
+              <Field label="Fecha de nacimiento" value={fmtDate(candidate.date_of_birth)} />
+              <Field label="Tipo de documento" value={candidate.document_type} />
+              <Field label="Nro de documento" value={candidate.document_number} />
+              <Field label="Teléfono" value={phone} />
+              <Field label="Email" value={email} />
+            </>
+          ) : (
+            <Field
+              label="Contacto"
+              custom={
+                <span className="text-muted-foreground">
+                  Disponible cuando esta persona se presente a una de tus ofertas.
+                </span>
+              }
+            />
+          )}
           <Field label="Ciudad actual" value={candidate.location_city} />
           <Field label="País actual" value={candidate.location_country} />
         </div>
@@ -341,7 +384,13 @@ export default async function CandidatoAdminPage({
             label="Curriculum (PDF)"
             value={candidate.cv_url ? null : null}
             custom={
-              candidate.cv_url ? (
+              // El CV lleva el telefono y el correo dentro, asi que sigue la
+              // misma regla que los datos de contacto.
+              !contactoVisible ? (
+                <span className="text-muted-foreground">
+                  Disponible cuando esta persona se presente a una de tus ofertas.
+                </span>
+              ) : candidate.cv_url ? (
                 <a
                   className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
                   href={candidate.cv_url}
