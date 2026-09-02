@@ -7,14 +7,24 @@ import { safeAction } from '@/lib/actions/safe';
  * Abrir la conversacion entre una empresa y una persona candidata.
  *
  * POR QUE EXISTE ESTO. Los botones "Contactar" de los perfiles publicos eran
- * `<Button>` sin `onClick`, sin `href` y sin formulario: adorno. No habia
- * ninguna forma de iniciar una conversacion desde la aplicacion, y se notaba en
- * los datos —401 cuentas y 176 candidaturas frente a 1 conversacion—. La ficha
- * de App Store promete "Habla directamente con las empresas que se interesan
- * por tu perfil", asi que ademas de una funcion rota era una promesa incumplida.
+ * `<Button>` sin `onClick`, sin `href` y sin formulario: adorno.
  *
- * Sin conversaciones tampoco se puede enseñar el bloqueo, que vive dentro de un
- * hilo y que la directriz 1.2 exige que exista y funcione.
+ * PRECISION IMPORTANTE, porque el commit que introdujo este fichero lo conto
+ * mal: si habia una forma de abrir conversacion, `startConversationAction` en
+ * app/admin/mensajes/actions.ts, pero solo desde el area de empresa
+ * (/admin/candidatos/[slug], boton "Escribir a X"). Lo que no existia era desde
+ * el perfil publico, que es la puerta por la que entra cualquiera que llegue de
+ * fuera. En la practica casi nadie llegaba: 401 cuentas y 176 candidaturas
+ * frente a 1 conversacion.
+ *
+ * La ficha de App Store promete "Habla directamente con las empresas que se
+ * interesan por tu perfil", asi que un boton muerto ahi es tambien una promesa
+ * incumplida.
+ *
+ * Esta accion cubre las dos direcciones y decide los papeles leyendo los roles,
+ * mientras que la del area de empresa da por hecho que quien llama es la
+ * empresa. Las dos crean la fila igual (employer_id, candidate_id), asi que el
+ * indice unico de la migracion 0018 las mantiene de acuerdo.
  *
  * BUSCAR O CREAR, NUNCA DUPLICAR. Si las dos personas ya tienen hilo se
  * devuelve ese. La unicidad la garantiza ademas un indice en la base de datos
