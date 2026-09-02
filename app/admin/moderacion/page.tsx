@@ -37,7 +37,7 @@ interface Report {
   details: string | null;
   status: string;
   created_at: string;
-  reporter: { full_name: string | null; email: string | null } | null;
+  reporter: { full_name: string | null } | null;
 }
 
 export default async function ModeracionPage() {
@@ -57,7 +57,18 @@ export default async function ModeracionPage() {
 
   const { data } = await supabase
     .from('content_reports')
-    .select('*, reporter:profiles!content_reports_reporter_id_fkey(full_name, email)')
+    /*
+       AQUI PEDIA `email` DE `profiles` Y ESA COLUMNA NO EXISTE.
+       El correo vive en auth.users, no en la tabla de perfiles. PostgREST
+       devolvia error, `data` llegaba null, y la pantalla decia "Todavia no ha
+       llegado ninguna denuncia" con denuncias dentro de la tabla. O sea: la
+       bandeja que existe para atender denuncias no ensenaba ninguna, que es
+       justo lo que la directriz 1.2 pide que funcione.
+
+       Se pide solo el nombre. Si hace falta el correo del denunciante, hay que
+       sacarlo por separado con la clave de servicio.
+    */
+    .select('*, reporter:profiles!content_reports_reporter_id_fkey(full_name)')
     .order('created_at', { ascending: false })
     .limit(200);
 
@@ -105,8 +116,7 @@ export default async function ModeracionPage() {
               ) : null}
 
               <p className="mt-3 text-xs text-muted-foreground">
-                {r.reporter?.full_name ?? 'Usuario'}
-                {r.reporter?.email ? ` · ${r.reporter.email}` : ''} ·{' '}
+                {r.reporter?.full_name ?? 'Usuario'} ·{' '}
                 {new Date(r.created_at).toLocaleString('es-ES')}
               </p>
 
