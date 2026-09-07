@@ -30,6 +30,19 @@ export async function updateCompanyAction(_prev: unknown, formData: FormData) {
     const location = String(formData.get('location') ?? '').trim() || null;
     const website = String(formData.get('website') ?? '').trim() || null;
     const description = String(formData.get('description') ?? '').trim() || null;
+    // EL LOGO SOLO SE TOCA SI EL FORMULARIO LO MANDA.
+    //
+    // Antes se leia siempre, y un formulario que no incluye el campo daba
+    // `null`, que se escribia igual: subias la foto de empresa, se guardaba
+    // bien, y el primer "Guardar cambios" la borraba de la base de datos. El
+    // archivo seguia en storage, asi que no habia ni rastro del problema salvo
+    // que el perfil volvia a las iniciales.
+    //
+    // Mandar el valor actual desde el formulario NO habria bastado: la imagen
+    // se sube por otra accion mientras el modal esta abierto, asi que el
+    // formulario puede llevar todavia el valor viejo (o vacio) y lo borraria
+    // igual. Un formulario no debe escribir un campo que no edita.
+    const enviaLogo = formData.has('logo_url');
     const logo_url = String(formData.get('logo_url') ?? '').trim() || null;
     // Campos añadidos por la migración 0004.
     const tax_id = String(formData.get('tax_id') ?? '').trim() || null;
@@ -44,8 +57,9 @@ export async function updateCompanyAction(_prev: unknown, formData: FormData) {
 
     // Núcleo + columnas de 0004 (siempre presentes).
     const core = {
-      name, industry, size, location, website, description, logo_url,
+      name, industry, size, location, website, description,
       tax_id, founded_year, contact_name, contact_email, contact_phone,
+      ...(enviaLogo ? { logo_url } : {}),
     };
     // Columnas de 0006 (se aplican aparte para no romper el guardado si aún no existen).
     const v6 = { contact_role, address_province };
