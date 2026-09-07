@@ -1,9 +1,10 @@
 'use client';
 
-import { useActionState, useEffect, useRef, useState } from 'react';
+import { startTransition, useActionState, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FileText, ImagePlus, ExternalLink, Upload } from 'lucide-react';
 import { uploadAvatarAction, uploadCvAction } from '@/app/dashboard/storage-actions';
+import { comprimirImagen } from '@/lib/images/comprimir';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 
@@ -80,12 +81,22 @@ export function AvatarUpload({
   // Al elegir archivo: previsualizar y SUBIR automáticamente, para que el
   // usuario no tenga que pulsar un botón extra (antes esto confundía: la
   // gente pulsaba "Guardar cambios" del modal, que solo guardaba textos).
-  function onPick(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setPreview(URL.createObjectURL(file));
-    // requestSubmit dispara `<form action={...}>` con FormData (incluye el file).
-    formRef.current?.requestSubmit();
+  //
+  // LA IMAGEN SE REDUCE ANTES DE SALIR. Una foto de cámara pesa 2-5 MB y las
+  // server actions aceptan mucho menos, así que la petición se rechazaba antes
+  // de llegar al servidor y saltaba la pantalla de "Algo ha ido mal" — sin el
+  // mensaje de "máximo 2 MB", que nunca llegaba a ejecutarse. Por eso ya no se
+  // usa requestSubmit(): hay que mandar el archivo reducido, no el que tiene el
+  // <input>, que no se puede reemplazar.
+  async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const original = e.target.files?.[0];
+    if (!original) return;
+    setPreview(URL.createObjectURL(original));
+
+    const file = await comprimirImagen(original);
+    const fd = new FormData();
+    fd.set('avatar', file);
+    startTransition(() => action(fd));
   }
 
   // Al confirmar el servidor: soltar el blob local y refrescar la ruta para que
@@ -113,7 +124,8 @@ export function AvatarUpload({
         {label}
       </h3>
       <p className="mt-1 text-xs text-muted-foreground">
-        PNG, JPG o WebP. Máx 2 MB. Se guarda automáticamente al seleccionar.
+        PNG, JPG o WebP. Se reduce sola, así que vale una foto de la cámara.
+        Se guarda automáticamente al seleccionar.
       </p>
 
       <div className="mt-4 flex items-center gap-4">
@@ -125,7 +137,7 @@ export function AvatarUpload({
           <input
             type="file"
             name="avatar"
-            accept="image/png,image/jpeg,image/webp"
+            accept="image/png,image/jpeg,image/webp,image/heic,image/heif"
             required
             disabled={pending}
             onChange={onPick}
