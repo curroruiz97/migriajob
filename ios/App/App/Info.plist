@@ -22,6 +22,17 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<!-- SIN ESTAS DOS CLAVES iOS MATA LA APP. No es un aviso ni un error que se
+	     pueda capturar: en cuanto el WebView abre la camara o el carrete sin una
+	     descripcion de uso declarada, el sistema termina el proceso al instante.
+	     Es lo que le paso al revisor de Apple en Empresa > Editar perfil >
+	     Choose File > Hacer foto (rechazo 2.1a del 5 sep 2026).
+	     El texto lo lee el usuario en el cuadro de permiso, asi que dice para
+	     que se usa y no otra cosa. -->
+	<key>NSCameraUsageDescription</key>
+	<string>MigriaJob usa la camara para que puedas hacer una foto y usarla como foto de perfil o logotipo de tu empresa.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>MigriaJob accede a tus fotos para que puedas elegir una imagen como foto de perfil o logotipo de tu empresa.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

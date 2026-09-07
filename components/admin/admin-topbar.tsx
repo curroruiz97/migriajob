@@ -179,7 +179,14 @@ export function AdminTopbar({ user, unreadCount = 0, variant = 'employer', avata
                 </>
               )}
 
-              {/* Empleador: solo Facturación. */}
+              {/* Empleador: Facturación + Configuración.
+                  CONFIGURACIÓN NO ESTABA AQUÍ y esa es la razón del rechazo
+                  5.1.1(v) del 5 sep 2026: el borrado de cuenta vive en
+                  /admin/configuracion, y para un empleador el único camino era
+                  Empresa > bajar hasta el final de la página. El revisor se
+                  quedó antes (la app le petó en "Editar perfil") y concluyó que
+                  no existía. El candidato sí tenía este enlace desde el primer
+                  día; el empleador se quedó fuera por descuido. */}
               {!isCandidate && (
                 <>
                   <div className="p-1">
@@ -190,6 +197,15 @@ export function AdminTopbar({ user, unreadCount = 0, variant = 'employer', avata
                       >
                         <CreditCard className="h-4 w-4 text-muted-foreground" />
                         Facturación
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href="/admin/configuracion"
+                        className="flex cursor-pointer items-center gap-2.5 px-2.5 py-2 text-sm"
+                      >
+                        <Settings className="h-4 w-4 text-muted-foreground" />
+                        Configuración
                       </Link>
                     </DropdownMenuItem>
                   </div>

@@ -58,6 +58,12 @@ const EMPLOYER_MENU: NavItem[] = [
   { href: '/admin/plantillas', label: 'Plantillas', icon: FileText },
   { href: '/admin/notificaciones', label: 'Notificaciones', icon: Bell },
   { href: '/admin/facturacion', label: 'Facturación', icon: CreditCard },
+  // Aquí vive el borrado de cuenta (Cuenta y privacidad > Eliminar cuenta).
+  // Apple lo dio por inexistente en el rechazo 5.1.1(v) porque desde el menú
+  // del empleador no se llegaba: el único enlace estaba al final de la página
+  // de Empresa. Un requisito obligatorio no puede depender de que alguien
+  // haga scroll.
+  { href: '/admin/configuracion', label: 'Configuración', icon: Settings },
 ];
 
 const CANDIDATE_PRIMARY: NavItem[] = [
