@@ -8,7 +8,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: ['/', '/perfiles/*'],
-        disallow: ['/admin/*', '/dashboard/*', '/api/*', '/login', '/registro', '/recuperar/*'],
+        // /revision/* son materiales para la revision de Apple (grabaciones de
+        // pantalla que se enlazan en App Store Connect). No son contenido del
+        // sitio y no pintan nada en un buscador.
+        disallow: ['/admin/*', '/dashboard/*', '/api/*', '/login', '/registro', '/recuperar/*', '/revision/*'],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
