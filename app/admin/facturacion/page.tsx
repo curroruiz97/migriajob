@@ -7,8 +7,24 @@ import { HideOnIOSApp } from '@/components/common/hide-on-ios-app';
 
 export const metadata = { title: 'Facturación' };
 
+/**
+ * LA PANTALLA ENTERA SE ESCONDE EN LA APP DE IPHONE.
+ *
+ * Antes solo se escondia el boton "Mejorar a Pro". No bastaba: la pantalla
+ * anuncia un plan, unos limites de uso y un metodo de pago, y para Apple eso
+ * es un mecanismo de compra ajeno a la suya (directriz 3.1.1). Es el motivo
+ * del rechazo del 9 de septiembre de 2026.
+ *
+ * Conviene decirlo claro: hoy nada de esta pantalla es real. No existe columna
+ * de plan en `companies`, no hay tabla de suscripciones y no hay ni una sola
+ * comprobacion de limites en el codigo. "Starter", "0 / 10 busquedas" y
+ * "Metodo de pago" son texto fijo. Asi que esconderla no le quita nada a nadie
+ * —ni siquiera en la web, donde le esta prometiendo al usuario cosas que no
+ * existen—; cuando los planes se implementen de verdad habra que rehacerla.
+ */
 export default function FacturacionPage() {
   return (
+    <HideOnIOSApp fallback={<NoDisponibleEnLaApp />}>
     <div className="mx-auto max-w-4xl space-y-8">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Facturación</h1>
@@ -61,6 +77,20 @@ export default function FacturacionPage() {
         </h2>
         <p className="mt-2 text-sm text-zinc-500">No hay facturas todavía.</p>
       </div>
+    </div>
+    </HideOnIOSApp>
+  );
+}
+
+function NoDisponibleEnLaApp() {
+  return (
+    <div className="mx-auto max-w-4xl">
+      <h1 className="text-2xl font-bold tracking-tight">Facturación</h1>
+      {/* Sin mencionar la web: señalar donde contratar fuera de Apple es
+          justo lo que la directriz 3.1.1 prohibe. */}
+      <p className="mt-2 text-sm text-zinc-500">
+        No disponible en la aplicación.
+      </p>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { HideOnIOSApp } from '@/components/common/hide-on-ios-app';
 import { Logo } from '@/components/ui/logo';
 
 const SECTIONS = [
@@ -47,16 +48,27 @@ export function MarketingFooter() {
             <div key={section.title}>
               <h3 className="text-sm font-semibold text-foreground">{section.title}</h3>
               <ul className="mt-3 space-y-2">
-                {section.items.map((item) => (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className="text-sm text-muted-foreground transition-colors hover:text-primary"
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
+                {section.items.map((item) => {
+                  const enlace = (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  );
+                  // El pie es la unica puerta que quedaba a la pagina de
+                  // precios desde dentro de la app de iPhone, donde no puede
+                  // haber ninguna ruta a contratar fuera de Apple (3.1.1).
+                  // En la web y en Android el enlace sigue igual.
+                  return item.href === '/planes-y-precios' ? (
+                    <HideOnIOSApp key={item.href}>{enlace}</HideOnIOSApp>
+                  ) : (
+                    enlace
+                  );
+                })}
               </ul>
             </div>
           ))}

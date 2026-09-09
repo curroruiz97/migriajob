@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { HideOnIOSApp } from '@/components/common/hide-on-ios-app';
 import { ArrowRight, Search, Filter, MessageSquare, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -71,9 +72,13 @@ export default function ComoFuncionaPage() {
 
         <div className="mt-16 rounded-3xl bg-zinc-900 px-8 py-14 text-center text-white dark:bg-zinc-100 dark:text-zinc-900">
           <h2 className="text-3xl font-bold tracking-tight">¿Lo probamos?</h2>
-          <p className="mx-auto mt-3 max-w-xl text-zinc-300 dark:text-zinc-700">
-            14 días gratis del plan Pro. Sin tarjeta de crédito.
-          </p>
+          {/* Promocion de un plan de pago: no puede verse dentro de la app de
+              iPhone (directriz 3.1.1). En la web y en Android se ve igual. */}
+          <HideOnIOSApp>
+            <p className="mx-auto mt-3 max-w-xl text-zinc-300 dark:text-zinc-700">
+              14 días gratis del plan Pro. Sin tarjeta de crédito.
+            </p>
+          </HideOnIOSApp>
           <div className="mt-8 flex justify-center gap-3">
             <Button asChild size="lg" className="bg-white text-zinc-900 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white">
               <Link href="/registro">

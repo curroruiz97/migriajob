@@ -21,6 +21,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { HideOnIOSApp } from '@/components/common/hide-on-ios-app';
 
 interface AdminTopbarProps {
   user: { email: string };
@@ -190,15 +191,20 @@ export function AdminTopbar({ user, unreadCount = 0, variant = 'employer', avata
               {!isCandidate && (
                 <>
                   <div className="p-1">
-                    <DropdownMenuItem asChild>
-                      <Link
-                        href="/admin/facturacion"
-                        className="flex cursor-pointer items-center gap-2.5 px-2.5 py-2 text-sm"
-                      >
-                        <CreditCard className="h-4 w-4 text-muted-foreground" />
-                        Facturación
-                      </Link>
-                    </DropdownMenuItem>
+                    {/* Facturación no aparece en la app de iPhone: la pantalla
+                        habla de planes y método de pago, y para Apple eso es una
+                        vía de compra ajena a la suya (3.1.1). */}
+                    <HideOnIOSApp>
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/admin/facturacion"
+                          className="flex cursor-pointer items-center gap-2.5 px-2.5 py-2 text-sm"
+                        >
+                          <CreditCard className="h-4 w-4 text-muted-foreground" />
+                          Facturación
+                        </Link>
+                      </DropdownMenuItem>
+                    </HideOnIOSApp>
                     <DropdownMenuItem asChild>
                       <Link
                         href="/admin/configuracion"

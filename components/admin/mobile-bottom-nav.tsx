@@ -30,6 +30,7 @@ import {
 import { signOutAction } from '@/app/(auth)/actions';
 import { Logo } from '@/components/ui/logo';
 import { cn } from '@/lib/utils';
+import { useIsIOSApp } from '@/lib/hooks/use-is-ios-app';
 
 type NavItem = {
   href: string;
@@ -90,9 +91,16 @@ export function MobileBottomNav({
 }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const esAppDeIPhone = useIsIOSApp();
 
   const primary = variant === 'employer' ? EMPLOYER_PRIMARY : CANDIDATE_PRIMARY;
-  const menu = variant === 'employer' ? EMPLOYER_MENU : CANDIDATE_MENU;
+  // Facturación fuera del menú en la app de iPhone: esa pantalla habla de
+  // planes y método de pago, y para Apple es una vía de compra ajena a la
+  // suya (3.1.1). En la web y en Android sigue estando.
+  const menuCompleto = variant === 'employer' ? EMPLOYER_MENU : CANDIDATE_MENU;
+  const menu = esAppDeIPhone
+    ? menuCompleto.filter((item) => item.href !== '/admin/facturacion')
+    : menuCompleto;
   const hasMore = menu.length > 0;
 
   // Acento unificado: ambos roles usan el terracota (primary) de marca para
