@@ -17,6 +17,7 @@ import {
   FileText,
   Inbox,
   FolderOpen,
+  ShieldAlert,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 import { cn } from '@/lib/utils';
@@ -29,6 +30,11 @@ const NAV: Array<{ href: string; label: string; icon: typeof Megaphone; exact?: 
   { href: '/admin/candidatos', label: 'Buscar candidatos', icon: Users },
   { href: '/admin/procesos', label: 'Mis procesos', icon: Workflow },
   { href: '/admin/expedientes', label: 'Expedientes', icon: FolderOpen, adminOnly: true },
+  // La bandeja de denuncias no estaba en ningún menú: se abría solo escribiendo
+  // la dirección. La directriz 1.2 de Apple no se conforma con que exista el
+  // botón de denunciar, pide que alguien las atienda, y nadie atiende una
+  // bandeja que no ve.
+  { href: '/admin/moderacion', label: 'Moderación', icon: ShieldAlert, adminOnly: true },
   { href: '/admin/busqueda-avanzada', label: 'Búsqueda avanzada', icon: Search },
   { href: '/admin/busquedas-guardadas', label: 'Búsquedas guardadas', icon: BookmarkCheck },
   { href: '/admin/favoritos', label: 'Favoritos', icon: Heart },

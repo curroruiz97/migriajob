@@ -7,6 +7,8 @@ import {
   Users,
   Search,
   Workflow,
+  ShieldAlert,
+  FolderOpen,
   MessageSquare,
   MessageCircle,
   CreditCard,
@@ -39,6 +41,8 @@ type NavItem = {
   exact?: boolean;
   /** Muestra el badge de no leídos en este tab. */
   badge?: boolean;
+  /** Solo para el equipo de Migria. Una empresa no lo ve. */
+  adminOnly?: boolean;
 };
 
 const EMPLOYER_PRIMARY: NavItem[] = [
@@ -51,7 +55,11 @@ const EMPLOYER_PRIMARY: NavItem[] = [
 const EMPLOYER_MENU: NavItem[] = [
   { href: '/admin/candidatos', label: 'Buscar candidatos', icon: Users },
   { href: '/admin/procesos', label: 'Mis procesos', icon: Workflow },
-  { href: '/admin/expedientes', label: 'Expedientes', icon: Workflow },
+  // Las dos de Migria. Estaban mal: Expedientes salía para cualquier empresa
+  // —el menú móvil nunca supo del rol—, y Moderación no salía para nadie, de
+  // modo que la bandeja de denuncias solo se abría escribiendo la dirección.
+  { href: '/admin/expedientes', label: 'Expedientes', icon: FolderOpen, adminOnly: true },
+  { href: '/admin/moderacion', label: 'Moderación', icon: ShieldAlert, adminOnly: true },
   { href: '/admin/busqueda-avanzada', label: 'Búsqueda avanzada', icon: Search },
   { href: '/admin/busquedas-guardadas', label: 'Búsquedas guardadas', icon: BookmarkCheck },
   { href: '/admin/favoritos', label: 'Favoritos', icon: Heart },
@@ -85,9 +93,12 @@ function isActive(pathname: string, item: NavItem) {
 export function MobileBottomNav({
   variant,
   unreadCount = 0,
+  isAdmin = false,
 }: {
   variant: 'employer' | 'candidate';
   unreadCount?: number;
+  /** Equipo de Migria: añade Expedientes y Moderación al menú. */
+  isAdmin?: boolean;
 }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -97,10 +108,12 @@ export function MobileBottomNav({
   // Facturación fuera del menú en la app de iPhone: esa pantalla habla de
   // planes y método de pago, y para Apple es una vía de compra ajena a la
   // suya (3.1.1). En la web y en Android sigue estando.
-  const menuCompleto = variant === 'employer' ? EMPLOYER_MENU : CANDIDATE_MENU;
+  const menuBase = (variant === 'employer' ? EMPLOYER_MENU : CANDIDATE_MENU).filter(
+    (item) => !item.adminOnly || isAdmin
+  );
   const menu = esAppDeIPhone
-    ? menuCompleto.filter((item) => item.href !== '/admin/facturacion')
-    : menuCompleto;
+    ? menuBase.filter((item) => item.href !== '/admin/facturacion')
+    : menuBase;
   const hasMore = menu.length > 0;
 
   // Acento unificado: ambos roles usan el terracota (primary) de marca para

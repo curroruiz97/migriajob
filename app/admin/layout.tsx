@@ -77,7 +77,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         </div>
       </div>
       <CompareBar />
-      <MobileBottomNav variant="employer" unreadCount={unreadCount} />
+      <MobileBottomNav variant="employer" unreadCount={unreadCount} isAdmin={role === 'admin'} />
     </CompareProvider>
   );
 }
