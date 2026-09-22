@@ -44,6 +44,12 @@ const nextConfig: NextConfig = {
     ];
   },
   async headers() {
+    // Las fichas de candidato no se indexan mientras el catálogo esté cerrado.
+    // La página ya manda su propio `noindex` en el <head>; esta cabecera es el
+    // segundo cinturón, porque la de abajo, que aplica a TODAS las rutas, dice
+    // "index" y conviene que aquí no haya ninguna duda.
+    const fichasIndexables = process.env.CATALOGO_PUBLICO === 'true';
+
     return [
       {
         // Apply these headers to all routes
@@ -56,6 +62,16 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      // Va DESPUÉS de la regla general a propósito: con la misma clave, la
+      // última que coincide es la que se aplica.
+      ...(fichasIndexables
+        ? []
+        : [
+            {
+              source: '/perfiles/:slug+',
+              headers: [{ key: 'X-Robots-Tag', value: 'noindex, follow' }],
+            },
+          ]),
       {
         // Apply specific headers to image files
         source: '/:path*.jpg',

@@ -1,0 +1,51 @@
+-- ============================================================
+-- Migración 0020: cerrar la lectura pública de `profiles`
+-- ============================================================
+-- QUÉ PASABA
+-- La migración 0017 tapó la fuga de datos personales en `candidates`, pero la
+-- tabla de al lado siguió abierta. `profiles` conserva desde el primer día:
+--
+--   create policy "Public read profiles" on profiles for select using (true);
+--
+-- `using (true)` es literal: cualquiera, sin sesión, puede leer la tabla
+-- entera. Y `profiles` guarda, de TODAS las cuentas —candidatos, empresas y
+-- administradores—, `full_name`, `phone`, `location`, `avatar_url` y `role`.
+--
+-- "Cualquiera" no es una forma de hablar: la clave pública de Supabase viaja
+-- dentro del JavaScript de la web, es pública por diseño. Con ella, una sola
+-- petición devuelve el listado completo, incluidos los teléfonos de las cuentas
+-- de empresa y cuáles son las cuentas de administrador.
+--
+-- QUÉ HACE ESTO
+-- En Postgres el permiso de SELECT sobre una tabla cubre todas sus columnas y
+-- no se puede recortar quitando columnas sueltas: hay que retirar el permiso de
+-- tabla y volver a darlo columna a columna, o no darlo. Aquí no se da ninguna.
+--
+-- POR QUÉ SE PUEDE REVOCAR ENTERO Y NO COLUMNA A COLUMNA, COMO EN 0017
+-- Se revisaron las 23 consultas a `profiles` del código desplegado. Todas
+-- piden `role` del propio usuario y están dentro de un `if (user)`, o viven en
+-- /admin y /dashboard. Los únicos embeds (conversaciones, solicitudes,
+-- denuncias) están también en /admin. Ninguna lectura la hace `anon`.
+--
+-- La política RLS se queda como está y el rol `authenticated` no se toca: las
+-- empresas con sesión siguen viendo exactamente lo mismo que hasta ahora. Lo
+-- que cambia es que sin sesión la base de datos ya no responde.
+--
+-- `auth_role()` es SECURITY DEFINER, así que sigue funcionando: las políticas
+-- de otras tablas que la usan no se ven afectadas.
+--
+-- CÓMO SE REVIERTE, SI ALGO PÚBLICO DEJARA DE PINTARSE
+--   grant select (id, role, full_name, avatar_url) on public.profiles to anon;
+-- Nunca `phone` ni `location`, y nunca la tabla entera.
+
+revoke select on public.profiles from anon;
+
+-- Comprobación: esta consulta debe devolver cero filas después de aplicar la
+-- migración. Si devuelve alguna, `anon` conserva permiso sobre esa columna.
+--
+--   select column_name
+--   from information_schema.column_privileges
+--   where table_schema = 'public'
+--     and table_name = 'profiles'
+--     and grantee = 'anon'
+--     and privilege_type = 'SELECT';

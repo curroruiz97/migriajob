@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { createClient } from '@/lib/supabase/server';
+import { catalogoEsPublico } from '@/lib/config/catalogo';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
@@ -13,6 +14,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/registro`, lastModified: new Date(), priority: 0.5 },
     { url: `${baseUrl}/login`, lastModified: new Date(), priority: 0.5 },
   ];
+
+  // Con el catálogo cerrado las fichas llevan `noindex`: pedirle a Google que
+  // las rastree desde el sitemap sería contradecirse. Se quedan fuera hasta que
+  // se vuelva a abrir (CATALOGO_PUBLICO=true), y entonces vuelven solas.
+  if (!catalogoEsPublico()) return staticRoutes;
 
   let profileRoutes: MetadataRoute.Sitemap = [];
   try {

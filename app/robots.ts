@@ -7,6 +7,11 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
+        // OJO: `/perfiles/*` sigue permitido A PROPÓSITO aunque las fichas
+        // lleven `noindex` mientras el catálogo esté cerrado. Un `Disallow`
+        // aquí impediría a Google entrar, y sin entrar no puede leer el
+        // noindex: las URLs que ya tiene indexadas se quedarían para siempre.
+        // Primero se desindexan, y solo después tendría sentido bloquear.
         allow: ['/', '/perfiles/*'],
         // /revision/* son materiales para la revision de Apple (grabaciones de
         // pantalla que se enlazan en App Store Connect). No son contenido del

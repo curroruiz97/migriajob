@@ -9,6 +9,8 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
+import { CatalogoBloqueado, aPerfilAnonimo } from '@/components/public/catalogo-bloqueado';
+import { puedeVerCatalogo, rolDelVisitante } from '@/lib/config/catalogo';
 
 export const metadata = {
   title: 'Buscar talento · Profesionales latinos verificados | Migria',
@@ -43,6 +45,11 @@ const HIGHLIGHTS = [
 export default async function PerfilesPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const view = params.view === 'list' ? 'list' : 'grid';
+
+  // Las fichas con nombre son para quien contrata. Sin sesión de empresa se
+  // ve el escaparate anónimo (ver lib/config/catalogo.ts). El hero y los
+  // totales se mantienen en los dos casos: ahí no hay dato de nadie.
+  const puedeVer = puedeVerCatalogo(await rolDelVisitante());
 
   const { items: profiles, total, perPage } = await searchProfiles({
     q: params.q,
@@ -142,6 +149,7 @@ export default async function PerfilesPage({ searchParams }: PageProps) {
       </section>
 
       {/* CONTENIDO */}
+      {puedeVer ? (
       <Container size="xl" className="py-10" id="filtros">
         <div className="grid gap-8 lg:grid-cols-[300px_1fr]">
           <aside className="lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto scrollbar-thin">
@@ -191,6 +199,11 @@ export default async function PerfilesPage({ searchParams }: PageProps) {
           </div>
         </div>
       </Container>
+      ) : (
+        <Container size="xl" className="py-10" id="filtros">
+          <CatalogoBloqueado total={total} muestra={profiles.slice(0, 6).map(aPerfilAnonimo)} />
+        </Container>
+      )}
 
       {/* CTA */}
       <Container size="xl" className="pb-20">

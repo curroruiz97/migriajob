@@ -6,6 +6,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ProfileCard, ProfileCardPlaceholder } from '@/components/public/profile-card';
+import { PerfilTeaser, aPerfilAnonimo } from '@/components/public/catalogo-bloqueado';
+import { puedeVerCatalogo } from '@/lib/config/catalogo';
 import { HeroFloatingCards } from '@/components/public/hero-floating-cards';
 import { AnimatedCounter } from '@/components/ui/animated-counter';
 import { CountryFlag } from '@/components/ui/country-flag';
@@ -78,6 +80,10 @@ export default async function HomePage() {
   }
   const showEmpresa = !role || role === 'employer' || role === 'admin';
   const showCandidato = !role || role === 'candidate';
+
+  // El talento destacado enseña el nombre y la cara, así que fuera de una
+  // cuenta de empresa se pinta en anónimo: mismo gancho, sin publicar a nadie.
+  const puedeVerFichas = puedeVerCatalogo(role);
 
   return (
     <div className="bg-background">
@@ -335,7 +341,15 @@ export default async function HomePage() {
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {featured.length === 0
               ? Array.from({ length: 6 }).map((_, i) => <ProfileCardPlaceholder key={i} />)
-              : featured.slice(0, 6).map((p) => <ProfileCard key={p.id} profile={p} />)}
+              : featured
+                  .slice(0, 6)
+                  .map((p) =>
+                    puedeVerFichas ? (
+                      <ProfileCard key={p.id} profile={p} />
+                    ) : (
+                      <PerfilTeaser key={p.id} perfil={aPerfilAnonimo(p)} />
+                    )
+                  )}
           </div>
         </div>
       </section>

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
   Briefcase, ExternalLink, GraduationCap, Languages as LanguagesIcon,
@@ -19,8 +20,15 @@ import { SkillBar } from '@/components/ui/skill-bar';
 import { getProfileBySlug, incrementProfileViews } from '@/lib/db/queries';
 import { ReportDialog } from '@/components/moderation/report-dialog';
 import { ContactButton } from '@/components/messaging/contact-button';
+import { PerfilTeaser, aPerfilAnonimo } from '@/components/public/catalogo-bloqueado';
+import { catalogoEsPublico, puedeVerCatalogo, rolDelVisitante } from '@/lib/config/catalogo';
 
-export const revalidate = 120;
+/**
+ * Antes se revalidaba cada 120 s. Ahora quién puede ver la ficha depende de la
+ * sesión, y una página cacheada no puede responder distinto a cada visitante:
+ * o la sirve entera a todos o a nadie.
+ */
+export const dynamic = 'force-dynamic';
 
 interface ExperienceItem {
   company: string; role: string; start?: string; end?: string; description?: string;
@@ -54,9 +62,17 @@ export async function generateMetadata({
     profile.bio?.slice(0, 160) ??
     `${title}${country ? ` · Profesional de ${country}` : ''} en Migria.`;
 
+  // Con el catálogo cerrado estas fichas no se indexan. Se manda `noindex` en
+  // la propia página, y no un bloqueo en robots.txt, precisamente para que
+  // Google pueda entrar, leerlo y retirar del índice las que ya tiene. Un
+  // Disallow haría lo contrario: sin rastreo no hay forma de ver el noindex y
+  // las URLs viejas se quedarían.
+  const indexable = catalogoEsPublico();
+
   return {
     title,
     description,
+    robots: indexable ? undefined : { index: false, follow: true },
     openGraph: {
       title: `${title} · Migria`,
       description,
@@ -73,6 +89,40 @@ export default async function ProfileDetailPage({
   const { slug } = await params;
   const profile = await getProfileBySlug(slug);
   if (!profile) notFound();
+
+  // Sin cuenta de empresa se devuelve la ficha en anónimo, no un 404 ni un
+  // redirect: la página existe, y así Google la visita, ve el `noindex` de
+  // arriba y retira del índice las que ya tenía. Además el visitante entiende
+  // qué hay detrás y tiene dónde registrarse.
+  if (!puedeVerCatalogo(await rolDelVisitante())) {
+    return (
+      <div className="bg-background">
+        <div className="mx-auto w-full max-w-3xl px-4 py-16 sm:px-6">
+          <div className="max-w-md">
+            <PerfilTeaser perfil={aPerfilAnonimo(profile)} />
+          </div>
+          <div className="mt-8 rounded-2xl border border-border bg-surface p-6 sm:p-8">
+            <h1 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
+              Esta ficha se abre con una cuenta de empresa.
+            </h1>
+            <p className="mt-3 text-muted-foreground">
+              El nombre, la trayectoria completa, la documentación y el contacto de este
+              profesional solo se muestran a empresas registradas. Proteger esos datos es parte
+              del compromiso que Migria tiene con cada candidato.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Button asChild size="lg" className="rounded-full">
+                <Link href="/registro?role=employer">Crear cuenta de empresa</Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="rounded-full">
+                <Link href="/login">Iniciar sesión</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   incrementProfileViews(profile.id).catch(() => {});
 
