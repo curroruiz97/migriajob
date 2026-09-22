@@ -48,7 +48,7 @@ const nextConfig: NextConfig = {
     // La página ya manda su propio `noindex` en el <head>; esta cabecera es el
     // segundo cinturón, porque la de abajo, que aplica a TODAS las rutas, dice
     // "index" y conviene que aquí no haya ninguna duda.
-    const fichasIndexables = process.env.CATALOGO_PUBLICO === 'true';
+    const fichasIndexables = process.env.CATALOGO_PUBLICO !== 'false';
 
     return [
       {

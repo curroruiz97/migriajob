@@ -1,34 +1,38 @@
 /**
  * ¿Quién puede ver el catálogo de candidatos?
  *
- * POR QUÉ EXISTE ESTO
- * Los 1.055 candidatos importados del Excel de postulantes no tienen cuenta:
- * no se registraron, no pueden entrar, no pueden editar ni retirar su ficha.
- * Estaban publicados en abierto e indexados en Google con nombre y apellidos.
+ * POR DEFECTO ESTÁ ABIERTO, Y ES UNA DECISIÓN DE NEGOCIO
+ * El catálogo se cerró el 22 de septiembre de 2026 y se volvió a abrir el
+ * mismo día, con este razonamiento de Curro: lo que Migria vende no es el
+ * acceso a los candidatos, es el proceso. Una empresa que vea una ficha no
+ * puede llamar a esa persona y traérsela de Perú por su cuenta: necesita la
+ * captación, la validación, la extranjería, el visado, el alta, el vuelo y el
+ * acompañamiento. El escaparate abierto es entonces marketing —enseña el fondo
+ * de talento que justifica el servicio— y no una fuga de valor.
  *
- * Y en el modelo de Migria ese escaparate abierto no vende nada: la empresa no
- * navega perfiles por su cuenta, habla con Migria y Migria le presenta la short
- * list. Así que el catálogo abierto era todo el riesgo y ninguna venta. Detrás
- * de registro, además, cada empresa que mira deja su correo.
+ * CÓMO SE CIERRA, SI ALGÚN DÍA HACE FALTA
+ * Poniendo `CATALOGO_PUBLICO=false` en las variables de entorno de Vercel. No
+ * hace falta tocar código ni base de datos. Con eso, las fichas con nombre solo
+ * se abren con sesión de empresa, el visitante ve el catálogo en anónimo
+ * (components/public/catalogo-bloqueado.tsx), las fichas mandan `noindex` y los
+ * perfiles salen del sitemap.
  *
- * CÓMO SE REVIERTE
- * Poniendo `CATALOGO_PUBLICO=true` en las variables de entorno de Vercel. No
- * hace falta tocar código ni base de datos, y el despliegue que dispara el
- * cambio de variable lo deja como estaba: catálogo abierto, fichas indexables y
- * perfiles otra vez en el sitemap.
+ * Deliberadamente NO se toca `is_public` en la base de datos ni las políticas
+ * de acceso: lo que cada candidato decidió sobre su propia visibilidad se
+ * respeta en los dos casos.
  *
- * Deliberadamente NO se ha tocado `is_public` en la base de datos ni las
- * políticas de acceso. Lo que un candidato decidió sobre su propia visibilidad
- * sigue guardado tal cual, y el día que se revierta esto vuelve solo.
+ * Lo que queda pendiente al margen de esto, porque no depende de que el
+ * catálogo esté abierto o cerrado: las 1.055 personas importadas del Excel no
+ * saben que su ficha está publicada y no tienen forma de pedir la baja.
  */
 
 import { createClient } from '@/lib/supabase/server';
 
 export type RolUsuario = 'candidate' | 'employer' | 'admin' | null;
 
-/** Interruptor global. Sin la variable puesta, el catálogo está cerrado. */
+/** Interruptor global. Sin la variable puesta, el catálogo está abierto. */
 export function catalogoEsPublico(): boolean {
-  return process.env.CATALOGO_PUBLICO === 'true';
+  return process.env.CATALOGO_PUBLICO !== 'false';
 }
 
 /**
