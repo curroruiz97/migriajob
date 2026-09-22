@@ -8,6 +8,14 @@ const config: Config = {
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
+    // FALTABA `lib`, y llevaba faltando desde el primer commit. Tailwind solo
+    // genera las clases que encuentra escritas en los ficheros que escanea, y
+    // los degradados de las tarjetas de noticias viven en
+    // lib/content/articles.ts (`hero: 'from-success-soft to-info-soft'`).
+    // Al no mirar ahi, esas clases no existian en el CSS y las tarjetas
+    // salian en blanco. La unica que se veia era la que usaba
+    // `from-primary-soft`, porque esa clase la generaba otro componente.
+    './lib/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
