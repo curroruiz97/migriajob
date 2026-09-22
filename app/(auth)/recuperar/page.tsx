@@ -6,7 +6,7 @@ import {
   AuthBrandHeaderMobile,
 } from '@/components/public/auth-brand-panel';
 
-export const metadata = { title: 'Recuperar contraseña · Migria' };
+export const metadata = { title: 'Recuperar contraseña' };
 
 export default function RecuperarPage() {
   return (

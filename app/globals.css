@@ -8,52 +8,60 @@
     --font-geist-mono: "Geist Mono";
     --font-display: "Instrument Serif", "Fraunces", Georgia, serif;
 
-    /* === Paleta Migria oficial (#b55339 terracota) === */
-    --background: 35 53% 97%;
-    --foreground: 22 53% 9%;
+    /* === Paleta Talnet (#507BEC azul, #050335 azul marino) ===
+       Los dos colores salen de su propia identidad: el token --primary de
+       talnetgroup.com y los pixeles de su favicon. Los neutros llevan un
+       sesgo minimo hacia el azul —no son grises puros— para que el conjunto
+       lea como elegido y no como plantilla. */
+    --background: 0 0% 98%;
+    --foreground: 230 25% 12%;
     --surface: 0 0% 100%;
-    --surface-muted: 30 47% 94%;
+    --surface-muted: 220 20% 97%;
     --card: 0 0% 100%;
-    --card-foreground: 22 53% 9%;
+    --card-foreground: 230 25% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 22 53% 9%;
+    --popover-foreground: 230 25% 12%;
 
-    /* PRIMARY = #b55339 — color oficial Migria */
-    --primary: 13 52% 47%;
+    /* PRIMARY = #507BEC — color oficial Talnet */
+    --primary: 224 80% 62%;
     --primary-foreground: 0 0% 100%;
-    --primary-soft: 13 52% 92%;
+    --primary-soft: 224 80% 94%;
 
-    --secondary: 22 53% 9%;
-    --secondary-foreground: 24 76% 91%;
+    /* SECONDARY = #050335 — el azul marino del logotipo */
+    --secondary: 242 89% 11%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 30 47% 94%;
-    --muted-foreground: 26 26% 34%;
+    --muted: 220 20% 96%;
+    --muted-foreground: 222 10% 45%;
 
-    /* ACCENT = variación más oscura del primary para gradientes */
-    --accent: 12 58% 38%;
+    /* ACCENT: en Talnet el acento ES el primario. Se conserva el token con
+       una variante mas profunda para los degradados, y --accent-warm, que
+       era el amarillo de Migria, pasa a un azul claro: se usa en el
+       degradado del hero y quitarlo lo romperia. */
+    --accent: 230 72% 52%;
     --accent-foreground: 0 0% 100%;
-    --accent-warm: 38 90% 52%;
+    --accent-warm: 214 90% 70%;
 
-    --destructive: 0 64% 50%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --destructive-soft: 0 70% 94%;
+    --destructive-soft: 0 80% 95%;
 
-    --success: 156 100% 32%;
+    --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
-    --success-soft: 152 67% 90%;
+    --success-soft: 142 55% 92%;
 
-    --warning: 38 100% 42%;
+    --warning: 38 92% 45%;
     --warning-foreground: 0 0% 100%;
-    --warning-soft: 38 95% 92%;
+    --warning-soft: 38 92% 93%;
 
-    --info: 203 88% 41%;
+    --info: 199 89% 45%;
     --info-foreground: 0 0% 100%;
-    --info-soft: 207 87% 92%;
+    --info-soft: 199 85% 93%;
 
-    --border: 30 35% 87%;
-    --border-strong: 28 26% 72%;
-    --input: 30 35% 87%;
-    --ring: 18 67% 56%;
+    --border: 220 16% 89%;
+    --border-strong: 220 12% 74%;
+    --input: 220 16% 89%;
+    --ring: 224 80% 62%;
 
     --radius: 0.625rem;
     --radius-sm: 0.375rem;
@@ -62,56 +70,56 @@
     --radius-xl: 1.25rem;
     --radius-2xl: 1.75rem;
 
-    --shadow-sm: 0 1px 2px rgba(35, 18, 11, .06);
-    --shadow-md: 0 4px 12px rgba(35, 18, 11, .08);
-    --shadow-lg: 0 12px 32px rgba(35, 18, 11, .10);
+    --shadow-sm: 0 1px 2px rgba(5, 3, 53, .06);
+    --shadow-md: 0 4px 12px rgba(5, 3, 53, .08);
+    --shadow-lg: 0 12px 32px rgba(5, 3, 53, .10);
   }
 
   .dark {
-    --background: 22 56% 6%;
-    --foreground: 24 76% 91%;
-    --surface: 22 50% 11%;
-    --surface-muted: 22 36% 15%;
-    --card: 22 50% 11%;
-    --card-foreground: 24 76% 91%;
-    --popover: 22 50% 11%;
-    --popover-foreground: 24 76% 91%;
+    --background: 240 30% 7%;
+    --foreground: 0 0% 98%;
+    --surface: 240 24% 11%;
+    --surface-muted: 235 25% 15%;
+    --card: 240 24% 11%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 24% 11%;
+    --popover-foreground: 0 0% 98%;
 
-    /* PRIMARY más luminoso para dark, basado en #b55339 */
-    --primary: 13 60% 60%;
-    --primary-foreground: 22 56% 6%;
-    --primary-soft: 22 36% 15%;
+    /* En oscuro el fondo es el azul marino de la marca, no un gris. */
+    --primary: 224 85% 68%;
+    --primary-foreground: 242 89% 11%;
+    --primary-soft: 235 40% 20%;
 
-    --secondary: 24 76% 91%;
-    --secondary-foreground: 22 56% 6%;
+    --secondary: 0 0% 98%;
+    --secondary-foreground: 242 89% 11%;
 
-    --muted: 22 36% 15%;
-    --muted-foreground: 28 26% 64%;
+    --muted: 235 25% 17%;
+    --muted-foreground: 225 14% 65%;
 
-    --accent: 13 65% 50%;
+    --accent: 224 75% 58%;
     --accent-foreground: 0 0% 100%;
-    --accent-warm: 38 95% 60%;
+    --accent-warm: 214 85% 66%;
 
-    --destructive: 0 64% 60%;
+    --destructive: 0 75% 62%;
     --destructive-foreground: 0 0% 100%;
-    --destructive-soft: 0 36% 18%;
+    --destructive-soft: 0 40% 20%;
 
-    --success: 156 70% 42%;
+    --success: 142 62% 45%;
     --success-foreground: 0 0% 100%;
-    --success-soft: 156 30% 18%;
+    --success-soft: 142 32% 18%;
 
-    --warning: 38 90% 56%;
-    --warning-foreground: 22 56% 6%;
-    --warning-soft: 38 36% 18%;
+    --warning: 38 88% 58%;
+    --warning-foreground: 242 89% 11%;
+    --warning-soft: 38 34% 19%;
 
-    --info: 203 80% 56%;
+    --info: 199 80% 58%;
     --info-foreground: 0 0% 100%;
-    --info-soft: 203 36% 18%;
+    --info-soft: 199 34% 19%;
 
-    --border: 22 30% 18%;
-    --border-strong: 22 24% 28%;
-    --input: 22 30% 18%;
-    --ring: 18 67% 64%;
+    --border: 235 22% 20%;
+    --border-strong: 235 16% 30%;
+    --input: 235 22% 20%;
+    --ring: 224 85% 68%;
   }
 
   * {

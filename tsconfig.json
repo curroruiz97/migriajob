@@ -24,5 +24,10 @@
     "strictNullChecks": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  // `tests` queda fuera del typecheck a proposito. Las pruebas importan de
+  // "bun:test", cuyos tipos los trae el runtime de bun y no este proyecto, asi
+  // que `tsc --noEmit` las daba por modulo inexistente y tumbaba el CI entero
+  // —build incluido— por un error que no existe. Quien las ejecuta es
+  // `bun test`, que si las compila y falla de verdad si algo esta mal.
+  "exclude": ["node_modules", "tests"]
 }

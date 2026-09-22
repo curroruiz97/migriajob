@@ -89,7 +89,7 @@ export const JOURNEY_STAGES = [
     number: 11,
     title: '¡Bienvenido a España!',
     subtitle: 'Tu proceso migratorio ha concluido exitosamente.',
-    description: '¡Felicidades! Has completado todo el proceso migratorio. Bienvenido a España y a tu nueva etapa profesional. El equipo de Migria te desea todo el éxito.',
+    description: '¡Felicidades! Has completado todo el proceso migratorio. Bienvenido a España y a tu nueva etapa profesional. El equipo de Talnet te desea todo el éxito.',
     icon: 'PartyPopper',
   },
 ] as const;

@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Términos y condiciones',
-  description: 'Términos y condiciones de uso de Migria.',
+  description: 'Términos y condiciones de uso de Talnet.',
 };
 
 export default function TermsPage() {
@@ -11,7 +11,7 @@ export default function TermsPage() {
 
       <h2>1. Aceptación</h2>
       <p>
-        Al crear una cuenta en Migria aceptas estos términos. Si no estás de acuerdo, no uses
+        Al crear una cuenta en Talnet aceptas estos términos. Si no estás de acuerdo, no uses
         el servicio.
       </p>
 
@@ -24,7 +24,7 @@ export default function TermsPage() {
       <h2>3. Tu contenido</h2>
       <p>
         Conservas la propiedad de la información que publicas. Al publicarla nos otorgas una
-        licencia mundial, no exclusiva y gratuita para mostrarla en Migria con la finalidad
+        licencia mundial, no exclusiva y gratuita para mostrarla en Talnet con la finalidad
         del servicio. Eres responsable de la veracidad de tu perfil.
       </p>
 
@@ -39,14 +39,14 @@ export default function TermsPage() {
 
       <h2>5. Tarifas</h2>
       <p>
-        Migria ofrece un plan gratuito y planes de pago (Pro y Enterprise). Las tarifas y
+        Talnet ofrece un plan gratuito y planes de pago (Pro y Enterprise). Las tarifas y
         condiciones se publican en <a href="/planes-y-precios">Planes y precios</a>. Las
         suscripciones se renuevan automáticamente salvo cancelación con 7 días de antelación.
       </p>
 
       <h2>6. Limitación de responsabilidad</h2>
       <p>
-        Migria es una plataforma de conexión. NO somos parte de la relación laboral entre
+        Talnet es una plataforma de conexión. NO somos parte de la relación laboral entre
         candidatos y empresas. No garantizamos contrataciones ni el comportamiento de los
         usuarios. Nuestra responsabilidad máxima se limita al importe pagado por el cliente
         en los 12 meses previos.
@@ -55,7 +55,7 @@ export default function TermsPage() {
       <h2>7. Cancelación de cuenta</h2>
       <p>
         Puedes eliminar tu cuenta en cualquier momento desde <code>/dashboard/configuracion</code>.
-        Migria puede suspender cuentas que infrinjan estos términos.
+        Talnet puede suspender cuentas que infrinjan estos términos.
       </p>
 
       <h2>8. Ley aplicable</h2>

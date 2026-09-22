@@ -25,16 +25,16 @@ const instrumentSerif = Instrument_Serif({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'),
   title: {
-    default: 'Migria — Talento latino, listo para trabajar en España',
-    template: '%s · Migria',
+    default: 'Talnet — Talento latino, listo para trabajar en España',
+    template: '%s · Talnet',
   },
   description:
     'Conectamos a profesionales de Latinoamérica con empresas españolas que necesitan personas verificadas, con permiso de trabajo y experiencia europea.',
   robots: { index: true, follow: true },
   openGraph: {
     type: 'website',
-    siteName: 'Migria',
-    title: 'Migria — Talento latino para empresas españolas',
+    siteName: 'Talnet',
+    title: 'Talnet — Talento latino para empresas españolas',
     description:
       'El escaparate de profesionales latinos verificados, con permiso de trabajo y disponibles para empresas en España.',
   },
@@ -44,7 +44,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover', // necesario para env(safe-area-inset-*) en notch/gestos
-  themeColor: '#b55339',
+  themeColor: '#507BEC',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -7,8 +7,8 @@ import {
 } from '@/components/public/auth-brand-panel';
 
 export const metadata = {
-  title: 'Iniciar sesión · Migria',
-  description: 'Accede a tu cuenta Migria',
+  title: 'Iniciar sesión',
+  description: 'Accede a tu cuenta Talnet',
 };
 
 export default async function LoginPage({

@@ -1,5 +1,5 @@
 /**
- * Artículos del blog Migria. Fuente: migriajob.com/noticias.
+ * Artículos del blog Talnet. Fuente: migriajob.com/noticias.
  * Cuerpo redactado con la información real disponible y referencias verificadas.
  */
 
@@ -59,7 +59,7 @@ export const ARTICLES: Article[] = [
         'Movilidad facilitada dentro de la UE.',
         'Reagrupación familiar más sencilla.',
       ]},
-      { type: 'callout', title: 'Migria te acompaña', text: 'Cada modalidad tiene sus tiempos, requisitos y costes. En MIGRIA gestionamos el expediente completo ante extranjería y la Embajada de España en tu país, para que tú solo tengas que preocuparte de prepararte para tu nuevo empleo.' },
+      { type: 'callout', title: 'Talnet te acompaña', text: 'Cada modalidad tiene sus tiempos, requisitos y costes. En TALNET gestionamos el expediente completo ante extranjería y la Embajada de España en tu país, para que tú solo tengas que preocuparte de prepararte para tu nuevo empleo.' },
     ],
   },
   {
@@ -78,7 +78,7 @@ export const ARTICLES: Article[] = [
       { type: 'h2', text: '2. Estabilidad económica' },
       { type: 'p', text: 'Sabes exactamente cuánto vas a cobrar, en qué condiciones y con qué horario. El contrato de trabajo está sujeto a la legislación española, lo que garantiza salario mínimo, vacaciones pagadas, derecho a indemnización por despido y prestación por desempleo si cotizas el mínimo exigido.' },
       { type: 'h2', text: '3. Acompañamiento real, no promesas' },
-      { type: 'p', text: 'Cuando viajas con un partner como MIGRIA tienes recepción en aeropuerto, traslado a tu empresa, búsqueda de alojamiento, kit de bienvenida con tarjeta SIM, gestión del empadronamiento y seguimiento durante tus primeros meses. La integración no es algo que te toca resolver solo: es parte del servicio.' },
+      { type: 'p', text: 'Cuando viajas con un partner como TALNET tienes recepción en aeropuerto, traslado a tu empresa, búsqueda de alojamiento, kit de bienvenida con tarjeta SIM, gestión del empadronamiento y seguimiento durante tus primeros meses. La integración no es algo que te toca resolver solo: es parte del servicio.' },
       { type: 'callout', title: 'Importante', text: 'Aceptar ofertas que no incluyan contrato de origen firmado y visado tramitado por la empresa contratante es la principal causa de fraudes y situaciones irregulares para trabajadores latinoamericanos. Verifica siempre.' },
     ],
   },
@@ -153,7 +153,7 @@ export const ARTICLES: Article[] = [
         'Pide ver la resolución de extranjería antes de pagar nada.',
         'Lee tu contrato completo: salario, jornada, lugar de trabajo, duración.',
       ]},
-      { type: 'callout', title: 'Cómo te ayuda Migria', text: 'En MIGRIA gestionamos el proceso completo: empresa española, contrato, expediente de extranjería, visado y aterrizaje. Trabajamos con consultoras legales certificadas en Perú y España.' },
+      { type: 'callout', title: 'Cómo te ayuda Talnet', text: 'En TALNET gestionamos el proceso completo: empresa española, contrato, expediente de extranjería, visado y aterrizaje. Trabajamos con consultoras legales certificadas en Perú y España.' },
     ],
   },
   {
@@ -178,7 +178,7 @@ export const ARTICLES: Article[] = [
       { type: 'h2', text: '5. ¿Qué documentos necesito antes de viajar?' },
       { type: 'p', text: 'Pasaporte vigente, antecedentes penales legalizados, certificado médico, contrato de trabajo firmado y visado expedido por la Embajada de España.' },
       { type: 'h2', text: '6. ¿Cuánto cuesta el proceso?' },
-      { type: 'p', text: 'Las tasas oficiales de visado y extranjería rondan los 300-500€ en total. Cuando trabajas con MIGRIA, los costes de tramitación legal están incluidos en el servicio acordado con la empresa contratante.' },
+      { type: 'p', text: 'Las tasas oficiales de visado y extranjería rondan los 300-500€ en total. Cuando trabajas con TALNET, los costes de tramitación legal están incluidos en el servicio acordado con la empresa contratante.' },
       { type: 'h2', text: '7. ¿Qué pasa si pierdo el empleo en España?' },
       { type: 'p', text: 'Si has cotizado el mínimo (12 meses), tienes derecho a prestación por desempleo. Hay además subsidios y ayudas autonómicas para situaciones de transición. Tu autorización de residencia se puede renovar aunque cambies de trabajo.' },
       { type: 'h2', text: '8. ¿Cómo me adapto culturalmente?' },
@@ -204,7 +204,7 @@ export const ARTICLES: Article[] = [
       { type: 'p', text: 'Es común que falsas agencias pidan pagos por adelantado por "gestión de visado", "curso obligatorio" o "alojamiento" que nunca se materializan. Una vez pagas, la persona desaparece. Las cantidades pueden superar los 3.000€.' },
       { type: 'h2', text: 'Riesgo 4: Desadaptación cultural sin red' },
       { type: 'p', text: 'Llegar solo a un país nuevo, sin trabajo formal, sin alojamiento estable, sin red de apoyo, en un momento de presión económica, lleva con frecuencia a problemas de salud mental y a tener que volver al país en peores condiciones de las que se salió.' },
-      { type: 'callout', title: '¿Cómo evitarlo?', text: 'Verifica siempre que la empresa contratante existe (CIF, dirección, web). Pide ver la resolución de extranjería antes de pagar nada. Si una oferta parece demasiado buena, probablemente lo es. Ante la duda, consulta con organismos oficiales o con MIGRIA.' },
+      { type: 'callout', title: '¿Cómo evitarlo?', text: 'Verifica siempre que la empresa contratante existe (CIF, dirección, web). Pide ver la resolución de extranjería antes de pagar nada. Si una oferta parece demasiado buena, probablemente lo es. Ante la duda, consulta con organismos oficiales o con TALNET.' },
     ],
   },
   {
@@ -238,7 +238,7 @@ export const ARTICLES: Article[] = [
       ]},
       { type: 'h2', text: 'Estafa 3: El contrato envenenado' },
       { type: 'p', text: 'La empresa existe, el visado es real, pero el contrato esconde cláusulas abusivas: descuento de "gastos de viaje" del salario durante un año, alojamiento obligatorio caro, prohibición de cambiar de empresa, etc. Te encuentras atrapado en condiciones casi de servidumbre.' },
-      { type: 'callout', title: 'Lo que hace MIGRIA', text: 'En MIGRIA todos los contratos cumplen el convenio colectivo del sector, sin cláusulas abusivas. Trabajamos solo con empresas verificadas, con varios años de actividad y referencias contrastadas. Y el coste de la tramitación legal lo asume la empresa contratante.' },
+      { type: 'callout', title: 'Lo que hace TALNET', text: 'En TALNET todos los contratos cumplen el convenio colectivo del sector, sin cláusulas abusivas. Trabajamos solo con empresas verificadas, con varios años de actividad y referencias contrastadas. Y el coste de la tramitación legal lo asume la empresa contratante.' },
     ],
   },
   {
@@ -301,7 +301,7 @@ export const ARTICLES: Article[] = [
       ]},
       { type: 'h2', text: '5. El rol del Consulado General de España en Lima' },
       { type: 'p', text: 'Una vez tu empresa ha tramitado y obtenido la autorización en España, recibes una notificación. Con esa resolución y el resto de documentación, pides cita en el Consulado de España en Lima para tu visado de trabajo. La cita puede demorar entre 1 y 3 meses según carga.' },
-      { type: 'callout', title: 'Migria como puente', text: 'Trabajamos con consultoras legales en Perú y España. Te acompañamos en cada paso, evitando errores documentales y garantizando que llegas con todo listo.' },
+      { type: 'callout', title: 'Talnet como puente', text: 'Trabajamos con consultoras legales en Perú y España. Te acompañamos en cada paso, evitando errores documentales y garantizando que llegas con todo listo.' },
     ],
   },
   {
@@ -330,7 +330,7 @@ export const ARTICLES: Article[] = [
       { type: 'h2', text: 'Error 7: No invertir en la documentación' },
       { type: 'p', text: 'Tener antecedentes penales legalizados, título universitario apostillado y certificados de cursos antes de iniciar entrevistas acelera el proceso enormemente. Las empresas valoran candidatos "listos para empezar".' },
       { type: 'h2', text: 'Error 8: Buscar solo' },
-      { type: 'p', text: 'El mercado laboral español tiene sus códigos. Tener un partner como MIGRIA que conoce ambos lados (la oferta española y el perfil latinoamericano) multiplica las probabilidades de éxito y reduce los riesgos.' },
+      { type: 'p', text: 'El mercado laboral español tiene sus códigos. Tener un partner como TALNET que conoce ambos lados (la oferta española y el perfil latinoamericano) multiplica las probabilidades de éxito y reduce los riesgos.' },
     ],
   },
 ];

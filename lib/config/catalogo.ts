@@ -3,7 +3,7 @@
  *
  * POR DEFECTO ESTÁ ABIERTO, Y ES UNA DECISIÓN DE NEGOCIO
  * El catálogo se cerró el 22 de septiembre de 2026 y se volvió a abrir el
- * mismo día, con este razonamiento de Curro: lo que Migria vende no es el
+ * mismo día, con este razonamiento de Curro: lo que Talnet vende no es el
  * acceso a los candidatos, es el proceso. Una empresa que vea una ficha no
  * puede llamar a esa persona y traérsela de Perú por su cuenta: necesita la
  * captación, la validación, la extranjería, el visado, el alta, el vuelo y el

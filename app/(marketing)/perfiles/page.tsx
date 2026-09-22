@@ -13,7 +13,7 @@ import { CatalogoBloqueado, aPerfilAnonimo } from '@/components/public/catalogo-
 import { puedeVerCatalogo, rolDelVisitante } from '@/lib/config/catalogo';
 
 export const metadata = {
-  title: 'Buscar talento · Profesionales latinos verificados | Migria',
+  title: 'Buscar talento · Profesionales latinos verificados',
   description:
     'Explora profesionales latinos cualificados. Filtra por país de origen, NIE, permiso de trabajo, homologación, ubicación y disponibilidad.',
 };

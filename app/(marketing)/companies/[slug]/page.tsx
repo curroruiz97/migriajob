@@ -20,7 +20,7 @@ export async function generateMetadata({
   if (!company) return { title: 'Empresa no encontrada' };
   return {
     title: company.name,
-    description: company.description ?? `Conoce ${company.name} en Migria.`,
+    description: company.description ?? `Conoce ${company.name} en Talnet.`,
   };
 }
 

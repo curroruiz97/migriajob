@@ -155,7 +155,7 @@ export default async function JobDetailPage({
               </Section>
             )}
 
-            <Section title="Acompañamiento Migria" icon={ShieldCheck}>
+            <Section title="Acompañamiento Talnet" icon={ShieldCheck}>
               <p className="text-muted-foreground">
                 Esta oferta incluye gestión migratoria completa: tramitación del visado, alta en Seguridad
                 Social, recepción en aeropuerto, kit de bienvenida y seguimiento durante los primeros meses.
@@ -169,7 +169,7 @@ export default async function JobDetailPage({
             <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
               <h3 className="font-display text-lg text-foreground">Aplica ya</h3>
               <p className="mt-1 text-xs text-muted-foreground">
-                Crea tu perfil en Migria y envía tu candidatura en un clic.
+                Crea tu perfil en Talnet y envía tu candidatura en un clic.
               </p>
               <Button asChild size="lg" className="mt-4 w-full">
                 <Link href={`/login?redirectTo=/dashboard/ofertas/${slug}`}>

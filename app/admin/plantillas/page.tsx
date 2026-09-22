@@ -12,7 +12,7 @@ const SUGGESTIONS = [
     name: 'Primera toma de contacto',
     body: `Hola {nombre},
 
-Vi tu perfil en Migria y me ha encantado tu experiencia en {rol}. Estamos buscando una persona para nuestro equipo en {ciudad} y creo que podrías encajar muy bien.
+Vi tu perfil en Talnet y me ha encantado tu experiencia en {rol}. Estamos buscando una persona para nuestro equipo en {ciudad} y creo que podrías encajar muy bien.
 
 ¿Te interesaría que tengamos una primera videollamada de 15 minutos esta semana para conocernos?
 

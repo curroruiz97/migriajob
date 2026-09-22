@@ -111,7 +111,7 @@ export async function GET(request: Request) {
         is_accompaniment: true,
       },
       push: {
-        title: 'Tu proceso en Migria',
+        title: 'Tu proceso en Talnet',
         body: message,
         link: '/dashboard',
       },

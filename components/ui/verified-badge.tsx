@@ -2,7 +2,7 @@ import { BadgeCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 /**
- * Badge tipo "Twitter verified" — perfil verificado por Migria.
+ * Badge tipo "Twitter verified" — perfil verificado por Talnet.
  */
 export function VerifiedBadge({
   size = 'md',
@@ -21,7 +21,7 @@ export function VerifiedBadge({
         showLabel && 'rounded-full bg-info-soft px-2 py-0.5 text-xs font-medium',
         className
       )}
-      title="Perfil verificado por Migria"
+      title="Perfil verificado por Talnet"
     >
       <BadgeCheck className={sizeMap[size]} fill="currentColor" stroke="white" strokeWidth={2.5} />
       {showLabel && <span>Verificado</span>}

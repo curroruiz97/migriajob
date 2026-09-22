@@ -9,7 +9,7 @@ export default async function OnboardingPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
-  // El equipo de Migria no crea empresa. Esta guarda es para quien llegue por
+  // El equipo de Talnet no crea empresa. Esta guarda es para quien llegue por
   // la dirección directa —un enlace guardado, el historial del navegador—:
   // sin ella, un administrador puede acabar dando de alta una empresa con su
   // propio nombre dentro de los datos de producción.

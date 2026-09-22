@@ -8,9 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 export const metadata = {
-  title: 'Migria España',
+  title: 'Talnet España',
   description:
-    'MIGRIA España, consultora especializada en reclutamiento y selección de talento estratégico para sectores clave de la economía española. Partner colaborador de las empresas.',
+    'TALNET España, consultora especializada en reclutamiento y selección de talento estratégico para sectores clave de la economía española. Partner colaborador de las empresas.',
 };
 
 const VALUES = [
@@ -122,7 +122,7 @@ const PLANS = [
     subtitle: 'Reclutamiento recurrente',
     price: 'Consultar',
     priceNote: 'Cuota mensual según volumen, más honorario por candidato contratado.',
-    description: 'Diseñado para empresas que necesitan contratar de forma continua. MIGRIA actúa como partner externo de reclutamiento.',
+    description: 'Diseñado para empresas que necesitan contratar de forma continua. TALNET actúa como partner externo de reclutamiento.',
     features: [
       'Gestión continua de procesos.',
       'Reclutamiento activo.',
@@ -148,7 +148,7 @@ export default function MigriaEspanaPage() {
         <div className="bg-dot-pattern absolute inset-0 opacity-50" aria-hidden="true" />
         <div className="relative mx-auto max-w-5xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <Badge variant="soft" className="mb-6">
-            <Building2 className="mr-1 h-3 w-3" /> Migria España
+            <Building2 className="mr-1 h-3 w-3" /> Talnet España
           </Badge>
           <h1 className="font-display text-5xl leading-[1.05] tracking-tight text-foreground sm:text-7xl">
             Partner estratégico en <em className="text-gradient-primary not-italic">reclutamiento</em> especializado.
@@ -178,7 +178,7 @@ export default function MigriaEspanaPage() {
         </h2>
         <div className="prose prose-zinc dark:prose-invert mt-6 max-w-none">
           <p>
-            MIGRIA España es una consultora especializada en <strong>reclutamiento y selección de talento</strong>{' '}
+            TALNET España es una consultora especializada en <strong>reclutamiento y selección de talento</strong>{' '}
             para sectores clave de la economía española.
           </p>
           <p>
@@ -273,7 +273,7 @@ export default function MigriaEspanaPage() {
           </h2>
           <div className="prose prose-zinc dark:prose-invert mx-auto mt-6 max-w-none">
             <p>
-              En MIGRIA trabajamos <strong>desde dentro del proyecto del cliente</strong>, alineando el proceso
+              En TALNET trabajamos <strong>desde dentro del proyecto del cliente</strong>, alineando el proceso
               de selección con su identidad corporativa, valores y necesidades reales. Cada proceso refuerza la
               imagen de marca empleadora de la empresa.
             </p>
@@ -313,13 +313,13 @@ export default function MigriaEspanaPage() {
         </div>
       </section>
 
-      {/* PROPUESTA DE VALOR / POR QUÉ ELEGIR MIGRIA */}
+      {/* PROPUESTA DE VALOR / POR QUÉ ELEGIR TALNET */}
       <section className="border-y border-border bg-secondary py-20 text-secondary-foreground">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <Badge className="mb-4 bg-accent-warm text-secondary">Nuestra propuesta de valor</Badge>
             <h2 className="font-display text-4xl leading-tight sm:text-5xl">
-              Por qué elegir MIGRIA.
+              Por qué elegir TALNET.
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-secondary-foreground/80">
               Minimizar tiempos, optimizar resultados e impulsar el crecimiento empresarial con el mejor

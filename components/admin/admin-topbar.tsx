@@ -53,7 +53,7 @@ export function AdminTopbar({ user, unreadCount = 0, variant = 'employer', avata
         {isCandidate ? (
           // Vista candidato: marca a la izquierda (sin buscador de candidatos — eso es de reclutador).
           <Link href="/dashboard/ofertas" aria-label="MigriaJob — Ofertas" className="flex items-center lg:hidden">
-            <Logo height={26} asChild />
+            <Logo height={22} asChild />
           </Link>
         ) : (
           // Vista empleador: buscador de candidatos.

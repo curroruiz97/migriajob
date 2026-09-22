@@ -22,7 +22,7 @@ export function ContactoForm() {
         <CheckCircle2 className="mx-auto h-10 w-10 text-success" />
         <h3 className="mt-4 font-display text-2xl text-foreground">Recibido. Gracias.</h3>
         <p className="mt-2 text-muted-foreground">
-          Tu consulta ya está con el equipo de Migria. Te respondemos en horario laboral,
+          Tu consulta ya está con el equipo de Talnet. Te respondemos en horario laboral,
           normalmente el mismo día.
         </p>
       </div>

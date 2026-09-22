@@ -4,8 +4,8 @@ import { RegistroForm } from './registro-form';
 import { AuthBrandHeaderMobile } from '@/components/public/auth-brand-panel';
 
 export const metadata = {
-  title: 'Crear cuenta · Migria',
-  description: 'Crea tu cuenta gratuita en Migria',
+  title: 'Crear cuenta',
+  description: 'Crea tu cuenta gratuita en Talnet',
 };
 
 export default async function RegistroPage({

@@ -103,7 +103,7 @@ export async function generateMetadata({
   const country = profile.country_of_origin ? countryName(profile.country_of_origin) : '';
   const description =
     profile.bio?.slice(0, 160) ??
-    `${title}${country ? ` · Profesional de ${country}` : ''} en Migria.`;
+    `${title}${country ? ` · Profesional de ${country}` : ''} en Talnet.`;
 
   // Con el catálogo cerrado estas fichas no se indexan. Se manda `noindex` en
   // la propia página, y no un bloqueo en robots.txt, precisamente para que
@@ -117,7 +117,7 @@ export async function generateMetadata({
     description,
     robots: indexable ? undefined : { index: false, follow: true },
     openGraph: {
-      title: `${title} · Migria`,
+      title: `${title} · Talnet`,
       description,
       type: 'profile',
       images: profile.avatar_url ? [{ url: profile.avatar_url }] : undefined,
@@ -151,7 +151,7 @@ export default async function ProfileDetailPage({
             <p className="mt-3 text-muted-foreground">
               El nombre, la trayectoria completa, la documentación y el contacto de este
               profesional solo se muestran a empresas registradas. Proteger esos datos es parte
-              del compromiso que Migria tiene con cada candidato.
+              del compromiso que Talnet tiene con cada candidato.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button asChild size="lg" className="rounded-full">
@@ -258,7 +258,7 @@ export default async function ProfileDetailPage({
                 <Button size="lg" variant="outline">
                   <Heart className="mr-1.5 h-4 w-4" /> Guardar
                 </Button>
-                <ShareButton size="lg" variant="ghost" title={profile.headline ?? 'Perfil'} text={`Perfil profesional en Migria`} label="Compartir" />
+                <ShareButton size="lg" variant="ghost" title={profile.headline ?? 'Perfil'} text={`Perfil profesional en Talnet`} label="Compartir" />
               </div>
             </div>
           </div>

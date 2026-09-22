@@ -99,7 +99,7 @@ export default async function MiProcesoPage() {
           Mi proceso
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Seguimiento en tiempo real de tu proceso migratorio. El equipo de Migria actualiza
+          Seguimiento en tiempo real de tu proceso migratorio. El equipo de Talnet actualiza
           cada etapa a medida que avanzas.
         </p>
       </div>
@@ -164,7 +164,7 @@ export default async function MiProcesoPage() {
             <section className="rounded-2xl border border-border bg-surface p-5">
               <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <FileText className="h-4 w-4 text-primary" />
-                Mensaje del equipo Migria
+                Mensaje del equipo Talnet
               </h2>
               <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-foreground">
                 {journey.notes}

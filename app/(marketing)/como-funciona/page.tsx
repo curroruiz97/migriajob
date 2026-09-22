@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 
 export const metadata = {
   title: 'Cómo funciona',
-  description: 'Descubre cómo Migria conecta empresas con talento cualificado en cuatro sencillos pasos.',
+  description: 'Descubre cómo Talnet conecta empresas con talento cualificado en cuatro sencillos pasos.',
 };
 
 const STEPS = [
@@ -41,7 +41,7 @@ export default function ComoFuncionaPage() {
       <div className="mx-auto max-w-5xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl dark:text-zinc-50">
-            Cómo funciona Migria
+            Cómo funciona Talnet
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-zinc-600 dark:text-zinc-300">
             En cuatro pasos pasas de "necesito contratar" a "tengo a la persona adecuada".

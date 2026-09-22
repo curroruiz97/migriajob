@@ -592,7 +592,7 @@ export const journeyStageHistory = pgTable(
   })
 );
 
-// ============ INTERNAL CONTROL (Migria admin) ============
+// ============ INTERNAL CONTROL (Talnet admin) ============
 export const paymentStatus = pgEnum('payment_status', ['pendiente', 'parcial', 'completado', 'reembolsado']);
 export const paymentConcept = pgEnum('payment_concept', [
   'tasa_extranjeria', 'honorarios_migria', 'tasa_consular', 'seguro_medico', 'vuelo', 'alojamiento', 'otros',

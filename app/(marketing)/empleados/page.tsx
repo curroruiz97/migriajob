@@ -7,9 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 export const metadata = {
-  title: 'Migria para empleados',
+  title: 'Talnet para empleados',
   description:
-    'MIGRIA para empleados conecta tu talento con oportunidades reales en España, acompañándote en todo el proceso.',
+    'TALNET para empleados conecta tu talento con oportunidades reales en España, acompañándote en todo el proceso.',
 };
 
 const REASONS_SPAIN = [
@@ -85,10 +85,10 @@ export default function EmpleadosPage() {
         <div className="bg-dot-pattern absolute inset-0 opacity-50" aria-hidden="true" />
         <div className="relative mx-auto max-w-5xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <Badge variant="soft" className="mb-6">
-            <Plane className="mr-1 h-3 w-3" /> Migria para empleados
+            <Plane className="mr-1 h-3 w-3" /> Talnet para empleados
           </Badge>
           <h1 className="font-display text-5xl leading-[1.05] tracking-tight text-foreground sm:text-7xl">
-            El <em className="text-gradient-primary not-italic">sueño</em> Migria.
+            El <em className="text-gradient-primary not-italic">sueño</em> Talnet.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
             España es un país con una <strong className="text-foreground">economía diversa y una fuerte
@@ -116,7 +116,7 @@ export default function EmpleadosPage() {
             crecer, asumir responsabilidades y <strong>construir una trayectoria laboral estable</strong>.
           </p>
           <p>
-            MIGRIA no solo te abre una puerta: <strong>acompaña, forma y apoya</strong> a las personas en la
+            TALNET no solo te abre una puerta: <strong>acompaña, forma y apoya</strong> a las personas en la
             construcción de una nueva vida en un país estable, seguro y con oportunidades reales en
             distintos sectores de actividad.
           </p>
@@ -209,12 +209,12 @@ export default function EmpleadosPage() {
       {/* PROCESO */}
       <section className="mx-auto max-w-5xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="text-center">
-          <Badge variant="outline" className="mb-4">El acompañamiento Migria</Badge>
+          <Badge variant="outline" className="mb-4">El acompañamiento Talnet</Badge>
           <h2 className="font-display text-4xl leading-tight text-foreground sm:text-5xl">
             No viajas solo.
           </h2>
           <p className="mt-3 max-w-2xl mx-auto text-muted-foreground">
-            MIGRIA te guía desde la primera entrevista hasta tu integración en España. Llegas, te
+            TALNET te guía desde la primera entrevista hasta tu integración en España. Llegas, te
             adaptas, creces y te sientes orgulloso de tu trayectoria.
           </p>
         </div>
@@ -282,7 +282,7 @@ export default function EmpleadosPage() {
             Trabajar en España es un paso firme hacia un futuro más estable y prometedor.
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-white/90">
-            MIGRIA es más que movilidad laboral: es un puente entre tu talento y tu futuro.
+            TALNET es más que movilidad laboral: es un puente entre tu talento y tu futuro.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90">

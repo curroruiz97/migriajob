@@ -2,7 +2,7 @@ import { BadgeCheck, MessageSquare, Sparkles, ArrowUpRight } from 'lucide-react'
 import { CountryFlag } from '@/components/ui/country-flag';
 
 /**
- * Mockup visual premium del producto Migria. Sustituye al carrusel de tarjetas.
+ * Mockup visual premium del producto Talnet. Sustituye al carrusel de tarjetas.
  * Layout: panel central tipo dashboard + dos badges flotantes + halo de fondo.
  * Inspiración: Linear / Stripe / Vercel hero.
  */

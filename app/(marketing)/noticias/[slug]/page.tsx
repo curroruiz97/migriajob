@@ -79,7 +79,7 @@ export default async function ArticleDetailPage({
 
         {/* SHARE */}
         <div className="mt-10 flex items-center justify-between border-t border-border pt-6">
-          <Logo height={40} />
+          <Logo height={30} />
           <div className="flex gap-2">
             <ShareButton title={article.title} text={article.excerpt} />
           </div>

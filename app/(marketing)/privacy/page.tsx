@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Política de privacidad',
-  description: 'Cómo Migria recopila, usa y protege tus datos personales.',
+  description: 'Cómo Talnet recopila, usa y protege tus datos personales.',
 };
 
 export default function PrivacyPage() {
@@ -11,7 +11,7 @@ export default function PrivacyPage() {
 
       <h2>1. Responsable del tratamiento</h2>
       <p>
-        Migria SaaS — en adelante "Migria" o "nosotros" — es el responsable del tratamiento
+        Talnet SaaS — en adelante "Talnet" o "nosotros" — es el responsable del tratamiento
         de los datos personales que se recogen a través de esta plataforma. Puedes contactarnos
         en <a href="mailto:privacidad@migria.app">privacidad@migria.app</a>.
       </p>
@@ -79,7 +79,7 @@ export default function PrivacyPage() {
 
       <h2>8. Menores</h2>
       <p>
-        Migria no está dirigido a menores de 16 años. Si detectas que un menor ha creado cuenta,
+        Talnet no está dirigido a menores de 16 años. Si detectas que un menor ha creado cuenta,
         contáctanos para eliminarla.
       </p>
 

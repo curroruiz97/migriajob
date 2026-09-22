@@ -50,7 +50,7 @@ export function AdminSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-border bg-surface lg:flex">
       <div className="flex h-16 items-center border-b border-border px-6">
-        <Logo height={32} />
+        <Logo height={26} />
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-4">

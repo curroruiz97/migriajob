@@ -91,7 +91,7 @@ export default async function ExpedientesPage({
           Control de expedientes
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Gestión interna del equipo Migria. {items.length} expediente{items.length !== 1 && 's'} activo{items.length !== 1 && 's'}.
+          Gestión interna del equipo Talnet. {items.length} expediente{items.length !== 1 && 's'} activo{items.length !== 1 && 's'}.
         </p>
       </div>
 

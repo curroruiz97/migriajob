@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 export const metadata = {
-  title: 'Migria para empresas',
+  title: 'Talnet para empresas',
   description:
     'Captación internacional de talento hispanoamericano. Procesos legales, formación previa, acompañamiento completo y garantía de retención.',
 };
@@ -113,7 +113,7 @@ export default function EmpresasPage() {
         <div className="bg-dot-pattern absolute inset-0 opacity-50" aria-hidden="true" />
         <div className="relative mx-auto max-w-5xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <Badge variant="soft" className="mb-6">
-            <Building2 className="mr-1 h-3 w-3" /> Migria para empresas
+            <Building2 className="mr-1 h-3 w-3" /> Talnet para empresas
           </Badge>
           <h1 className="font-display text-5xl leading-[1.05] tracking-tight text-foreground sm:text-7xl">
             Tu <em className="text-gradient-primary not-italic">partner</em> de reclutamiento internacional.
@@ -143,7 +143,7 @@ export default function EmpresasPage() {
         </h2>
         <div className="prose prose-zinc dark:prose-invert mt-6 max-w-none">
           <p>
-            MIGRIA es una plataforma integral de captación internacional, especializada en conectar talento
+            TALNET es una plataforma integral de captación internacional, especializada en conectar talento
             hispanoamericano con oportunidades reales de empleo en España en múltiples sectores.
           </p>
           <p>
@@ -154,11 +154,11 @@ export default function EmpresasPage() {
         </div>
       </section>
 
-      {/* ¿POR QUÉ MIGRIA? - DEMANDA */}
+      {/* ¿POR QUÉ TALNET? - DEMANDA */}
       <section className="border-y border-border bg-surface-muted/40 py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <Badge variant="outline" className="mb-4">¿Por qué Migria?</Badge>
+            <Badge variant="outline" className="mb-4">¿Por qué Talnet?</Badge>
             <h2 className="font-display text-4xl leading-tight text-foreground sm:text-5xl">
               El problema que resolvemos.
             </h2>

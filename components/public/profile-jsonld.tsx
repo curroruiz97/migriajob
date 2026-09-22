@@ -38,7 +38,7 @@ export function ProfileJsonLd({
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
-    name: profile.headline ?? 'Profesional Migria',
+    name: profile.headline ?? 'Profesional Talnet',
     jobTitle: profile.current_role,
     description: profile.bio,
     image: profile.avatar_url,

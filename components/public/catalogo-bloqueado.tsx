@@ -13,7 +13,7 @@ import { CountryFlag, countryName } from '@/components/ui/country-flag';
  * abrieron una cuenta.
  *
  * Es además la puerta de captación: para ver una ficha hay que registrarse
- * como empresa, y ahí es donde Migria consigue el contacto.
+ * como empresa, y ahí es donde Talnet consigue el contacto.
  */
 
 export interface PerfilAnonimo {
@@ -132,7 +132,7 @@ export function CatalogoBloqueado({
             {total.toLocaleString('es-ES')} profesionales, uno a uno, cuando te registras.
           </h2>
           <p className="mt-3 max-w-2xl text-muted-foreground">
-            Protegemos los datos de las personas que confían su candidatura a Migria: las fichas
+            Protegemos los datos de las personas que confían su candidatura a Talnet: las fichas
             completas —nombre, trayectoria, documentación y contacto— se abren al crear una cuenta
             de empresa. Es gratis y se tarda un minuto.
           </p>

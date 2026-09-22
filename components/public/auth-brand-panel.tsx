@@ -33,7 +33,7 @@ const COPY: Record<
     title: (
       <>
         Bienvenido de vuelta a{' '}
-        <em className="text-gradient-primary not-italic">Migria</em>.
+        <em className="text-gradient-primary not-italic">Talnet</em>.
       </>
     ),
     description:
@@ -45,7 +45,7 @@ const COPY: Record<
     ],
     testimonial: {
       quote:
-        '"Migria me acompañó desde Lima hasta mi primera semana en Madrid. Todo el proceso fue legal y seguro."',
+        '"Talnet me acompañó desde Lima hasta mi primera semana en Madrid. Todo el proceso fue legal y seguro."',
       name: 'Carolina M.',
       role: 'Chef de partida · Madrid',
     },
@@ -89,7 +89,7 @@ const COPY: Record<
     ],
     testimonial: {
       quote:
-        '"Incorporamos 12 cocineros con Migria en 6 meses. Cero rotación y plantilla estable."',
+        '"Incorporamos 12 cocineros con Talnet en 6 meses. Cero rotación y plantilla estable."',
       name: 'María Fernández',
       role: 'Dir. RR. HH., Grupo Hostelero',
     },
@@ -131,8 +131,8 @@ export function AuthBrandPanel({ variant = 'login' }: AuthBrandPanelProps) {
       />
 
       <div className="relative flex h-full flex-col px-10 py-10 xl:px-14 xl:py-14">
-        <Link href="/" aria-label="Migria — ir al inicio" className="inline-flex">
-          <Logo height={48} asChild />
+        <Link href="/" aria-label="Talnet — ir al inicio" className="inline-flex">
+          <Logo height={38} asChild />
         </Link>
 
         <div className="mt-12 flex-1">
@@ -187,7 +187,7 @@ export function AuthBrandPanel({ variant = 'login' }: AuthBrandPanelProps) {
           {variant === 'register-employer' ? (
             <span className="inline-flex items-center gap-1.5">
               <Building2 className="h-3.5 w-3.5 text-primary" />
-              <span>+87 empresas confían en Migria</span>
+              <span>+87 empresas confían en Talnet</span>
             </span>
           ) : (
             <>
@@ -211,8 +211,8 @@ export function AuthBrandHeaderMobile({ variant = 'login' }: AuthBrandPanelProps
   void variant;
   return (
     <div className="flex items-center justify-between lg:hidden">
-      <Link href="/" aria-label="Migria — ir al inicio">
-        <Logo height={36} asChild />
+      <Link href="/" aria-label="Talnet — ir al inicio">
+        <Logo height={30} asChild />
       </Link>
       <Link
         href="/"

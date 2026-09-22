@@ -8,9 +8,9 @@ import { UserMenu } from './user-menu';
 
 const NAV_ITEMS = [
   { href: '/empleos', label: 'Empleos' },
-  { href: '/empresas', label: 'Migria para empresas' },
-  { href: '/empleados', label: 'Migria para empleados' },
-  { href: '/migria-espana', label: 'Migria España' },
+  { href: '/empresas', label: 'Talnet para empresas' },
+  { href: '/empleados', label: 'Talnet para empleados' },
+  { href: '/migria-espana', label: 'Talnet España' },
   { href: '/noticias', label: 'Noticias' },
   { href: '/contacto', label: 'Contacto' },
 ];
@@ -26,7 +26,7 @@ export async function MarketingHeader() {
       className="safe-top sticky top-0 z-40 w-full border-b border-border/60 bg-glass"
     >
       <div className="mx-auto flex h-24 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
-        <Logo height={72} />
+        <Logo height={34} />
 
         <nav className="hidden items-center gap-0.5 xl:flex">
           {NAV_ITEMS.map((item) => (

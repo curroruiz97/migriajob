@@ -35,24 +35,24 @@ const VALUES = [
 
 const FAQ = [
   {
-    q: '¿Qué es MIGRIA y cuál es su objetivo?',
-    a: 'MIGRIA es una marca especializada en la captación, formación y movilidad de profesionales hispanoamericanos hacia oportunidades laborales reales en España, con foco inicial en hostelería (cocina y sala) y expansión a logística, construcción, mantenimiento, limpieza, agricultura y otros sectores. Su objetivo es dar una respuesta ética, legal y profesional a la escasez de personal cualificado, creando relaciones estables entre talento y empresas.',
+    q: '¿Qué es TALNET y cuál es su objetivo?',
+    a: 'TALNET es una marca especializada en la captación, formación y movilidad de profesionales hispanoamericanos hacia oportunidades laborales reales en España, con foco inicial en hostelería (cocina y sala) y expansión a logística, construcción, mantenimiento, limpieza, agricultura y otros sectores. Su objetivo es dar una respuesta ética, legal y profesional a la escasez de personal cualificado, creando relaciones estables entre talento y empresas.',
   },
   {
-    q: '¿Qué perfiles profesionales selecciona MIGRIA?',
+    q: '¿Qué perfiles profesionales selecciona TALNET?',
     a: 'Trabajamos con perfiles de hostelería (cocineros, chefs de partida, ayudantes de cocina, jefes de sala, camareros especializados, baristas, sommeliers) y de otros sectores demandados en España: operarios de producción, técnicos de mantenimiento, pescaderos senior, recruiters, supervisores de turno, etc. Todos los candidatos pasan por evaluación técnica y de experiencia antes de presentarse a las empresas.',
   },
   {
     q: '¿Cómo funciona el proceso para las empresas?',
-    a: 'MIGRIA opera con un modelo por proceso cerrado, adaptado al tamaño y necesidades de cada cliente. El servicio incluye captación internacional, evaluación técnica, coordinación documental completa, formación previa (cultura laboral española, certificaciones, inglés funcional cuando aplica) y acompañamiento y seguimiento de la integración del profesional en el negocio.',
+    a: 'TALNET opera con un modelo por proceso cerrado, adaptado al tamaño y necesidades de cada cliente. El servicio incluye captación internacional, evaluación técnica, coordinación documental completa, formación previa (cultura laboral española, certificaciones, inglés funcional cuando aplica) y acompañamiento y seguimiento de la integración del profesional en el negocio.',
   },
   {
     q: '¿Qué apoyo recibe el profesional que viaja a España?',
-    a: 'La persona no viaja sola: MIGRIA la acompaña desde la primera entrevista hasta su integración en España. Esto incluye formación previa, gestión de trámites legales y de extranjería, acompañamiento emocional, recepción en aeropuerto y seguimiento durante los primeros meses de trabajo.',
+    a: 'La persona no viaja sola: TALNET la acompaña desde la primera entrevista hasta su integración en España. Esto incluye formación previa, gestión de trámites legales y de extranjería, acompañamiento emocional, recepción en aeropuerto y seguimiento durante los primeros meses de trabajo.',
   },
   {
     q: '¿Qué niveles de servicio y política de retención ofrecéis a las empresas?',
-    a: 'Ofrecemos tres niveles: Básico, Estándar y Premium, con distintas intensidades de acompañamiento y volumen (desde 2 hasta unos 30 puestos). Garantía de retención: 3 meses en Básico, 4 en Estándar y 6 en Premium. Si el candidato no completa el periodo de garantía por causas justificadas, MIGRIA ofrece reposición gratuita o un descuento proporcional en el siguiente proceso.',
+    a: 'Ofrecemos tres niveles: Básico, Estándar y Premium, con distintas intensidades de acompañamiento y volumen (desde 2 hasta unos 30 puestos). Garantía de retención: 3 meses en Básico, 4 en Estándar y 6 en Premium. Si el candidato no completa el periodo de garantía por causas justificadas, TALNET ofrece reposición gratuita o un descuento proporcional en el siguiente proceso.',
   },
 ];
 
@@ -103,7 +103,7 @@ export default async function HomePage() {
                 empresas que <em className="text-gradient-primary not-italic">crecen</em>.
               </h1>
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-                MIGRIA conecta el talento hispanoamericano con oportunidades reales en España.
+                TALNET conecta el talento hispanoamericano con oportunidades reales en España.
                 <strong className="text-foreground"> Captamos, formamos y acompañamos</strong> a profesionales
                 y empresas en cada paso del proceso.
               </p>
@@ -222,7 +222,7 @@ export default async function HomePage() {
                 El talento <em className="text-gradient-primary not-italic">no tiene</em> fronteras.
               </h2>
               <p className="mt-6 max-w-md text-lg leading-relaxed opacity-80">
-                MIGRIA es una marca integral de captación internacional. Simplificamos, profesionalizamos y
+                TALNET es una marca integral de captación internacional. Simplificamos, profesionalizamos y
                 humanizamos toda la movilidad laboral, acompañando a empresas y candidatos en cada paso.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -354,10 +354,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* CULTURA MIGRIA */}
+      {/* CULTURA TALNET */}
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="text-center">
-          <Badge variant="outline" className="mb-4">Cultura Migria</Badge>
+          <Badge variant="outline" className="mb-4">Cultura Talnet</Badge>
           <h2 className="font-display text-4xl leading-tight text-foreground sm:text-5xl">
             Cinco valores que <em className="text-gradient-primary not-italic">no negociamos</em>.
           </h2>
@@ -387,7 +387,7 @@ export default async function HomePage() {
                 <Plane className="mr-1 h-3 w-3" /> Tu partner de reclutamiento
               </Badge>
               <h2 className="font-display text-4xl leading-tight sm:text-5xl">
-                Da el salto con MIGRIA.
+                Da el salto con TALNET.
               </h2>
               <p className="mt-4 max-w-xl opacity-80">
                 Acompañamos a empresas de toda España en la captación y contratación de talento, gestionando
@@ -476,7 +476,7 @@ export default async function HomePage() {
             </p>
             <Button asChild size="lg" variant="outline" className="mt-6">
               <Link href="/empleados">
-                Ver el sueño Migria <ArrowRight className="ml-1.5 h-4 w-4" />
+                Ver el sueño Talnet <ArrowRight className="ml-1.5 h-4 w-4" />
               </Link>
             </Button>
           </div>

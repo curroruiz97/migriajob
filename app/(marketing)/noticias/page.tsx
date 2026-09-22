@@ -18,7 +18,7 @@ export default function NoticiasPage() {
       <section className="border-b border-border bg-hero-gradient">
         <Container size="xl" as="section" className="py-16 lg:py-20">
           <Badge variant="soft" className="mb-4">
-            <Newspaper className="mr-1 h-3 w-3" /> Blog Migria
+            <Newspaper className="mr-1 h-3 w-3" /> Blog Talnet
           </Badge>
           <h1 className="font-display text-5xl tracking-tight text-foreground sm:text-6xl">
             Movilidad laboral, sin <em className="text-gradient-primary not-italic">tonterías</em>.

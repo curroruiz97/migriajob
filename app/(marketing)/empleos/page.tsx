@@ -18,7 +18,7 @@ import { createClient } from '@/lib/supabase/server';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Empleos disponibles | Migria',
+  title: 'Empleos disponibles',
   description:
     'Ofertas reales publicadas por empresas españolas: hostelería, industria, logística, mantenimiento y más.',
 };

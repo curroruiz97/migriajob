@@ -4,12 +4,12 @@ import { createClient } from '@/lib/supabase/server';
 /**
  * Índice del área admin. Reparte según quién entra:
  *
- *   · Equipo de Migria (rol admin) → Expedientes, que es su trabajo.
+ *   · Equipo de Talnet (rol admin) → Expedientes, que es su trabajo.
  *   · Empresa sin ficha creada      → onboarding.
  *   · Empresa con ficha             → sus ofertas.
  *
  * LO DEL ROL ADMIN NO ES UN ADORNO. Antes esto solo miraba si la cuenta tenía
- * empresa asociada, y un administrador de Migria no la tiene ni debe tenerla:
+ * empresa asociada, y un administrador de Talnet no la tiene ni debe tenerla:
  * al entrar por primera vez se encontraba el formulario "Cuéntanos sobre tu
  * empresa" con su propio nombre ya escrito en la casilla del nombre. Si lo
  * rellenaba —que es a lo que invita la pantalla— creaba una empresa fantasma

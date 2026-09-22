@@ -7,7 +7,7 @@ import { Logo } from '@/components/ui/logo';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Bienvenido a Migria',
+  title: 'Bienvenido a Talnet',
   description: 'Talento que viaja, empresas que crecen, comunidades que prosperan.',
 };
 
@@ -48,7 +48,7 @@ export default async function BienvenidaPage() {
       >
         {/* Marca */}
         <header className="flex flex-col items-center pt-6 text-center">
-          <Logo height={44} asChild />
+          <Logo height={34} asChild />
           <p className="mt-5 max-w-xs font-display text-xl leading-snug tracking-tight text-foreground">
             Talento que viaja, empresas que crecen, comunidades que prosperan.
           </p>

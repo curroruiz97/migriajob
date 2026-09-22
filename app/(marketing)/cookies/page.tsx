@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Política de cookies',
-  description: 'Cómo Migria usa cookies y tecnologías similares.',
+  description: 'Cómo Talnet usa cookies y tecnologías similares.',
 };
 
 export default function CookiesPage() {
@@ -15,7 +15,7 @@ export default function CookiesPage() {
         información entre visitas (sesión iniciada, preferencias, etc.).
       </p>
 
-      <h2>Cookies que usa Migria</h2>
+      <h2>Cookies que usa Talnet</h2>
       <table>
         <thead>
           <tr><th>Categoría</th><th>Uso</th><th>Duración</th></tr>

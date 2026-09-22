@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic';
  * de denunciar: pide que alguien las atienda. Sin una pantalla donde se vean,
  * las denuncias se quedan en una tabla que nadie abre nunca.
  *
- * Solo para admins de Migria. /admin lo comparten empleadores y admins, así que
+ * Solo para admins de Talnet. /admin lo comparten empleadores y admins, así que
  * el filtro por rol se hace aquí y no basta con el middleware.
  */
 

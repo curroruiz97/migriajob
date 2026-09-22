@@ -17,7 +17,7 @@ import { createPaymentAction, updatePaymentStatusAction, deletePaymentAction } f
 
 const CONCEPT_LABELS: Record<string, string> = {
   tasa_extranjeria: 'Tasa de Extranjería',
-  honorarios_migria: 'Honorarios Migria',
+  honorarios_migria: 'Honorarios Talnet',
   tasa_consular: 'Tasa consular',
   seguro_medico: 'Seguro médico',
   vuelo: 'Vuelo',

@@ -41,7 +41,7 @@ type NavItem = {
   exact?: boolean;
   /** Muestra el badge de no leídos en este tab. */
   badge?: boolean;
-  /** Solo para el equipo de Migria. Una empresa no lo ve. */
+  /** Solo para el equipo de Talnet. Una empresa no lo ve. */
   adminOnly?: boolean;
 };
 
@@ -55,7 +55,7 @@ const EMPLOYER_PRIMARY: NavItem[] = [
 const EMPLOYER_MENU: NavItem[] = [
   { href: '/admin/candidatos', label: 'Buscar candidatos', icon: Users },
   { href: '/admin/procesos', label: 'Mis procesos', icon: Workflow },
-  // Las dos de Migria. Estaban mal: Expedientes salía para cualquier empresa
+  // Las dos de Talnet. Estaban mal: Expedientes salía para cualquier empresa
   // —el menú móvil nunca supo del rol—, y Moderación no salía para nadie, de
   // modo que la bandeja de denuncias solo se abría escribiendo la dirección.
   { href: '/admin/expedientes', label: 'Expedientes', icon: FolderOpen, adminOnly: true },
@@ -97,7 +97,7 @@ export function MobileBottomNav({
 }: {
   variant: 'employer' | 'candidate';
   unreadCount?: number;
-  /** Equipo de Migria: añade Expedientes y Moderación al menú. */
+  /** Equipo de Talnet: añade Expedientes y Moderación al menú. */
   isAdmin?: boolean;
 }) {
   const pathname = usePathname();
@@ -232,7 +232,7 @@ function MobileMenu({
           className="flex items-center justify-between border-b border-border px-4"
           style={{ paddingTop: 'max(env(safe-area-inset-top), 12px)', paddingBottom: '12px' }}
         >
-          <Logo height={28} asChild />
+          <Logo height={22} asChild />
           <button
             type="button"
             onClick={onClose}
