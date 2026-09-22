@@ -110,7 +110,7 @@ export async function getMetricas(): Promise<Metricas> {
 
     return {
       key: etapa.key,
-      titulo: etapa.title,
+      titulo: etapa.short,
       alcanzaron,
       aqui_ahora: aquiAhora.length,
       se_cayeron_aqui: seCayeronAqui,

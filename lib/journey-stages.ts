@@ -1,11 +1,17 @@
 /**
  * Definición centralizada de las 11 etapas del proceso migratorio.
  * Compartida entre la vista candidato y el panel admin.
+ *
+ * `title` es lo que lee el candidato en su recorrido, y por eso está escrito
+ * como una buena noticia («¡Felicitaciones! Has sido seleccionado»). `short` es
+ * el nombre de la etapa a secas, para las pantallas internas: en una tabla o un
+ * embudo, once frases de ánimo no se leen.
  */
 
 export const JOURNEY_STAGES = [
   {
     key: 'seleccionado',
+    short: 'Seleccionado',
     number: 1,
     title: '¡Felicitaciones! Has sido seleccionado',
     subtitle: 'La empresa ha decidido avanzar contigo.',
@@ -14,6 +20,7 @@ export const JOURNEY_STAGES = [
   },
   {
     key: 'inicio_proceso',
+    short: 'Inicio del proceso',
     number: 2,
     title: 'Inicio del proceso migratorio',
     subtitle: 'Estamos preparando toda la documentación necesaria.',
@@ -22,6 +29,7 @@ export const JOURNEY_STAGES = [
   },
   {
     key: 'expediente_presentado',
+    short: 'Expediente presentado',
     number: 3,
     title: 'Expediente presentado',
     subtitle: 'La solicitud ya fue presentada ante las autoridades.',
@@ -30,6 +38,7 @@ export const JOURNEY_STAGES = [
   },
   {
     key: 'revision_administrativa',
+    short: 'Revisión administrativa',
     number: 4,
     title: 'Revisión administrativa',
     subtitle: 'Las autoridades están verificando la documentación.',
@@ -38,6 +47,7 @@ export const JOURNEY_STAGES = [
   },
   {
     key: 'evaluacion_expediente',
+    short: 'Evaluación del expediente',
     number: 5,
     title: 'Evaluación del expediente',
     subtitle: 'El expediente continúa su proceso normal de evaluación.',
@@ -46,6 +56,7 @@ export const JOURNEY_STAGES = [
   },
   {
     key: 'coordinacion_incorporacion',
+    short: 'Coordinación de incorporación',
     number: 6,
     title: 'Coordinación de incorporación',
     subtitle: 'Seguimos trabajando junto a la empresa para tu futura incorporación.',
@@ -54,6 +65,7 @@ export const JOURNEY_STAGES = [
   },
   {
     key: 'esperando_resolucion',
+    short: 'Esperando resolución',
     number: 7,
     title: 'Esperando resolución oficial',
     subtitle: 'Tu expediente se encuentra en la etapa final del proceso administrativo.',
@@ -62,6 +74,7 @@ export const JOURNEY_STAGES = [
   },
   {
     key: 'resolucion_favorable',
+    short: 'Resolución favorable',
     number: 8,
     title: '¡Resolución favorable!',
     subtitle: 'Excelentes noticias. Tu solicitud ha sido aprobada.',
@@ -70,6 +83,7 @@ export const JOURNEY_STAGES = [
   },
   {
     key: 'gestion_consular',
+    short: 'Gestión consular',
     number: 9,
     title: 'Gestión consular',
     subtitle: 'Preparación de cita y trámites consulares.',
@@ -78,6 +92,7 @@ export const JOURNEY_STAGES = [
   },
   {
     key: 'preparando_viaje',
+    short: 'Preparando el viaje',
     number: 10,
     title: 'Preparando tu viaje',
     subtitle: 'Estamos coordinando los últimos detalles de tu incorporación.',
@@ -86,6 +101,7 @@ export const JOURNEY_STAGES = [
   },
   {
     key: 'bienvenido',
+    short: 'Llegada a España',
     number: 11,
     title: '¡Bienvenido a España!',
     subtitle: 'Tu proceso migratorio ha concluido exitosamente.',
