@@ -68,7 +68,36 @@ export async function generateMetadata({
 }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const profile = await getProfileBySlug(slug);
-  if (!profile) return { title: 'Perfil no encontrado' };
+  /*
+    UNA FICHA QUE NO EXISTE DEBERIA RESPONDER 404 Y RESPONDE 200. Se intento
+    arreglar el 22 de septiembre de 2026 y no se consiguio; queda escrito aqui
+    lo que se descarto, para que el siguiente no repita el camino:
+
+      · No es el middleware. Se sacaron /perfiles y /empleos de su matcher y el
+        200 se mantuvo. Revertido, porque ademas perdian el refresco de sesion.
+      · No es `force-dynamic`. Se quito de las dos paginas y el 200 se mantuvo.
+      · No es `revalidate`. Se probo ponerselo a una ruta limpia, que siguio
+        devolviendo 404 correctamente.
+      · No es el codigo de la pagina. El MISMO fichero copiado a otra ruta
+        (/zzdiag2/[slug]) devolvia 404. El problema esta en el segmento.
+      · No es `loading.tsx`. Se aparto el de /empleos con un build desde cero y
+        el 200 se mantuvo.
+      · No es la pagina de error: /empleos y /companies comparten el mismo
+        not-found.tsx, y una responde 404 y la otra 200.
+      · No es llamar a notFound() tarde. Se probo lanzarlo desde
+        generateMetadata, antes de renderizar nada, y el 200 se mantuvo.
+
+    Y se confirmo que notFound() SI se ejecuta: la respuesta trae la pagina de
+    "no encontrado" entera, solo que con el codigo equivocado.
+
+    MIENTRAS TANTO, LO QUE SI ARREGLA EL DANO. El perjuicio de un 200 aqui es
+    que Google trata la direccion inventada como pagina valida y vacia, la
+    indexa y le reparte autoridad. Con `noindex` no la indexa, tenga el codigo
+    que tenga. No es lo correcto, pero es lo eficaz.
+  */
+  if (!profile) {
+    return { title: 'Perfil no encontrado', robots: { index: false, follow: false } };
+  }
 
   const title = profile.headline ?? profile.current_role ?? 'Perfil profesional';
   const country = profile.country_of_origin ? countryName(profile.country_of_origin) : '';

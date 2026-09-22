@@ -48,7 +48,13 @@ function salaryText(min: number | null, max: number | null, cur: string | null):
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const job = await getJobBySlug(slug).catch(() => null);
-  if (!job) return { title: 'Oferta no encontrada' };
+  // NO SE PUEDE DEVOLVER 404 AQUI, Y SE INTENTO. Ver el comentario largo de
+  // /perfiles/[slug]. Lo que si se puede es impedir que Google la indexe, que
+  // es el dano real: sin esto, una direccion inventada entra en el indice como
+  // pagina valida y vacia.
+  if (!job) {
+    return { title: 'Oferta no encontrada', robots: { index: false, follow: false } };
+  }
   const j = job as { title: string; description: string | null };
   return {
     title: j.title,
