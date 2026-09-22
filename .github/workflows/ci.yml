@@ -52,5 +52,15 @@ jobs:
       - name: Comprobar tipos
         run: bunx tsc --noEmit
 
+      - name: Pruebas
+        # Las de humo necesitan la clave pública del sitio para comprobar que
+        # la base de datos sigue cerrada a los anónimos. Es pública por diseño
+        # —va dentro del JavaScript de la web— pero no se guarda en el
+        # repositorio: se pone como secreto SMOKE_ANON_KEY en GitHub y las tres
+        # comprobaciones se activan solas. Sin él, se saltan.
+        env:
+          SMOKE_ANON_KEY: ${{ secrets.SMOKE_ANON_KEY }}
+        run: bun test
+
       - name: Build de producción
         run: bunx next build
