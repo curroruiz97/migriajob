@@ -95,11 +95,13 @@ export async function createJobAction(_prev: unknown, formData: FormData) {
       .maybeSingle();
     if (error) return { error: 'No se pudo publicar la oferta. Inténtalo de nuevo.' as string };
 
-    // Columnas de la migración 0007 (defensivo: si aún no existen, se ignora).
+    // Columnas de la migración 0007. OJO: a 22-sep-2026 esa migración NO está
+    // aplicada en la base de datos, así que este update falla y el catch vacío
+    // se lo traga: categoría, país y fecha de incorporación no se guardan.
     if (created?.id) {
       await supabase
         .from('jobs')
-        .update({ category: j.category, country: j.country, start_date: j.start_date })
+        .update({ category: j.category, country: j.country, start_date: j.start_date } as never)
         .eq('id', created.id)
         .then(() => {}, () => {});
     }
@@ -138,10 +140,10 @@ export async function updateJobAction(jobId: string, _prev: unknown, formData: F
       .eq('id', jobId)
       .eq('company_id', companyId);
 
-    // Columnas de la migración 0007 (defensivo).
+    // Columnas de la migración 0007 (ver la nota en createJobAction).
     await supabase
       .from('jobs')
-      .update({ category: j.category, country: j.country, start_date: j.start_date })
+      .update({ category: j.category, country: j.country, start_date: j.start_date } as never)
       .eq('id', jobId)
       .eq('company_id', companyId)
       .then(() => {}, () => {});

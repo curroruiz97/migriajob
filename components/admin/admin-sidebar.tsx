@@ -18,6 +18,7 @@ import {
   Inbox,
   FolderOpen,
   ShieldAlert,
+  BarChart3,
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 import { cn } from '@/lib/utils';
@@ -35,6 +36,7 @@ const NAV: Array<{ href: string; label: string; icon: typeof Megaphone; exact?: 
   // botón de denunciar, pide que alguien las atienda, y nadie atiende una
   // bandeja que no ve.
   { href: '/admin/moderacion', label: 'Moderación', icon: ShieldAlert, adminOnly: true },
+  { href: '/admin/metricas', label: 'Métricas', icon: BarChart3, adminOnly: true },
   { href: '/admin/busqueda-avanzada', label: 'Búsqueda avanzada', icon: Search },
   { href: '/admin/busquedas-guardadas', label: 'Búsquedas guardadas', icon: BookmarkCheck },
   { href: '/admin/favoritos', label: 'Favoritos', icon: Heart },

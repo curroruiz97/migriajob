@@ -252,3 +252,79 @@ export async function deleteReceiptAction(receiptId: string) {
     return { ok: true as const };
   });
 }
+
+/**
+ * Cierra un expediente y deja escrito cómo acabó.
+ *
+ * ES LA PIEZA QUE HACE POSIBLE LA MÉTRICA. Hasta ahora un proceso que no
+ * llegaba a término simplemente dejaba de moverse, y desde fuera un expediente
+ * abandonado y uno lento se veían igual: los dos parados en la misma etapa.
+ * Sin distinguirlos no se puede medir en qué paso se sale la gente, ni la tasa
+ * de éxito, ni contar reposiciones.
+ *
+ * Se guarda la etapa en la que estaba al cerrarse, y esa foto es la que
+ * alimenta el embudo. No se deduce después del histórico de cambios, porque
+ * ese histórico solo existe si alguien fue moviendo las etapas una a una.
+ */
+export async function cerrarExpedienteAction(
+  journeyId: string,
+  desenlace: 'incorporado' | 'cerrado',
+  motivo?: string,
+  nota?: string
+) {
+  return safeAction(async () => {
+    const { supabase } = await requireAdmin();
+
+    const { data: actual } = await supabase
+      .from('candidate_journey')
+      .select('current_stage')
+      .eq('id', journeyId)
+      .maybeSingle<{ current_stage: string }>();
+
+    const { error } = await supabase
+      .from('candidate_journey')
+      .update({
+        outcome: desenlace,
+        closed_at: new Date().toISOString(),
+        // La etapa solo tiene sentido cuando el proceso se trunca: en un
+        // incorporado el recorrido se completó y no hay "dónde se salió".
+        closed_stage: desenlace === 'cerrado' ? (actual?.current_stage ?? null) : null,
+        close_reason: desenlace === 'cerrado' ? (motivo ?? 'otro') : null,
+        close_note: desenlace === 'cerrado' ? (nota?.trim() || null) : null,
+      } as never)
+      .eq('id', journeyId);
+
+    if (error) return { error: error.message };
+
+    revalidatePath('/admin/expedientes');
+    revalidatePath(`/admin/expedientes/${journeyId}`);
+    revalidatePath('/admin/metricas');
+    revalidatePath('/dashboard/mi-proceso');
+    return { ok: true as const };
+  });
+}
+
+/** Deshace un cierre: el proceso vuelve a estar vivo y sale de las cifras. */
+export async function reabrirExpedienteAction(journeyId: string) {
+  return safeAction(async () => {
+    const { supabase } = await requireAdmin();
+
+    const { error } = await supabase
+      .from('candidate_journey')
+      .update({
+        outcome: 'en_curso',
+        closed_at: null,
+        closed_stage: null,
+        close_reason: null,
+        close_note: null,
+      } as never)
+      .eq('id', journeyId);
+
+    if (error) return { error: error.message };
+
+    revalidatePath('/admin/expedientes');
+    revalidatePath(`/admin/expedientes/${journeyId}`);
+    revalidatePath('/admin/metricas');
+    return { ok: true as const };
+  });
+}

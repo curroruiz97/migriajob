@@ -45,7 +45,7 @@ export async function reportContentAction(_prev: unknown, formData: FormData) {
       .from('content_reports')
       .select('id')
       .eq('reporter_id', user.id)
-      .eq('target_type', targetType)
+      .eq('target_type', targetType as never)
       .eq('target_id', targetId)
       .maybeSingle();
 
@@ -55,9 +55,9 @@ export async function reportContentAction(_prev: unknown, formData: FormData) {
 
     const { error } = await supabase.from('content_reports').insert({
       reporter_id: user.id,
-      target_type: targetType,
+      target_type: targetType as never,
       target_id: targetId,
-      reason,
+      reason: reason as never,
       details: details || null,
     });
     if (error) return { error: error.message };
@@ -85,7 +85,7 @@ export async function resolveReportAction(reportId: string, status: string) {
     const { error } = await supabase
       .from('content_reports')
       .update({
-        status,
+        status: status as never,
         reviewed_by: user.id,
         reviewed_at: new Date().toISOString(),
       })

@@ -18,6 +18,7 @@ import { JOURNEY_STAGES, getStageIndex, getStageProgress } from '@/lib/journey-s
 import { StageManager } from './stage-manager';
 import { PaymentsPanel } from './payments-panel';
 import { ObservationsPanel } from './observations-panel';
+import { DesenlacePanel } from './desenlace-panel';
 
 export const metadata = { title: 'Detalle expediente' };
 
@@ -166,6 +167,21 @@ export default async function ExpedienteDetailPage({
           </dl>
         </section>
       </div>
+
+      {/* Como acabo el proceso. Va antes del gestor de etapas a proposito:
+          cuando un expediente esta cerrado, lo primero que hay que ver es que
+          lo esta, no en que etapa se quedo. */}
+      <DesenlacePanel
+        journeyId={journey.id}
+        outcome={(journey.outcome ?? 'en_curso') as 'en_curso' | 'incorporado' | 'cerrado'}
+        closeReason={journey.close_reason ?? null}
+        closeNote={journey.close_note ?? null}
+        closedAt={journey.closed_at ?? null}
+        etapaActual={
+          JOURNEY_STAGES.find((e) => e.key === journey.current_stage)?.title ??
+          journey.current_stage
+        }
+      />
 
       {/* Stage Manager */}
       <StageManager

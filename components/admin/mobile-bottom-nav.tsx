@@ -9,6 +9,7 @@ import {
   Workflow,
   ShieldAlert,
   FolderOpen,
+  BarChart3,
   MessageSquare,
   MessageCircle,
   CreditCard,
@@ -60,6 +61,7 @@ const EMPLOYER_MENU: NavItem[] = [
   // modo que la bandeja de denuncias solo se abría escribiendo la dirección.
   { href: '/admin/expedientes', label: 'Expedientes', icon: FolderOpen, adminOnly: true },
   { href: '/admin/moderacion', label: 'Moderación', icon: ShieldAlert, adminOnly: true },
+  { href: '/admin/metricas', label: 'Métricas', icon: BarChart3, adminOnly: true },
   { href: '/admin/busqueda-avanzada', label: 'Búsqueda avanzada', icon: Search },
   { href: '/admin/busquedas-guardadas', label: 'Búsquedas guardadas', icon: BookmarkCheck },
   { href: '/admin/favoritos', label: 'Favoritos', icon: Heart },
