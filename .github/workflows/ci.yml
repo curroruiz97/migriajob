@@ -1,0 +1,54 @@
+# Comprobación automática de cada cambio.
+#
+# POR QUÉ EXISTE
+# Hasta ahora no había ninguna: cada push a main se desplegaba directo a
+# producción y la única verificación era que Vercel consiguiera compilar. Los
+# fallos se descubrían usando la aplicación —el botón que no hacía nada, el
+# logotipo que se borraba al guardar, la foto de cámara que reventaba la
+# subida—, y varios los encontró el propio socio en producción.
+#
+# Esto no sustituye a unas pruebas, que siguen sin existir. Lo que hace es
+# barato y vale la pena igual: si un cambio rompe los tipos o el build, se ve
+# en el pull request y no en la web.
+#
+# El build corre SIN variables de entorno a propósito. La aplicación está
+# escrita para arrancar sin Supabase configurado (lib/supabase/server.ts
+# devuelve un stub), así que si alguien introduce una dependencia que reviente
+# sin claves, salta aquí en vez de en el despliegue.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Un push nuevo cancela la comprobación del anterior: no tiene sentido esperar
+# a que termine de verificar un commit que ya ha quedado atrás.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    name: Tipos y build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # La misma que usa el proyecto en Vercel.
+          node-version: '24'
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci --no-audit --no-fund
+
+      - name: Comprobar tipos
+        run: npx tsc --noEmit
+
+      - name: Build de producción
+        run: npx next build

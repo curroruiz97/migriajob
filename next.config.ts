@@ -60,6 +60,32 @@ const nextConfig: NextConfig = {
             value:
               'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
           },
+          // ---- Cabeceras de seguridad ----
+          // Hasta ahora el sitio no mandaba ninguna: solo HSTS, y esa la pone
+          // Vercel por su cuenta. En una web con sesión iniciada, paneles
+          // privados y datos personales, esto es lo mínimo.
+          //
+          // El navegador respeta el tipo que declara el servidor en lugar de
+          // adivinarlo. Evita que un fichero subido por un usuario y servido
+          // como imagen acabe ejecutándose como script.
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          // Al salir del sitio se manda el dominio, no la dirección completa.
+          // Importa porque las direcciones de aquí llevan dentro el slug del
+          // candidato, y el slug lleva su nombre.
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          // Nadie puede meter MigriaJob dentro de un iframe ajeno y engañar a
+          // alguien para que pulse donde no cree que pulsa. Van las dos
+          // cabeceras: la moderna y la antigua, para navegadores viejos.
+          { key: 'Content-Security-Policy', value: "frame-ancestors 'self'" },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          // OJO CON LA CÁMARA. Va `camera=(self)`, no `camera=()`: la foto de
+          // perfil y el logotipo se hacen con la cámara desde el móvil, y
+          // cerrarla aquí rompería justo lo que costó el rechazo 2.1(a) de
+          // Apple. Micrófono y ubicación no se usan en ninguna parte.
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(self), microphone=(), geolocation=(), interest-cohort=()',
+          },
         ],
       },
       // Va DESPUÉS de la regla general a propósito: con la misma clave, la
