@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@supabase/supabase-js';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { z } from 'zod';
 import { createNotification } from '@/lib/notifications/create';
 
@@ -32,12 +32,7 @@ const esquema = z.object({
 
 export type EstadoContacto = { ok?: true; error?: string };
 
-function clienteServidor() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return null;
-  return createClient(url, key, { auth: { persistSession: false } });
-}
+
 
 export async function enviarConsultaAction(
   _prev: EstadoContacto,
@@ -62,7 +57,7 @@ export async function enviarConsultaAction(
     return { error: parsed.error.issues[0]?.message ?? 'Revisa los datos del formulario.' };
   }
 
-  const supabase = clienteServidor();
+  const supabase = createAdminClient();
   if (!supabase) {
     console.error('[contacto] falta SUPABASE_SERVICE_ROLE_KEY');
     return { error: `No hemos podido registrar tu consulta. Escríbenos a ${CORREO_EQUIPO} y la atendemos igual.` };

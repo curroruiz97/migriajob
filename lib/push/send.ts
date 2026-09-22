@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { sendApnsPush, pushConfigured, type PushMessage, type ApnsEnvironment } from './apns';
 
 /**
@@ -16,12 +16,7 @@ interface DeviceRow {
   environment: ApnsEnvironment | null;
 }
 
-function adminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return null;
-  return createClient(url, key, { auth: { persistSession: false } });
-}
+
 
 /**
  * Nunca lanza. Una push que falla no puede tumbar la accion que la origino:
@@ -31,7 +26,7 @@ function adminClient() {
 export async function pushToUser(userId: string, message: PushMessage): Promise<void> {
   if (!pushConfigured()) return;
 
-  const supabase = adminClient();
+  const supabase = createAdminClient();
   if (!supabase) {
     console.warn('[push] falta SUPABASE_SERVICE_ROLE_KEY; no se envia nada');
     return;

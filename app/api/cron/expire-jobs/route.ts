@@ -1,14 +1,20 @@
 import { NextResponse } from 'next/server';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 /**
- * Cron diario: marca como 'expired' las ofertas con expires_at < now() y status='published'.
+ * Cron diario: marca como 'expired' las ofertas con expires_at < now() y
+ * status='published'.
  *
- * Configurar en vercel.json:
- *   { "crons": [{ "path": "/api/cron/expire-jobs", "schedule": "0 5 * * *" }] }
+ * ESTO NO HACÍA NADA HASTA EL 22 DE SEPTIEMBRE DE 2026, y lo peor es que lo
+ * decía todo lo contrario. Usaba el cliente de Supabase que va con la sesión
+ * del visitante, pero una tarea programada no tiene visitante: actúa como un
+ * anónimo. Las políticas de la base de datos hacen entonces lo correcto —un
+ * anónimo no modifica ofertas ajenas— y el UPDATE no tocaba ni una fila.
+ * Respuesta: `{ ok: true, expired: 0 }`, todos los días, con ofertas caducadas
+ * figurando como publicadas en la web.
  *
- * Vercel firma sus cron requests con header `x-vercel-cron`. Validamos eso para
- * evitar invocaciones manuales no autorizadas.
+ * Ahora usa el cliente de servicio, que es lo que necesita algo que se ejecuta
+ * solo. Ver lib/supabase/admin.ts.
  */
 export async function GET(request: Request) {
   const isVercelCron = request.headers.get('x-vercel-cron') === '1';
@@ -18,7 +24,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const supabase = await createServerClient();
+  const supabase = createAdminClient();
+  if (!supabase) {
+    // Mejor un error visible que otro cero silencioso.
+    return NextResponse.json(
+      { error: 'Falta SUPABASE_SERVICE_ROLE_KEY en el servidor' },
+      { status: 500 }
+    );
+  }
+
   const { data, error } = await supabase
     .from('jobs')
     .update({ status: 'expired' })

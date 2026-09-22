@@ -1,6 +1,6 @@
 import { createNotification } from '@/lib/notifications/create';
 import { NextResponse } from 'next/server';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { JOURNEY_STAGES, getStageIndex } from '@/lib/journey-stages';
 
 /**
@@ -8,9 +8,12 @@ import { JOURNEY_STAGES, getStageIndex } from '@/lib/journey-stages';
  * proceso lleva más de 14 días sin actualización en etapas de espera larga
  * (etapas 3-7: expediente presentado → esperando resolución).
  *
- * Configurar en vercel.json:
- *   { "path": "/api/cron/journey-accompaniment", "schedule": "0 10 * * 1" }
- *   (cada lunes a las 10:00 UTC)
+ * Dado de alta en vercel.json el 22 de septiembre de 2026: estaba escrito y
+ * funcionando desde el principio, pero nadie lo habia programado, asi que no
+ * se ejecuto nunca. Cada lunes a las 10:00 UTC.
+ *
+ * Usa el cliente de servicio: una tarea programada no tiene sesion, y con el
+ * cliente del visitante las politicas de acceso la dejaban sin hacer nada.
  */
 
 const LONG_WAIT_STAGES: Array<
@@ -45,7 +48,13 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const supabase = await createServerClient();
+  const supabase = createAdminClient();
+  if (!supabase) {
+    return NextResponse.json(
+      { error: 'Falta SUPABASE_SERVICE_ROLE_KEY en el servidor' },
+      { status: 500 }
+    );
+  }
 
   // Buscar journeys en etapas de espera larga sin actualización en 14+ días
   const fourteenDaysAgo = new Date();

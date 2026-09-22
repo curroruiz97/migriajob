@@ -77,6 +77,11 @@ export type ProfileFilters = {
   verified?: boolean;
   inSpain?: boolean;
   /**
+   * Solo perfiles tocados después de esta fecha (ISO). Lo usa el aviso de
+   * búsquedas guardadas para preguntar "qué hay nuevo desde la última vez".
+   */
+  updatedAfter?: string;
+  /**
    * Incluir candidatos no públicos (privados / importados). Solo tiene efecto
    * real para usuarios con rol `admin` (la RLS bloquea el resto). Lo usa el
    * panel /admin/candidatos para mostrar los leads importados.
@@ -144,6 +149,26 @@ export async function searchProfiles(
   filters: ProfileFilters = {}
 ): Promise<ProfileSearchResult> {
   const supabase = await createClient();
+  return buscarCandidatos(supabase, filters);
+}
+
+/**
+ * El cuerpo de la búsqueda, separado para poder ejecutarlo con OTRO cliente.
+ *
+ * Lo necesita el aviso de búsquedas guardadas: se ejecuta sin sesión, con el
+ * cliente de servicio, y hasta ahora no aplicaba los filtros de la búsqueda
+ * —se limitaba a contar todos los perfiles actualizados—, así que avisaba de
+ * perfiles que no tenían nada que ver con lo que esa empresa buscaba.
+ *
+ * Mismo código para las dos cosas: si mañana se añade un filtro a la pantalla,
+ * las alertas lo respetan sin que nadie se acuerde de tocarlas.
+ */
+// biome-ignore lint/suspicious/noExplicitAny: el cliente tipado y el de
+// servicio no comparten tipo, y aquí solo se encadenan filtros de PostgREST.
+export async function buscarCandidatos(
+  supabase: any,
+  filters: ProfileFilters = {}
+): Promise<ProfileSearchResult> {
   const perPage = Math.min(filters.perPage ?? 20, 100);
   const offset = ((filters.page ?? 1) - 1) * perPage;
 
@@ -161,6 +186,7 @@ export async function searchProfiles(
   if (filters.homologation) q = q.eq('homologation', filters.homologation);
   if (filters.verified) q = q.eq('verified', true);
   if (filters.inSpain) q = q.eq('location_country', 'España');
+  if (filters.updatedAfter) q = q.gt('updated_at', filters.updatedAfter);
 
   // Búsqueda flexible:
   //  - tolerante a género (cocinero ↔ cocinera ↔ cocineros ↔ cocineras)

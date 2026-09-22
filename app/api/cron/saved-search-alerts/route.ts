@@ -1,14 +1,28 @@
-import { createNotification } from '@/lib/notifications/create';
 import { NextResponse } from 'next/server';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createNotification } from '@/lib/notifications/create';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { buscarCandidatos, type ProfileFilters } from '@/lib/db/queries';
 
 /**
- * Cron diario: para cada saved_search con alert_frequency != 'off',
- * comprueba si hay candidatos nuevos públicos creados desde last_alert_at
- * que cumplan los filtros y envía un email.
+ * Cron diario: avisa a quien tenga una búsqueda guardada con alerta activada
+ * de los perfiles nuevos que cumplen SUS filtros.
  *
- * Por ahora solo actualiza last_alert_at y registra una notificación in-app
- * (el envío de emails con Resend se activa cuando RESEND_API_KEY esté configurada).
+ * DOS COSAS ESTABAN MAL, Y LAS DOS EN SILENCIO.
+ *
+ * 1. Usaba el cliente de Supabase que va con la sesión del visitante, pero una
+ *    tarea programada no tiene visitante. Las políticas veían a un anónimo y
+ *    `saved_searches` —que es privada de cada usuario— devolvía cero filas.
+ *    Resultado: no se envió jamás una sola alerta, y la respuesta decía
+ *    `{ ok: true, processed: 0 }`.
+ *
+ * 2. Aunque hubiera leído las búsquedas, no aplicaba sus filtros: contaba
+ *    todos los candidatos públicos actualizados desde la última vez. Una
+ *    empresa que hubiera guardado "cocineros con NIE en Valencia" habría
+ *    recibido "37 perfiles nuevos coinciden con tu búsqueda" contando a todo
+ *    el mundo. Peor que no avisar: avisar mal enseña a ignorar los avisos.
+ *
+ * Ahora usa el cliente de servicio y la misma función de búsqueda que la
+ * pantalla, así que un filtro nuevo en el panel vale aquí sin tocar nada.
  */
 export async function GET(request: Request) {
   const isVercelCron = request.headers.get('x-vercel-cron') === '1';
@@ -18,52 +32,84 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const supabase = await createServerClient();
+  const supabase = createAdminClient();
+  if (!supabase) {
+    return NextResponse.json(
+      { error: 'Falta SUPABASE_SERVICE_ROLE_KEY en el servidor' },
+      { status: 500 }
+    );
+  }
 
-  const { data: searches } = await supabase
+  const { data: searches, error } = await supabase
     .from('saved_searches')
-    .select('*')
+    .select('id, user_id, name, filters, last_alert_at')
     .neq('alert_frequency', 'off');
 
-  let processed = 0;
-  let notificationsCreated = 0;
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  let procesadas = 0;
+  let avisos = 0;
 
   for (const s of searches ?? []) {
-    const since = s.last_alert_at ?? new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-    const { count } = await supabase
-      .from('candidates')
-      .select('*', { count: 'exact', head: true })
-      .eq('is_public', true)
-      .gt('updated_at', since);
+    const busqueda = s as {
+      id: string;
+      user_id: string;
+      name: string;
+      filters: ProfileFilters | null;
+      last_alert_at: string | null;
+    };
 
-    if ((count ?? 0) > 0) {
-      const mensaje = `${count} ${count === 1 ? 'nuevo perfil coincide' : 'nuevos perfiles coinciden'} con tu búsqueda "${s.name}".`;
+    // Sin aviso previo, se mira la última semana: es lo que tiene sentido
+    // enseñar la primera vez, en vez del histórico entero.
+    const desde =
+      busqueda.last_alert_at ?? new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+    // Los filtros que la empresa guardó, más la novedad. `perPage: 1` porque
+    // aquí solo interesa el total, no los perfiles.
+    const { total } = await buscarCandidatos(supabase, {
+      ...(busqueda.filters ?? {}),
+      updatedAfter: desde,
+      page: 1,
+      perPage: 1,
+    });
+
+    if (total > 0) {
+      const mensaje =
+        total === 1
+          ? `Un perfil nuevo coincide con tu búsqueda "${busqueda.name}".`
+          : `${total} perfiles nuevos coinciden con tu búsqueda "${busqueda.name}".`;
+
       await createNotification({
         supabase,
-        userId: s.user_id,
+        userId: busqueda.user_id,
         type: 'saved_search_match',
         payload: {
           message: mensaje,
-          search_id: s.id,
-          search_name: s.name,
-          count,
+          search_id: busqueda.id,
+          search_name: busqueda.name,
+          count: total,
         },
         push: {
           title: 'Nuevos perfiles para ti',
           body: mensaje,
-          link: '/admin/candidatos',
+          link: '/admin/busquedas-guardadas',
         },
       });
-      notificationsCreated++;
+      avisos++;
     }
 
+    // La fecha se actualiza siempre, haya habido aviso o no: si no, una
+    // búsqueda sin coincidencias arrastraría su ventana para siempre y acabaría
+    // avisando del histórico entero el día que apareciera un perfil.
     await supabase
       .from('saved_searches')
       .update({ last_alert_at: new Date().toISOString() })
-      .eq('id', s.id);
+      .eq('id', busqueda.id);
 
-    processed++;
+    procesadas++;
   }
 
-  return NextResponse.json({ ok: true, processed, notificationsCreated });
+  return NextResponse.json({ ok: true, procesadas, avisos });
 }
