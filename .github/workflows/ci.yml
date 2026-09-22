@@ -38,17 +38,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      # El proyecto usa bun: el único lockfile versionado es bun.lock, y el
+      # .gitignore descarta a propósito package-lock.json, yarn.lock y
+      # pnpm-lock.yaml. Instalar con npm aquí daría una instalación distinta
+      # de la de producción, que es justo lo que un CI no debe hacer.
+      - uses: oven-sh/setup-bun@v2
         with:
-          # La misma que usa el proyecto en Vercel.
-          node-version: '24'
-          cache: npm
+          bun-version: latest
 
       - name: Instalar dependencias
-        run: npm ci --no-audit --no-fund
+        run: bun install --frozen-lockfile
 
       - name: Comprobar tipos
-        run: npx tsc --noEmit
+        run: bunx tsc --noEmit
 
       - name: Build de producción
-        run: npx next build
+        run: bunx next build
