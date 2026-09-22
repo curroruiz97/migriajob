@@ -9,7 +9,24 @@ import { Container } from '@/components/ui/container';
 import { getJobBySlug } from '@/lib/db/queries';
 import { ReportDialog } from '@/components/moderation/report-dialog';
 
-export const dynamic = 'force-dynamic';
+/**
+ * Prerenderizada con revalidación, no `force-dynamic`, y el motivo es el
+ * código de respuesta.
+ *
+ * Una oferta que no existe llama a `notFound()`, pero en una página generada
+ * al vuelo el servidor ya ha empezado a enviar la respuesta cuando eso ocurre:
+ * las cabeceras van por delante del contenido, así que el 404 llega tarde y
+ * Google recibe un 200 con una página de "no encontrada". Indexa entonces una
+ * página válida y vacía.
+ *
+ * Con revalidación, el HTML se termina antes de responder y el 404 sale
+ * correcto. Es lo que ya hacían /noticias y /companies, que nunca tuvieron
+ * este problema.
+ *
+ * Cinco minutos: una oferta cambia poco, y si se despublica deja de aparecer
+ * en el listado al instante porque ese sí es dinámico.
+ */
+export const revalidate = 300;
 
 const JOB_TYPE_LABELS: Record<string, string> = {
   full_time: 'Jornada completa', part_time: 'Media jornada', contract: 'Contrato',

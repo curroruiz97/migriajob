@@ -24,11 +24,25 @@ import { PerfilTeaser, aPerfilAnonimo } from '@/components/public/catalogo-bloqu
 import { catalogoEsPublico, puedeVerCatalogo, rolDelVisitante } from '@/lib/config/catalogo';
 
 /**
- * Antes se revalidaba cada 120 s. Ahora quién puede ver la ficha depende de la
- * sesión, y una página cacheada no puede responder distinto a cada visitante:
- * o la sirve entera a todos o a nadie.
+ * Prerenderizada con revalidación. Estuvo en `force-dynamic` unas horas y hubo
+ * que volver, porque el código de respuesta importa más que el matiz que
+ * buscábamos con aquello.
+ *
+ * EL CÓDIGO DE RESPUESTA. Un perfil que no existe llama a `notFound()`, pero
+ * en una página generada al vuelo el servidor ya ha empezado a enviar la
+ * respuesta cuando eso ocurre: las cabeceras van por delante del contenido,
+ * así que el 404 llega tarde y Google recibe un 200 con una página de "no
+ * encontrado". Indexa entonces una página válida y vacía. Con revalidación el
+ * HTML se termina antes de responder y el 404 sale correcto.
+ *
+ * Y EL MATIZ QUE SE PIERDE, QUE NO SE PIERDE. Con el catálogo cerrado
+ * (CATALOGO_PUBLICO=false) esta ficha responde distinto según quién mire, y
+ * una página guardada no puede hacer eso. No es un problema: cambiar esa
+ * variable en Vercel obliga a un despliegue nuevo, y un despliegue nuevo
+ * empieza con la caché vacía. Lo que sí hay que recordar es que, si alguna vez
+ * se cierra el catálogo, esta línea tiene que volver a `dynamic`.
  */
-export const dynamic = 'force-dynamic';
+export const revalidate = 120;
 
 interface ExperienceItem {
   company: string; role: string; start?: string; end?: string; description?: string;
