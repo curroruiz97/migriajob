@@ -109,7 +109,7 @@ export default async function ExpedienteDetailPage({
             </Badge>
           </div>
           <p className="mt-0.5 text-sm text-muted-foreground">
-            {stageDef?.title}
+            {stageDef?.short}
           </p>
           {/* Progress bar */}
           <div className="mt-2 h-2 w-full max-w-md overflow-hidden rounded-full bg-muted">
@@ -178,7 +178,7 @@ export default async function ExpedienteDetailPage({
         closeNote={journey.close_note ?? null}
         closedAt={journey.closed_at ?? null}
         etapaActual={
-          JOURNEY_STAGES.find((e) => e.key === journey.current_stage)?.title ??
+          JOURNEY_STAGES.find((e) => e.key === journey.current_stage)?.short ??
           journey.current_stage
         }
       />

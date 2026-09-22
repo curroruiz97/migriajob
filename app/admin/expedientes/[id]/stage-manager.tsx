@@ -99,7 +99,7 @@ export function StageManager({
                 isPending && 'opacity-50'
               )}
             >
-              {s.number}. {s.title.replace(/[¡!]/g, '').substring(0, 20)}{s.title.length > 23 ? '…' : ''}
+              {s.number}. {s.short}
             </button>
           );
         })}
@@ -118,7 +118,7 @@ export function StageManager({
         </button>
         <div className="flex-1 text-center">
           <span className="text-sm font-semibold text-foreground">
-            Etapa {currentIdx + 1}: {JOURNEY_STAGES[currentIdx]?.title}
+            Etapa {currentIdx + 1}: {JOURNEY_STAGES[currentIdx]?.short}
           </span>
         </div>
         <button
@@ -169,7 +169,7 @@ export function StageManager({
               return (
                 <li key={h.id} className="flex items-center justify-between text-xs">
                   <span className="text-foreground">
-                    → Etapa {def?.number}: {def?.title ?? h.stage}
+                    → Etapa {def?.number}: {def?.short ?? h.stage}
                   </span>
                   <span className="text-muted-foreground">
                     {new Date(h.created_at).toLocaleDateString('es-ES', {

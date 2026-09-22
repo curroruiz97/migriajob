@@ -122,7 +122,7 @@ export default async function ExpedientesPage({
                   : 'border-border bg-surface text-muted-foreground hover:bg-muted'
               )}
             >
-              {s.number}. {s.title.replace(/[¡!]/g, '')} ({count})
+              {s.number}. {s.short} ({count})
             </Link>
           );
         })}
