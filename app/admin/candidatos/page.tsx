@@ -7,6 +7,7 @@ import { ProfilesPagination } from '@/components/public/profiles-pagination';
 import { SaveSearchButton } from '@/components/admin/save-search-button';
 import { EmptyState } from '@/components/ui/empty-state';
 import type { Database } from '@/lib/supabase/types';
+import { soloEquipo } from '@/lib/auth/solo-equipo';
 
 type Candidate = Database['public']['Tables']['candidates']['Row'];
 
@@ -31,6 +32,12 @@ interface PageProps {
 }
 
 export default async function AdminCandidatosPage({ searchParams }: PageProps) {
+  // El buscador del catálogo es herramienta del equipo, no de la empresa
+  // cliente. Se cierra aquí y no en un layout de la carpeta a propósito: la
+  // ficha individual (/admin/candidatos/[slug]) tiene que seguir abierta,
+  // porque la empresa llega a ella desde una candidatura a su propia oferta.
+  await soloEquipo();
+
   const params = await searchParams;
   const view = params.view === 'list' ? 'list' : 'grid';
 

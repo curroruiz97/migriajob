@@ -30,6 +30,8 @@ interface AdminTopbarProps {
   variant?: 'employer' | 'candidate';
   /** Foto del candidato o logo de la empresa; se refleja en el avatar superior. */
   avatarUrl?: string | null;
+  /** Equipo de Talnet. El buscador del catálogo y Facturación son solo suyos. */
+  isAdmin?: boolean;
 }
 
 function getInitials(email: string) {
@@ -41,22 +43,29 @@ function getInitials(email: string) {
   return name.slice(0, 2).toUpperCase();
 }
 
-export function AdminTopbar({ user, unreadCount = 0, variant = 'employer', avatarUrl = null }: AdminTopbarProps) {
+export function AdminTopbar({ user, unreadCount = 0, variant = 'employer', avatarUrl = null, isAdmin = false }: AdminTopbarProps) {
   const initials = getInitials(user.email);
   const displayName = user.email.split('@')[0] ?? user.email;
   const hasUnread = unreadCount > 0;
   const isCandidate = variant === 'candidate';
+  // El buscador de arriba va al catálogo completo, que ya no es de la empresa.
+  const puedeBuscarCandidatos = !isCandidate && isAdmin;
 
   return (
     <TooltipProvider delayDuration={200}>
       <header className="safe-top sticky top-0 z-20 flex min-h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 sm:px-6 lg:px-8">
-        {isCandidate ? (
-          // Vista candidato: marca a la izquierda (sin buscador de candidatos — eso es de reclutador).
-          <Link href="/dashboard/ofertas" aria-label="MigriaJob — Ofertas" className="flex items-center lg:hidden">
+        {!puedeBuscarCandidatos ? (
+          // Sin buscador: ni el candidato ni la empresa cliente entran al
+          // catálogo. Queda la marca, que en móvil hace de vuelta al inicio.
+          <Link
+            href={isCandidate ? '/dashboard/ofertas' : '/admin/ofertas'}
+            aria-label="Talnet — inicio"
+            className="flex items-center lg:hidden"
+          >
             <Logo height={22} asChild />
           </Link>
         ) : (
-          // Vista empleador: buscador de candidatos.
+          // Solo el equipo: buscador del catálogo de candidatos.
           <form action="/admin/candidatos" className="flex flex-1 max-w-md items-center">
             <div className="group relative w-full">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
@@ -193,7 +202,10 @@ export function AdminTopbar({ user, unreadCount = 0, variant = 'employer', avata
                   <div className="p-1">
                     {/* Facturación no aparece en la app de iPhone: la pantalla
                         habla de planes y método de pago, y para Apple eso es una
-                        vía de compra ajena a la suya (3.1.1). */}
+                        vía de compra ajena a la suya (3.1.1). Y desde el 23-sep
+                        tampoco para la empresa cliente: hoy es texto fijo, sin
+                        planes ni límites detrás. */}
+                    {isAdmin && (
                     <HideOnIOSApp>
                       <DropdownMenuItem asChild>
                         <Link
@@ -205,6 +217,7 @@ export function AdminTopbar({ user, unreadCount = 0, variant = 'employer', avata
                         </Link>
                       </DropdownMenuItem>
                     </HideOnIOSApp>
+                    )}
                     <DropdownMenuItem asChild>
                       <Link
                         href="/admin/configuracion"

@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { esDelEquipo } from '@/lib/auth/solo-equipo';
 
 export const metadata = { title: 'Mensajes' };
 
 export default async function MensajesPage() {
+  const esEquipo = await esDelEquipo();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
@@ -61,9 +63,14 @@ export default async function MensajesPage() {
               : `${items.length} ${items.length === 1 ? 'conversación' : 'conversaciones'}`}
           </p>
         </div>
-        <Button asChild variant="outline" size="sm">
-          <Link href="/admin/candidatos">+ Iniciar conversación</Link>
-        </Button>
+        {/* Arrancar una conversación se hace desde el catálogo, que ya no es
+            de la empresa. Ella responde a quien le escribe y escribe a quien se
+            inscribe en sus ofertas, desde la candidatura. */}
+        {esEquipo && (
+          <Button asChild variant="outline" size="sm">
+            <Link href="/admin/candidatos">+ Iniciar conversación</Link>
+          </Button>
+        )}
       </div>
 
       {items.length === 0 ? (

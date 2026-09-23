@@ -54,21 +54,21 @@ const EMPLOYER_PRIMARY: NavItem[] = [
 ];
 
 const EMPLOYER_MENU: NavItem[] = [
-  { href: '/admin/candidatos', label: 'Buscar candidatos', icon: Users },
-  { href: '/admin/procesos', label: 'Mis procesos', icon: Workflow },
-  // Las dos de Talnet. Estaban mal: Expedientes salía para cualquier empresa
-  // —el menú móvil nunca supo del rol—, y Moderación no salía para nadie, de
-  // modo que la bandeja de denuncias solo se abría escribiendo la dirección.
+  { href: '/admin/candidatos', label: 'Buscar candidatos', icon: Users, adminOnly: true },
+  { href: '/admin/procesos', label: 'Mis procesos', icon: Workflow, adminOnly: true },
+  // De aquí abajo, todo lo marcado es del equipo: el mismo reparto que en el
+  // menú de escritorio (ver la nota en admin-sidebar.tsx). El menú móvil nunca
+  // supo del rol y llegó a enseñarle Expedientes a cualquier empresa.
   { href: '/admin/expedientes', label: 'Expedientes', icon: FolderOpen, adminOnly: true },
   { href: '/admin/moderacion', label: 'Moderación', icon: ShieldAlert, adminOnly: true },
   { href: '/admin/metricas', label: 'Métricas', icon: BarChart3, adminOnly: true },
-  { href: '/admin/busqueda-avanzada', label: 'Búsqueda avanzada', icon: Search },
-  { href: '/admin/busquedas-guardadas', label: 'Búsquedas guardadas', icon: BookmarkCheck },
-  { href: '/admin/favoritos', label: 'Favoritos', icon: Heart },
-  { href: '/admin/comparador', label: 'Comparador', icon: GitCompare },
-  { href: '/admin/plantillas', label: 'Plantillas', icon: FileText },
+  { href: '/admin/busqueda-avanzada', label: 'Búsqueda avanzada', icon: Search, adminOnly: true },
+  { href: '/admin/busquedas-guardadas', label: 'Búsquedas guardadas', icon: BookmarkCheck, adminOnly: true },
+  { href: '/admin/favoritos', label: 'Favoritos', icon: Heart, adminOnly: true },
+  { href: '/admin/comparador', label: 'Comparador', icon: GitCompare, adminOnly: true },
+  { href: '/admin/plantillas', label: 'Plantillas', icon: FileText, adminOnly: true },
   { href: '/admin/notificaciones', label: 'Notificaciones', icon: Bell },
-  { href: '/admin/facturacion', label: 'Facturación', icon: CreditCard },
+  { href: '/admin/facturacion', label: 'Facturación', icon: CreditCard, adminOnly: true },
   // Aquí vive el borrado de cuenta (Cuenta y privacidad > Eliminar cuenta).
   // Apple lo dio por inexistente en el rechazo 5.1.1(v) porque desde el menú
   // del empleador no se llegaba: el único enlace estaba al final de la página

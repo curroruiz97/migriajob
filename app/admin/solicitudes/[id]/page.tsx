@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { ApplicantStatusSelect } from '@/components/admin/applicant-status-select';
 import { FavoriteButton } from '@/components/admin/favorite-button';
 import { StartConversationButton } from '@/components/admin/start-conversation-button';
+import { esDelEquipo } from '@/lib/auth/solo-equipo';
 
 export const metadata = { title: 'Solicitud' };
 
@@ -102,6 +103,7 @@ export default async function SolicitudDetallePage({
 
   if (!appRaw) notFound();
   const app = appRaw as unknown as AppRow;
+  const esEquipo = await esDelEquipo();
 
   const j = pickOne(app.job);
   const c = pickOne(app.candidate);
@@ -200,7 +202,9 @@ export default async function SolicitudDetallePage({
               Ver perfil completo
             </Link>
           )}
-          {c?.id && <FavoriteButton candidateId={c.id} initial={alreadyFavorite} />}
+          {/* Favoritos es del equipo: para la empresa, guardar aquí
+              alimentaría una lista que ya no puede abrir. */}
+          {esEquipo && c?.id && <FavoriteButton candidateId={c.id} initial={alreadyFavorite} />}
           <ApplicantStatusSelect applicationId={app.id} status={app.status} />
         </div>
       </section>

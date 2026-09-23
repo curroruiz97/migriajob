@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { CompanyPerfil, type CompanyDefaults } from '@/components/admin/company-perfil';
+import { esDelEquipo } from '@/lib/auth/solo-equipo';
 
 export const metadata = { title: 'Perfil de empresa' };
 
@@ -55,6 +56,7 @@ export default async function PerfilEmpresaPage() {
         defaults={defaults}
         logoUrl={(c.logo_url as string | null) ?? null}
         initialCompletion={initialCompletion}
+        isAdmin={await esDelEquipo()}
       />
     </div>
   );

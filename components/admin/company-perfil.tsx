@@ -70,9 +70,12 @@ export interface CompanyDefaults {
 export function CompanyPerfil({
   defaults,
   logoUrl,
+  isAdmin = false,
 }: {
   defaults: CompanyDefaults;
   logoUrl: string | null;
+  /** Equipo de Talnet: solo ellos ven el acceso a Facturación. */
+  isAdmin?: boolean;
   /** Mantenida en el tipo por compatibilidad, ya no se usa para abrir el modal. */
   initialCompletion?: number;
 }) {
@@ -196,15 +199,20 @@ export function CompanyPerfil({
           </Button>
         </div>
 
-        <Link
-          href="/admin/facturacion"
-          className="flex items-center justify-between rounded-2xl border border-border bg-surface px-5 py-4 transition-colors hover:bg-muted"
-        >
-          <span className="flex items-center gap-3 text-sm font-medium text-foreground">
-            <CreditCard className="h-4 w-4 text-muted-foreground" /> Datos de facturación
-          </span>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </Link>
+        {/* Facturación es hoy una pantalla de mentira (texto fijo, sin planes
+            ni límites detrás). Se le deja de enseñar al cliente hasta que sea
+            de verdad; el equipo sigue viéndola. */}
+        {isAdmin && (
+          <Link
+            href="/admin/facturacion"
+            className="flex items-center justify-between rounded-2xl border border-border bg-surface px-5 py-4 transition-colors hover:bg-muted"
+          >
+            <span className="flex items-center gap-3 text-sm font-medium text-foreground">
+              <CreditCard className="h-4 w-4 text-muted-foreground" /> Datos de facturación
+            </span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </Link>
+        )}
         <Link
           href="/admin/configuracion"
           className="flex items-center justify-between rounded-2xl border border-border bg-surface px-5 py-4 transition-colors hover:bg-muted"
