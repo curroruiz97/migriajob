@@ -4,9 +4,29 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
+// El nombre lleva "migria" de antes del cambio de marca. Se queda: cambiarlo
+// haría que a todo el que ya respondió le volviese a salir el banner.
 const STORAGE_KEY = 'migria-cookie-consent';
 
-type Consent = 'accepted' | 'rejected' | null;
+/** Se emite al elegir, para que la analítica se entere sin recargar. */
+export const CONSENT_EVENT = 'consentimiento-cookies';
+
+export type Consent = 'accepted' | 'rejected' | null;
+
+/**
+ * Qué eligió esta persona. Devuelve null si aún no ha elegido.
+ *
+ * Va con try/catch porque en ventana privada, o con el almacenamiento
+ * bloqueado, leer localStorage no devuelve vacío: lanza. Y si esto revienta,
+ * se lleva por delante la página entera.
+ */
+export function leerConsentimiento(): Consent {
+  try {
+    return (localStorage.getItem(STORAGE_KEY) as Consent) ?? null;
+  } catch {
+    return null;
+  }
+}
 
 export function CookieBanner() {
   const [consent, setConsent] = useState<Consent>(null);
@@ -14,14 +34,20 @@ export function CookieBanner() {
 
   useEffect(() => {
     setHydrated(true);
-    setConsent((localStorage.getItem(STORAGE_KEY) as Consent) ?? null);
+    setConsent(leerConsentimiento());
   }, []);
 
   if (!hydrated || consent !== null) return null;
 
   const choose = (value: 'accepted' | 'rejected') => {
-    localStorage.setItem(STORAGE_KEY, value);
+    try {
+      localStorage.setItem(STORAGE_KEY, value);
+    } catch {
+      // Sin dónde guardarlo, la elección vale solo para esta visita. Preferible
+      // a que el botón no haga nada.
+    }
     setConsent(value);
+    window.dispatchEvent(new Event(CONSENT_EVENT));
   };
 
   return (

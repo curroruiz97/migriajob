@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useActionState, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import {
   AlertCircle,
   Briefcase,
@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AuthBrandPanel } from '@/components/public/auth-brand-panel';
 import { cn } from '@/lib/utils';
+import { marcarEvento } from '@/components/public/analytics';
 
 const initial: AuthState = {};
 
@@ -27,6 +28,12 @@ export function RegistroForm({ initialRole = 'candidate' }: { initialRole?: Role
   const [role, setRole] = useState<Role>(initialRole);
   const [showPassword, setShowPassword] = useState(false);
   const [state, formAction, pending] = useActionState(signUpAction, initial);
+
+  // Se distingue empresa de candidato porque valen cosas muy distintas: una
+  // empresa es demanda, un candidato es catálogo.
+  useEffect(() => {
+    if (state.ok) marcarEvento('cuenta_creada', { tipo: role });
+  }, [state.ok, role]);
 
   return (
     <div className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">

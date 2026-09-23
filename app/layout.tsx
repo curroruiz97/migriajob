@@ -4,6 +4,7 @@ import { Instrument_Serif } from 'next/font/google';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import type { ReactNode } from 'react';
 import { NativeBootstrap } from '@/components/native/native-bootstrap';
+import { Medicion } from '@/components/public/medicion';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import {
@@ -71,6 +72,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <NativeBootstrap />
           <NuqsAdapter>{children}</NuqsAdapter>
           <Toaster />
+          <Medicion />
         </ThemeProvider>
       </body>
     </html>

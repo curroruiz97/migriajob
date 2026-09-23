@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { CookieBanner } from '@/components/public/cookie-banner';
 import { HideInApp } from '@/components/common/hide-in-app';
 import { MarketingAppBottomNav } from '@/components/public/marketing-app-bottom-nav';
 import { MarketingFooter } from '@/components/public/marketing-footer';
@@ -23,7 +22,6 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
       </HideInApp>
       {/* Bottom nav nativo — solo aparece dentro de la app. */}
       <MarketingAppBottomNav />
-      <CookieBanner />
     </div>
   );
 }

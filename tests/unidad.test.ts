@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import { slugify, generateJobSlug } from '@/lib/utils/slugify';
 import { JOURNEY_STAGES, getStageIndex, getStageProgress } from '@/lib/journey-stages';
 import { signUpSchema, signInSchema } from '@/lib/validations/auth';
+import { rutaParaAnalitica } from '@/components/public/analytics';
 
 /**
  * Pruebas de la lógica que no depende de la base de datos ni del navegador.
@@ -117,5 +118,36 @@ describe('validación de alta de cuenta', () => {
 
   test('el inicio de sesión exige correo y contraseña', () => {
     expect(signInSchema.safeParse({ email: '', password: '' }).success).toBe(false);
+  });
+});
+
+describe('qué dirección se le manda a Google Analytics', () => {
+  test('una ficha del catálogo va sin el nombre de la persona', () => {
+    expect(rutaParaAnalitica('/perfiles/maria-fernandez-vargas')).toBe('/perfiles/[perfil]');
+  });
+
+  test('tampoco se escapa el número largo de los importados', () => {
+    expect(rutaParaAnalitica('/perfiles/jose-ramirez-40218837')).toBe('/perfiles/[perfil]');
+  });
+
+  test('ni por la query, que también puede llevarlo', () => {
+    expect(rutaParaAnalitica('/perfiles/ana-lopez', '?ref=buscador')).toBe('/perfiles/[perfil]');
+  });
+
+  test('el listado del catálogo sí se informa entero', () => {
+    expect(rutaParaAnalitica('/perfiles', '?city=Madrid')).toBe('/perfiles?city=Madrid');
+  });
+
+  test('una oferta o un artículo no identifican a nadie: van tal cual', () => {
+    expect(rutaParaAnalitica('/empleos/cocinero-valencia')).toBe('/empleos/cocinero-valencia');
+    expect(rutaParaAnalitica('/noticias/3-tipos-de-permiso-de-trabajo')).toBe(
+      '/noticias/3-tipos-de-permiso-de-trabajo'
+    );
+  });
+
+  test('la campaña de origen se conserva, que es para lo que se mide', () => {
+    expect(rutaParaAnalitica('/empresas', '?utm_source=linkedin')).toBe(
+      '/empresas?utm_source=linkedin'
+    );
   });
 });

@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { enviarConsultaAction, type EstadoContacto } from './actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { marcarEvento } from '@/components/public/analytics';
 
 const inicial: EstadoContacto = {};
 
@@ -15,6 +16,12 @@ const SELECT_CLASS =
 
 export function ContactoForm() {
   const [state, formAction, pending] = useActionState(enviarConsultaAction, inicial);
+
+  // La consulta enviada es la conversión de toda la web pública: es el momento
+  // en que un visitante pasa a ser una posible empresa cliente.
+  useEffect(() => {
+    if (state.ok) marcarEvento('consulta_enviada');
+  }, [state.ok]);
 
   if (state.ok) {
     return (
