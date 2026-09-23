@@ -3,6 +3,7 @@ import { slugify, generateJobSlug } from '@/lib/utils/slugify';
 import { JOURNEY_STAGES, getStageIndex, getStageProgress } from '@/lib/journey-stages';
 import { signUpSchema, signInSchema } from '@/lib/validations/auth';
 import { rutaParaAnalitica } from '@/components/public/analytics';
+import { normalizarEstado } from '@/lib/ofertas/estados';
 
 /**
  * Pruebas de la lógica que no depende de la base de datos ni del navegador.
@@ -149,5 +150,25 @@ describe('qué dirección se le manda a Google Analytics', () => {
     expect(rutaParaAnalitica('/empresas', '?utm_source=linkedin')).toBe(
       '/empresas?utm_source=linkedin'
     );
+  });
+});
+
+describe('el estado de una oferta al guardarla', () => {
+  test('un borrador sigue siendo un borrador', () => {
+    // Esto llegó a estar roto: 'draft' no figuraba entre los estados válidos,
+    // así que guardar un borrador lo publicaba.
+    expect(normalizarEstado('draft')).toBe('draft');
+  });
+
+  test('se respetan los cinco estados que admite la base', () => {
+    for (const estado of ['draft', 'published', 'paused', 'expired', 'archived']) {
+      expect(normalizarEstado(estado)).toBe(estado);
+    }
+  });
+
+  test('un valor que no se reconoce no publica nada', () => {
+    expect(normalizarEstado('publicada')).toBe('draft');
+    expect(normalizarEstado('')).toBe('draft');
+    expect(normalizarEstado(undefined)).toBe('draft');
   });
 });

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { safeAction } from '@/lib/actions/safe';
+import { normalizarEstado, type JobStatus } from '@/lib/ofertas/estados';
 import {
   upsertSelectionStage,
   applicationStatusToStage,
@@ -69,8 +70,6 @@ function slugify(title: string): string {
   return `${base || 'oferta'}-${suffix}`;
 }
 
-type JobStatus = 'published' | 'paused' | 'archived';
-
 function parseJobForm(formData: FormData) {
   const title = String(formData.get('title') ?? '').trim();
   const category = String(formData.get('category') ?? '').trim();
@@ -89,12 +88,8 @@ function parseJobForm(formData: FormData) {
   const start_date = String(formData.get('start_date') ?? '').trim() || null;
   // La categoría también se guarda como skill para el matching y la búsqueda.
   const skills = category ? [category] : [];
-  const statusRaw = String(formData.get('status') ?? 'published');
-  const status: JobStatus = (['published', 'paused', 'archived'] as const).includes(
-    statusRaw as JobStatus
-  )
-    ? (statusRaw as JobStatus)
-    : 'published';
+  const statusRaw = String(formData.get('status') ?? 'draft');
+  const status = normalizarEstado(statusRaw);
   return { title, category, description, requirements, country, city, location, job_type, work_mode, salary_min, salary_max, start_date, skills, status };
 }
 
@@ -143,6 +138,20 @@ export async function updateJobAction(jobId: string, _prev: unknown, formData: F
       return { error: 'Completa los campos obligatorios (título, categoría, descripción, requisitos y ciudad).' as string };
     }
 
+    // Editar una oferta no es volver a publicarla: si ya estaba publicada se
+    // respeta su fecha original. Antes cada guardado la resellaba con la fecha
+    // de hoy, y la oferta reaparecía como recién puesta en los listados.
+    const { data: previa } = await supabase
+      .from('jobs')
+      .select('published_at')
+      .eq('id', jobId)
+      .maybeSingle<{ published_at: string | null }>();
+
+    const publishedAt =
+      j.status === 'published'
+        ? (previa?.published_at ?? new Date().toISOString())
+        : null;
+
     const consulta = supabase
       .from('jobs')
       .update({
@@ -159,7 +168,7 @@ export async function updateJobAction(jobId: string, _prev: unknown, formData: F
         salary_max: j.salary_max,
         skills: j.skills,
         status: j.status as never,
-        published_at: j.status === 'published' ? new Date().toISOString() : null,
+        published_at: publishedAt,
         updated_at: new Date().toISOString(),
       });
 
