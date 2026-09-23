@@ -1230,7 +1230,9 @@ export type Database = {
         Row: {
           applications_count: number | null
           benefits: string | null
+          category: string | null
           company_id: string
+          country: string | null
           created_at: string
           currency: string | null
           description: string
@@ -1250,6 +1252,7 @@ export type Database = {
           search_vector: unknown
           skills: string[] | null
           slug: string
+          start_date: string | null
           status: Database["public"]["Enums"]["job_status"]
           title: string
           updated_at: string
@@ -1259,7 +1262,9 @@ export type Database = {
         Insert: {
           applications_count?: number | null
           benefits?: string | null
+          category?: string | null
           company_id: string
+          country?: string | null
           created_at?: string
           currency?: string | null
           description: string
@@ -1279,6 +1284,7 @@ export type Database = {
           search_vector?: unknown
           skills?: string[] | null
           slug: string
+          start_date?: string | null
           status?: Database["public"]["Enums"]["job_status"]
           title: string
           updated_at?: string
@@ -1288,7 +1294,9 @@ export type Database = {
         Update: {
           applications_count?: number | null
           benefits?: string | null
+          category?: string | null
           company_id?: string
+          country?: string | null
           created_at?: string
           currency?: string | null
           description?: string
@@ -1308,6 +1316,7 @@ export type Database = {
           search_vector?: unknown
           skills?: string[] | null
           slug?: string
+          start_date?: string | null
           status?: Database["public"]["Enums"]["job_status"]
           title?: string
           updated_at?: string

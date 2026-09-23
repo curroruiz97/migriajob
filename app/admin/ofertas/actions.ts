@@ -73,38 +73,25 @@ export async function createJobAction(_prev: unknown, formData: FormData) {
       return { error: 'Completa los campos obligatorios (título, categoría, descripción, requisitos y ciudad).' as string };
     }
 
-    // Columnas garantizadas (presentes desde el esquema inicial).
-    const { data: created, error } = await supabase
-      .from('jobs')
-      .insert({
-        company_id: companyId,
-        title: j.title,
-        slug: slugify(j.title),
-        description: j.description,
-        requirements: j.requirements,
-        location: j.location,
-        job_type: j.job_type as never,
-        work_mode: j.work_mode as never,
-        salary_min: j.salary_min,
-        salary_max: j.salary_max,
-        skills: j.skills,
-        status: j.status as never,
-        published_at: j.status === 'published' ? new Date().toISOString() : null,
-      })
-      .select('id')
-      .maybeSingle();
+    const { error } = await supabase.from('jobs').insert({
+      company_id: companyId,
+      title: j.title,
+      slug: slugify(j.title),
+      description: j.description,
+      requirements: j.requirements,
+      category: j.category,
+      country: j.country,
+      start_date: j.start_date,
+      location: j.location,
+      job_type: j.job_type as never,
+      work_mode: j.work_mode as never,
+      salary_min: j.salary_min,
+      salary_max: j.salary_max,
+      skills: j.skills,
+      status: j.status as never,
+      published_at: j.status === 'published' ? new Date().toISOString() : null,
+    });
     if (error) return { error: 'No se pudo publicar la oferta. Inténtalo de nuevo.' as string };
-
-    // Columnas de la migración 0007. OJO: a 22-sep-2026 esa migración NO está
-    // aplicada en la base de datos, así que este update falla y el catch vacío
-    // se lo traga: categoría, país y fecha de incorporación no se guardan.
-    if (created?.id) {
-      await supabase
-        .from('jobs')
-        .update({ category: j.category, country: j.country, start_date: j.start_date } as never)
-        .eq('id', created.id)
-        .then(() => {}, () => {});
-    }
 
     revalidatePath('/admin/ofertas');
     return { ok: true as const };
@@ -121,12 +108,15 @@ export async function updateJobAction(jobId: string, _prev: unknown, formData: F
       return { error: 'Completa los campos obligatorios (título, categoría, descripción, requisitos y ciudad).' as string };
     }
 
-    await supabase
+    const { error } = await supabase
       .from('jobs')
       .update({
         title: j.title,
         description: j.description,
         requirements: j.requirements,
+        category: j.category,
+        country: j.country,
+        start_date: j.start_date,
         location: j.location,
         job_type: j.job_type as never,
         work_mode: j.work_mode as never,
@@ -139,14 +129,7 @@ export async function updateJobAction(jobId: string, _prev: unknown, formData: F
       })
       .eq('id', jobId)
       .eq('company_id', companyId);
-
-    // Columnas de la migración 0007 (ver la nota en createJobAction).
-    await supabase
-      .from('jobs')
-      .update({ category: j.category, country: j.country, start_date: j.start_date } as never)
-      .eq('id', jobId)
-      .eq('company_id', companyId)
-      .then(() => {}, () => {});
+    if (error) return { error: 'No se pudieron guardar los cambios. Inténtalo de nuevo.' as string };
 
     revalidatePath('/admin/ofertas');
     revalidatePath(`/admin/ofertas/${jobId}`);

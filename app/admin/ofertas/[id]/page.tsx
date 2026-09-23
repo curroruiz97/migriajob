@@ -50,13 +50,14 @@ export default async function EditarOfertaPage({
   if (!job || (company && job.company_id !== company.id)) notFound();
   const j = job as Record<string, unknown>;
 
-  // País + ciudad: si la migración 0007 está aplicada usamos j.country; si no,
-  // derivamos el país del texto de `location` ("Ciudad, País").
+  // País + ciudad. Las ofertas anteriores al 23-sep-2026 se publicaron cuando
+  // la columna no existía en la base, así que ahí el país hay que sacarlo del
+  // texto de `location` ("Ciudad, País"). Lo mismo con la categoría y la fecha.
   const loc = (j.location as string | null) ?? '';
   const country = (j.country as string | null) || (loc.includes('Perú') ? 'Perú' : 'España');
   const city = loc.replace(/,?\s*(España|Perú)\s*$/i, '').trim();
   const startDate = j.start_date ? String(j.start_date).slice(0, 10) : '';
-  // Categoría: columna 0007, o primer skill como respaldo.
+  // Categoría: la columna, o el primer skill como respaldo en las antiguas.
   const category =
     (j.category as string | null) ||
     (Array.isArray(j.skills) && (j.skills as string[])[0] ? (j.skills as string[])[0] : '');
