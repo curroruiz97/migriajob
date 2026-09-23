@@ -72,7 +72,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <NativeBootstrap />
           <NuqsAdapter>{children}</NuqsAdapter>
           <Toaster />
-          <Medicion />
+          {/* El nombre va sin NEXT_PUBLIC_ a propósito, así que hay que
+              leerlo aquí, en servidor, y bajarlo. Se acepta el otro nombre por
+              si alguien lo configura con el prefijo. */}
+          <Medicion
+            measurementId={
+              process.env.GA_MEASUREMENT_ID ?? process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
+            }
+          />
         </ThemeProvider>
       </body>
     </html>

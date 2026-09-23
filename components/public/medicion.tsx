@@ -24,7 +24,7 @@ import { CookieBanner } from './cookie-banner';
 
 const ZONAS_SIN_MEDICION = ['/admin', '/dashboard'];
 
-export function Medicion() {
+export function Medicion({ measurementId }: { measurementId?: string }) {
   const pathname = usePathname();
 
   const esZonaPrivada = ZONAS_SIN_MEDICION.some(
@@ -34,7 +34,7 @@ export function Medicion() {
 
   return (
     <>
-      <Analytics />
+      <Analytics measurementId={measurementId} />
       <CookieBanner />
     </>
   );

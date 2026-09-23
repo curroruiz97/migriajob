@@ -23,9 +23,12 @@ import { CONSENT_EVENT, leerConsentimiento } from './cookie-banner';
  *
  * Por eso la vista de página se envía a mano y no automáticamente: es la única
  * forma de decidir qué se manda.
+ *
+ * EL IDENTIFICADOR LLEGA POR PROPIEDAD, no de process.env. Este componente
+ * corre en el navegador, y ahí Next solo deja ver las variables que empiezan
+ * por NEXT_PUBLIC_. La de este proyecto se llama GA_MEASUREMENT_ID a secas, así
+ * que la lee el layout, que es de servidor, y la baja hasta aquí.
  */
-
-const ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 /** Rutas cuyo último tramo identifica a una persona. */
 const ANONIMAS = ['/perfiles/'];
@@ -49,7 +52,8 @@ declare global {
   }
 }
 
-export function Analytics() {
+export function Analytics({ measurementId }: { measurementId?: string }) {
+  const ID = measurementId;
   const pathname = usePathname();
   const [acepta, setAcepta] = useState(false);
 
@@ -67,7 +71,7 @@ export function Analytics() {
     window.gtag('event', 'page_view', {
       page_path: rutaParaAnalitica(pathname, window.location.search),
     });
-  }, [acepta, pathname]);
+  }, [acepta, ID, pathname]);
 
   if (!acepta || !ID) return null;
 
