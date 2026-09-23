@@ -8,18 +8,53 @@ import {
   applicationStatusToStage,
 } from '@/lib/actions/selection-process';
 
+/**
+ * Quién está tocando una oferta.
+ *
+ * Una empresa solo puede tocar las suyas, y eso se garantiza filtrando por su
+ * company_id en cada consulta. Pero el equipo de Talnet no tiene empresa
+ * propia, así que ese filtro le dejaba fuera de todo: al intentar editar
+ * cualquier oferta se encontraba un «Empresa no encontrada». El dueño del
+ * producto no podía corregir ni retirar la oferta de un cliente sin pedírselo
+ * al cliente.
+ *
+ * La base de datos ya lo permitía —hay una política expresa de que los
+ * administradores gestionan cualquier oferta—; era el código el que estorbaba.
+ */
 async function requireEmployer() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) throw new Error('No autenticado');
-  const { data: company } = await supabase
-    .from('companies')
-    .select('id')
-    .eq('owner_id', user.id)
-    .maybeSingle();
-  return { user, supabase, companyId: company?.id ?? null };
+
+  const [{ data: company }, { data: perfil }] = await Promise.all([
+    supabase.from('companies').select('id').eq('owner_id', user.id).maybeSingle(),
+    supabase.from('profiles').select('role').eq('id', user.id).maybeSingle<{ role: string }>(),
+  ]);
+
+  return {
+    user,
+    supabase,
+    companyId: (company?.id as string | undefined) ?? null,
+    esEquipo: perfil?.role === 'admin',
+  };
+}
+
+/**
+ * El filtro de propiedad, en un sitio. Para una empresa acota a lo suyo; para
+ * el equipo no acota nada, porque puede con todas.
+ *
+ * Se escribe como un `.eq` condicional y no como dos consultas para que no haya
+ * forma de olvidarse del filtro en una rama.
+ */
+// biome-ignore lint/suspicious/noExplicitAny: el tipo del builder de PostgREST no se puede nombrar aquí.
+function soloSuyas<T extends { eq: (col: string, val: any) => T }>(
+  consulta: T,
+  companyId: string | null,
+  esEquipo: boolean
+): T {
+  return esEquipo ? consulta : consulta.eq('company_id', companyId);
 }
 
 function slugify(title: string): string {
@@ -100,15 +135,15 @@ export async function createJobAction(_prev: unknown, formData: FormData) {
 
 export async function updateJobAction(jobId: string, _prev: unknown, formData: FormData) {
   return safeAction(async () => {
-    const { supabase, companyId } = await requireEmployer();
-    if (!companyId) return { error: 'Empresa no encontrada.' as string };
+    const { supabase, companyId, esEquipo } = await requireEmployer();
+    if (!companyId && !esEquipo) return { error: 'Empresa no encontrada.' as string };
 
     const j = parseJobForm(formData);
     if (!j.title || !j.category || !j.description || !j.requirements || !j.city) {
       return { error: 'Completa los campos obligatorios (título, categoría, descripción, requisitos y ciudad).' as string };
     }
 
-    const { error } = await supabase
+    const consulta = supabase
       .from('jobs')
       .update({
         title: j.title,
@@ -126,9 +161,9 @@ export async function updateJobAction(jobId: string, _prev: unknown, formData: F
         status: j.status as never,
         published_at: j.status === 'published' ? new Date().toISOString() : null,
         updated_at: new Date().toISOString(),
-      })
-      .eq('id', jobId)
-      .eq('company_id', companyId);
+      });
+
+    const { error } = await soloSuyas(consulta.eq('id', jobId), companyId, esEquipo);
     if (error) return { error: 'No se pudieron guardar los cambios. Inténtalo de nuevo.' as string };
 
     revalidatePath('/admin/ofertas');
@@ -139,17 +174,21 @@ export async function updateJobAction(jobId: string, _prev: unknown, formData: F
 
 export async function setJobStatusAction(jobId: string, status: JobStatus) {
   return safeAction(async () => {
-    const { supabase, companyId } = await requireEmployer();
-    if (!companyId) return { error: 'Empresa no encontrada.' as string };
-    await supabase
-      .from('jobs')
-      .update({
-        status: status as never,
-        published_at: status === 'published' ? new Date().toISOString() : null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', jobId)
-      .eq('company_id', companyId);
+    const { supabase, companyId, esEquipo } = await requireEmployer();
+    if (!companyId && !esEquipo) return { error: 'Empresa no encontrada.' as string };
+    const { error } = await soloSuyas(
+      supabase
+        .from('jobs')
+        .update({
+          status: status as never,
+          published_at: status === 'published' ? new Date().toISOString() : null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', jobId),
+      companyId,
+      esEquipo
+    );
+    if (error) return { error: 'No se pudo cambiar el estado de la oferta.' as string };
     revalidatePath('/admin/ofertas');
     return { ok: true as const };
   });
@@ -157,20 +196,21 @@ export async function setJobStatusAction(jobId: string, status: JobStatus) {
 
 export async function duplicateJobAction(jobId: string) {
   return safeAction(async () => {
-    const { supabase, companyId } = await requireEmployer();
-    if (!companyId) return { error: 'Empresa no encontrada.' as string };
+    const { supabase, companyId, esEquipo } = await requireEmployer();
+    if (!companyId && !esEquipo) return { error: 'Empresa no encontrada.' as string };
 
-    const { data: src } = await supabase
-      .from('jobs')
-      .select('*')
-      .eq('id', jobId)
-      .eq('company_id', companyId)
-      .maybeSingle();
+    const { data: src } = await soloSuyas(
+      supabase.from('jobs').select('*').eq('id', jobId),
+      companyId,
+      esEquipo
+    ).maybeSingle();
     if (!src) return { error: 'Oferta no encontrada.' as string };
 
-    const s = src as Record<string, unknown> & { title: string };
+    // La copia se queda en la empresa de la oferta original, no en la de quien
+    // copia: si el equipo duplica la oferta de un cliente, sigue siendo suya.
+    const s = src as Record<string, unknown> & { title: string; company_id: string };
     await supabase.from('jobs').insert({
-      company_id: companyId,
+      company_id: s.company_id,
       title: `${s.title} (copia)`,
       slug: slugify(s.title),
       description: s.description as string,
