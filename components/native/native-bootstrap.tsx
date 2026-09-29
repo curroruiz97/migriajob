@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 /**
  * Inicialización nativa (solo dentro de la app Capacitor; no-op en navegador web).
- * - StatusBar con color de marca y texto claro, sin solapar el WebView.
+ * - StatusBar clara con iconos oscuros, sin solapar el WebView.
  * - Botón físico "atrás" de Android: retrocede en el historial o sale en la raíz.
  *
  * Usa import() dinámico para que los paquetes @capacitor/* no se evalúen en SSR
@@ -28,10 +28,14 @@ export function NativeBootstrap() {
       ]);
 
       StatusBar.setOverlaysWebView({ overlay: false }).catch(() => {});
-      // Azul marino de Talnet (#100E51). Hasta el cambio al manual de marca
-      // seguía el terracota de Migria.
-      StatusBar.setBackgroundColor({ color: '#100E51' }).catch(() => {});
-      StatusBar.setStyle({ style: Style.Dark }).catch(() => {}); // Dark = texto claro, para fondo oscuro
+      // BARRA CLARA CON ICONOS OSCUROS, en todas las versiones. Desde Android 15
+      // el sistema ignora setBackgroundColor (pantalla de borde a borde): la
+      // barra deja ver lo que hay debajo, que es la cabecera clara de la web.
+      // Con iconos claros (Style.Dark) la hora y la batería desaparecían; pasó
+      // el 29-sep al poner el azul marino de Talnet. Blanco + Style.Light se ve
+      // igual en Android 15 y en los anteriores.
+      StatusBar.setBackgroundColor({ color: '#FFFFFF' }).catch(() => {});
+      StatusBar.setStyle({ style: Style.Light }).catch(() => {}); // Light = iconos oscuros
 
       const sub = await App.addListener('backButton', ({ canGoBack }) => {
         if (canGoBack) {

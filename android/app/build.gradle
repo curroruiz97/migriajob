@@ -1,5 +1,14 @@
 apply plugin: 'com.android.application'
 
+// Firma de Google Play. Las contraseñas y la ruta de la clave van en
+// android/keystore.properties, que NO se sube a GitHub (ver .gitignore).
+// Sin ese fichero el build sale sin firmar y Google Play lo rechaza.
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace "com.migriajob.app"
     compileSdk rootProject.ext.compileSdkVersion
@@ -7,8 +16,8 @@ android {
         applicationId "com.migriajob.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6
-        versionName "1.5"
+        versionCode 8
+        versionName "1.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,17 +25,30 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 
-    // Nombre de salida del APK: migria-app.apk (debug y release).
+    // Nombre de salida del APK: talnet-app.apk (debug y release).
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
-            output.outputFileName = "migria-app.apk"
+            output.outputFileName = "talnet-app.apk"
         }
     }
 }

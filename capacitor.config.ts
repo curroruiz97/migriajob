@@ -3,7 +3,8 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   // DECISIÓN: appId inmutable tras publicar en stores.
   appId: 'com.migriajob.app',
-  appName: 'MigriaJob',
+  // El nombre que sale bajo el icono. appId, en cambio, no se toca nunca.
+  appName: 'Talnet',
   // webDir solo contiene la pantalla de carga/offline; la app real se carga vía server.url.
   webDir: 'mobile-shell',
   server: {
@@ -45,6 +46,16 @@ const config: CapacitorConfig = {
     // DECISIÓN: false en release. Con true, cualquiera con el móvil en la mano
     // puede inspeccionar la WebView desde chrome://inspect.
     webContentsDebuggingEnabled: false,
+    // SIN EL PLUGIN DE PUSH EN ANDROID, a propósito. No hay google-services.json
+    // (Firebase sin configurar) y con el plugin dentro la app pediría permiso de
+    // notificaciones para nada y podría cerrarse al registrarse. Así estaba la
+    // 1.6 publicada. Cuando se configure Firebase, quitar esta lista.
+    includePlugins: ['@capacitor/app', '@capacitor/status-bar'],
+    // Android 15 dibuja la web también detrás de la barra de estado y la de
+    // gestos (borde a borde obligatorio), y las pantallas sin `safe-top` —el
+    // login, por ejemplo— quedaban con el logo debajo de la hora. 'auto' deja
+    // la web entre las dos barras, como en Android 14 y anteriores.
+    adjustMarginsForEdgeToEdge: 'auto',
   },
 };
 
