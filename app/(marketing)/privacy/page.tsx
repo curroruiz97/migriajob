@@ -11,8 +11,9 @@ export default function PrivacyPage() {
 
       <h2>1. Responsable del tratamiento</h2>
       <p>
-        Talnet SaaS — en adelante "Talnet" o "nosotros" — es el responsable del tratamiento
-        de los datos personales que se recogen a través de esta plataforma. Puedes contactarnos
+        Talnet International Solutions S.L., con domicilio en Calle Italia, 8, local 1A,
+        47007 Valladolid — en adelante "Talnet" o "nosotros" —, es el responsable del
+        tratamiento de los datos personales que se recogen a través de esta plataforma. Puedes contactarnos
         en <a href="mailto:privacidad@migria.app">privacidad@migria.app</a>.
       </p>
 

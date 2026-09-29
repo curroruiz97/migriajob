@@ -74,7 +74,7 @@ export function MarketingFooter() {
           ))}
         </div>
         <div className="mt-12 border-t border-border pt-6 text-xs text-muted-foreground">
-          Copyright © {new Date().getFullYear()} <strong>MIGRIAJOB S.L.</strong> Todos los derechos reservados.
+          Copyright © {new Date().getFullYear()} <strong>Talnet International Solutions S.L.</strong> Todos los derechos reservados.
         </div>
       </div>
     </footer>
