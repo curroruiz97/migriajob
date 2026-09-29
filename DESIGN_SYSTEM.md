@@ -1,89 +1,75 @@
-# Design System — Migria SaaS
+# Design System — Talnet
 
-Paleta extraída de [migriajob.com](https://migriajob.com) durante FASE 2.
+Fuente: manual de marca «TALNET-Master Brand Guidelines-2026» (PDF que pasó
+Talnet en septiembre de 2026). Lo que aquí se describe está aplicado en
+`app/globals.css`, `tailwind.config.ts` y `lib/utils/fonts.ts`. Si el manual
+cambia, se cambia ahí; este documento solo resume.
 
-## Paleta extraída (top hex)
+## Color
 
-| Hex | Conteo | Uso original |
-|---|---:|---|
-| `#23120b` | 3 | marrón muy oscuro — headings, fondo dark |
-| `#f6b08b` | 2 | naranja claro — fondos suaves, hovers |
-| `#d96f46` | 2 | **terracota — primario / CTA** |
-| `#ff6900` | 1 | naranja vivo — acento |
-| `#fcb900` | 1 | amarillo cálido — destacar |
-| `#0693e3` | 1 | azul — info / enlaces |
-| `#00d084` | 1 | verde — éxito |
-| `#cf2e2e` | 1 | rojo — error |
-| `#ffffff` | 1 | blanco — superficies |
+Paleta del manual (página «Paleta de colores»):
 
-## Tokens semánticos
-
-### Light mode
-
-| Token | Hex | Notas |
+| Hex | Papel en el manual | Token |
 |---|---|---|
-| `--color-primary` | `#d96f46` | terracota migriajob |
-| `--color-primary-hover` | `#c45e3a` | -10% lightness |
-| `--color-primary-active` | `#a84d2f` | -20% lightness |
-| `--color-primary-foreground` | `#ffffff` | sobre primary |
-| `--color-primary-soft` | `#fae5d8` | bg badges, alerts soft |
-| `--color-secondary` | `#23120b` | marrón cálido headings |
-| `--color-secondary-foreground` | `#fae5d8` | sobre secondary |
-| `--color-accent` | `#ff6900` | CTA destacadas |
-| `--color-accent-warm` | `#fcb900` | badges premium |
-| `--color-background` | `#fdf8f3` | off-white cálido |
-| `--color-surface` | `#ffffff` | cards |
-| `--color-surface-muted` | `#f7efe6` | cards desactivadas, alt rows |
-| `--color-border` | `#e8dfd5` | bordes suaves |
-| `--color-border-strong` | `#cdb9a4` | bordes con énfasis |
-| `--color-text-primary` | `#23120b` | cuerpo |
-| `--color-text-secondary` | `#6b5440` | etiquetas, captions |
-| `--color-text-muted` | `#9c8b7b` | placeholders |
-| `--color-success` | `#00a26a` | -ajustado para AA |
-| `--color-success-soft` | `#d6f5e8` | |
-| `--color-warning` | `#d68a00` | -ajustado para AA |
-| `--color-warning-soft` | `#fef0d6` | |
-| `--color-error` | `#cf2e2e` | |
-| `--color-error-soft` | `#fbe1e1` | |
-| `--color-info` | `#0e7ec1` | -ajustado para AA |
-| `--color-info-soft` | `#dceefc` | |
+| `#2A56FB` | Azul primario | `--primary` (claro) |
+| `#4878F4` | Azul primario claro; el punto del logotipo | `--primary` (oscuro), punto del logo |
+| `#0E2C9F` | Azul primario oscuro | fondos del patrón |
+| `#100E51` | Azul marino; fondo oscuro de marca | `--secondary` (claro) |
+| `#070039` | Azul casi negro | texto sobre `--primary` en oscuro |
+| `#0435EB` | Acento del patrón sobre `#2A56FB` | `--accent` |
+| `#225CF2` | Acento del patrón sobre `#4878F4` | — |
+| `#0A2075` | Acento del patrón sobre `#0E2C9F` | — |
 
-### Dark mode
+`--accent-warm` (`#8BAAF8`) no está en el manual: es el punto del logotipo
+aclarado para resaltar texto sobre `#100E51`, donde `#4878F4` no llega al
+contraste de texto.
 
-| Token | Hex |
-|---|---|
-| `--color-background` | `#1a0d07` |
-| `--color-surface` | `#2a1810` |
-| `--color-surface-muted` | `#36211a` |
-| `--color-border` | `#3d2418` |
-| `--color-border-strong` | `#5a3a2a` |
-| `--color-text-primary` | `#fae5d8` |
-| `--color-text-secondary` | `#c8a585` |
-| `--color-text-muted` | `#9c8b7b` |
-| `--color-primary` | `#e58964` (más luminoso) |
-| `--color-primary-soft` | `#3d2418` |
+Contrastes que importan: blanco sobre `#2A56FB` 5,5:1 (el azul anterior,
+`#507BEC`, se quedaba en 3,9:1 y no pasaba AA). `#8BAAF8` sobre `#100E51` 7,6:1.
+
+El manual trabaja con **color plano**: nada de degradados en texto ni manchas
+difuminadas de fondo.
 
 ## Tipografía
 
-- **Body / UI:** Geist Sans (heredado), fallback `system-ui, sans-serif`
-- **Display (headings)/headlines:** Geist Sans 700, tracking tight
-- **Mono:** Geist Mono
+- **Sora** (principal): titulares (`font-display`, `h1`, `h2`), cifras, textos
+  junto al logotipo. Seminegrita por defecto. **No tiene cursiva**: se enfatiza
+  con color.
+- **Inter** (secundaria): texto corrido e interfaz (`font-sans`).
+- Geist Mono solo para lo monoespaciado.
 
-Escala: `12 / 14 / 16 / 18 / 20 / 24 / 30 / 36 / 48 / 60`
+## Logotipo
+
+`components/ui/logo.tsx` (`<Logo />` e `<Isotipo />`), con los trazados del PDF
+en `components/ui/logo-paths.ts`. Negro sobre claro, blanco sobre oscuro, punto
+en `#4878F4`; versión monocroma con `mono`. Margen libre mínimo: la mitad de su
+altura. No se redibuja ni se deforma.
+
+Ficheros sueltos (para correos y terceros): `public/talnet-logo.svg|png`,
+`public/talnet-logo-blanco.svg|png`, `public/talnet-isotipo.svg|png`.
+Iconos: `app/icon.svg`, `app/favicon.ico`, `app/apple-icon.png`; imagen para
+compartir: `app/opengraph-image.png`.
+
+## Patrón de marca
+
+La barra y la curva de la «t», en tres piezas (`alto`, `cuadrado`, `ancho`),
+siempre un tono más oscuro que su fondo. En React: `<BrandPattern />` y
+`<BrandDot />` (`components/ui/brand-pattern.tsx`). En CSS:
+
+- `.bg-patron-marca` — la pieza ancha asomando abajo a la derecha de una cabecera.
+- `.bg-cta-marca` — bloque azul de llamada a la acción con la pieza cuadrada en la esquina.
+
+SVG sueltos en `public/marca/`.
+
+## Fotografía
+
+Personas reales trabajando o interactuando, luz natural, sin filtros ni
+ángulos extremos. Para anunciar vacantes o portadas, retratos recortados sobre
+fondo liso (ver `components/public/hero-marca.tsx`).
 
 ## Espaciado y radios
 
 - Container max: `max-w-7xl` (1280px)
-- Radios: `--radius-sm: 6px`, `--radius-md: 10px`, `--radius-lg: 14px`, `--radius-xl: 20px`, `--radius-2xl: 28px`
-
-## Aplicación
-
-Componentes alineados a tokens en esta fase:
-- `globals.css` — `:root` y `.dark`
-- `tailwind.config.ts` — `theme.extend.colors` mapea tokens a clases (`bg-primary`, `text-foreground`, `border-strong`, etc.)
-- `Button` — variants default/outline/ghost/destructive/accent
-- `Card`, `Input`, `Label`, `Badge`, `Tabs`, `Skeleton`
-- `MarketingHeader` con CTA primaria
-- `AdminSidebar` activo en primary
-- `ProfileCard` con tonos de availability ajustados a la paleta
-- `ProcessKanban` con columnas tonificadas
+- Radios: `--radius-sm: 6px`, `--radius-md: 10px`, `--radius-lg: 14px`,
+  `--radius-xl: 20px`, `--radius-2xl: 28px`. Los bloques de marca van en
+  `rounded-xl` (20px), lo más cerca de las piezas del manual.

@@ -133,7 +133,7 @@ export default async function CompanyPublicPage({
                 <ul className="mt-4 space-y-3">
                   {reviews.map((r) => (
                     <li key={r.id} className="rounded-2xl border border-border bg-surface p-5">
-                      <div className="flex gap-1 text-accent-warm" aria-label={`${r.score} estrellas`}>
+                      <div className="flex gap-1 text-primary" aria-label={`${r.score} estrellas`}>
                         {Array.from({ length: r.score }).map((_, i) => <span key={i}>★</span>)}
                       </div>
                       {r.body && <p className="mt-2 text-sm text-foreground">{r.body}</p>}

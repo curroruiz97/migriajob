@@ -93,7 +93,7 @@ export default async function EmpleosPage({ searchParams }: PageProps) {
     <div className="bg-background">
       {/* HERO */}
       <section className="relative overflow-hidden border-b border-border bg-hero-gradient">
-        <div className="bg-dot-pattern absolute inset-0 opacity-50" aria-hidden="true" />
+        <div className="bg-patron-marca absolute inset-0 opacity-50" aria-hidden="true" />
         <Container size="xl" className="relative py-16 lg:py-20">
           <div>
             <Badge variant="soft" className="mb-5">
@@ -254,16 +254,7 @@ export default async function EmpleosPage({ searchParams }: PageProps) {
 
       {/* CTA */}
       <Container size="xl" className="py-20">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-accent p-10 text-center text-white sm:p-14">
-          <div
-            className="absolute inset-0 opacity-[0.08]"
-            style={{
-              backgroundImage:
-                'radial-gradient(currentColor 1px, transparent 1px)',
-              backgroundSize: '24px 24px',
-            }}
-            aria-hidden="true"
-          />
+        <div className="relative overflow-hidden rounded-xl bg-cta-marca p-10 text-center text-white sm:p-14">
           <div className="relative">
             <Sparkles className="mx-auto h-10 w-10" />
             <h2 className="font-display mt-6 text-3xl leading-tight sm:text-4xl">

@@ -122,13 +122,7 @@ export function AuthBrandPanel({ variant = 'login' }: AuthBrandPanelProps) {
       className="relative hidden overflow-hidden bg-hero-gradient lg:block"
       aria-hidden="true"
     >
-      <div className="bg-dot-pattern absolute inset-0 opacity-60" />
-      <div
-        className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl"
-      />
-      <div
-        className="absolute -bottom-32 -left-16 h-96 w-96 rounded-full bg-accent/15 blur-3xl"
-      />
+      <div className="bg-patron-marca absolute inset-0 opacity-60" />
 
       <div className="relative flex h-full flex-col px-10 py-10 xl:px-14 xl:py-14">
         <Link href="/" aria-label="Talnet — ir al inicio" className="inline-flex">

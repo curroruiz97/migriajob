@@ -29,15 +29,7 @@ export default async function BienvenidaPage() {
 
   return (
     <main className="relative min-h-[100dvh] overflow-hidden bg-hero-gradient">
-      <div className="bg-dot-pattern absolute inset-0 opacity-50" aria-hidden="true" />
-      <div
-        className="absolute -top-32 -right-24 h-80 w-80 rounded-full bg-primary/20 blur-3xl"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute -bottom-32 -left-24 h-80 w-80 rounded-full bg-accent/15 blur-3xl"
-        aria-hidden="true"
-      />
+      <div className="bg-patron-marca absolute inset-0 opacity-50" aria-hidden="true" />
 
       <div
         className="relative mx-auto flex min-h-[100dvh] w-full max-w-md flex-col px-6"

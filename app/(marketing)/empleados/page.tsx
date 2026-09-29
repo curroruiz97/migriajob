@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 export const metadata = {
   title: 'Talnet para empleados',
   description:
-    'TALNET para empleados conecta tu talento con oportunidades reales en España, acompañándote en todo el proceso.',
+    'Talnet para empleados conecta tu talento con oportunidades reales en España, acompañándote en todo el proceso.',
 };
 
 const REASONS_SPAIN = [
@@ -82,7 +82,7 @@ export default function EmpleadosPage() {
     <div className="bg-background">
       {/* HERO */}
       <section className="relative overflow-hidden bg-hero-gradient">
-        <div className="bg-dot-pattern absolute inset-0 opacity-50" aria-hidden="true" />
+        <div className="bg-patron-marca absolute inset-0 opacity-50" aria-hidden="true" />
         <div className="relative mx-auto max-w-5xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <Badge variant="soft" className="mb-6">
             <Plane className="mr-1 h-3 w-3" /> Talnet para empleados
@@ -116,7 +116,7 @@ export default function EmpleadosPage() {
             crecer, asumir responsabilidades y <strong>construir una trayectoria laboral estable</strong>.
           </p>
           <p>
-            TALNET no solo te abre una puerta: <strong>acompaña, forma y apoya</strong> a las personas en la
+            Talnet no solo te abre una puerta: <strong>acompaña, forma y apoya</strong> a las personas en la
             construcción de una nueva vida en un país estable, seguro y con oportunidades reales en
             distintos sectores de actividad.
           </p>
@@ -214,7 +214,7 @@ export default function EmpleadosPage() {
             No viajas solo.
           </h2>
           <p className="mt-3 max-w-2xl mx-auto text-muted-foreground">
-            TALNET te guía desde la primera entrevista hasta tu integración en España. Llegas, te
+            Talnet te guía desde la primera entrevista hasta tu integración en España. Llegas, te
             adaptas, creces y te sientes orgulloso de tu trayectoria.
           </p>
         </div>
@@ -276,13 +276,13 @@ export default function EmpleadosPage() {
 
       {/* CTA FINAL */}
       <section className="mx-auto max-w-5xl px-4 pb-20 sm:px-6 lg:px-8">
-        <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-accent p-10 text-center text-white sm:p-14">
+        <div className="overflow-hidden rounded-xl bg-cta-marca p-10 text-center text-white sm:p-14">
           <Globe2 className="mx-auto h-10 w-10" />
           <h2 className="font-display mt-6 text-3xl leading-tight sm:text-4xl">
             Trabajar en España es un paso firme hacia un futuro más estable y prometedor.
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-white/90">
-            TALNET es más que movilidad laboral: es un puente entre tu talento y tu futuro.
+            Talnet es más que movilidad laboral: es un puente entre tu talento y tu futuro.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90">
