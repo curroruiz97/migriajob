@@ -18,5 +18,8 @@
 
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="android:background">@drawable/splash</item>
+        <!-- Android 12+: el sistema pinta el icono sobre este color. Azul marino
+             de Talnet, igual que el fondo del icono y de splash.png. -->
+        <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>
     </style>
 </resources>
