@@ -248,7 +248,7 @@ export default function EmpresasPage() {
           {SERVICES_EXTRA.map((s) => (
             <div key={s.title} className="card-hover rounded-2xl border border-border bg-surface p-6">
               <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent-warm/20 text-accent-warm">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
                   <s.icon className="h-6 w-6" />
                 </div>
                 <div>
@@ -273,7 +273,7 @@ export default function EmpresasPage() {
           <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {BENEFITS.map((b) => (
               <div key={b} className="flex items-center gap-3 rounded-xl bg-secondary-foreground/5 p-4 backdrop-blur-sm">
-                <CheckCircle2 className="h-5 w-5 shrink-0 text-accent-warm" />
+                <CheckCircle2 className="h-5 w-5 shrink-0 text-accent-warm dark:text-accent" />
                 <span className="text-sm">{b}</span>
               </div>
             ))}

@@ -148,7 +148,7 @@ export function CompanyPerfil({
         <div className="flex items-center gap-4 rounded-2xl border border-border bg-surface p-5">
           <Avatar className="h-16 w-16 ring-2 ring-background">
             {logoUrl && <AvatarImage src={logoUrl} alt="" />}
-            <AvatarFallback className="bg-accent-warm/15 text-accent-warm">
+            <AvatarFallback className="bg-primary-soft text-primary">
               <Building2 className="h-7 w-7" />
             </AvatarFallback>
           </Avatar>
@@ -169,12 +169,12 @@ export function CompanyPerfil({
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="flex w-full items-center justify-between gap-3 rounded-2xl border border-accent-warm/30 bg-accent-warm/10 px-5 py-3.5 text-left transition-colors hover:bg-accent-warm/15"
+            className="flex w-full items-center justify-between gap-3 rounded-2xl border border-primary/25 bg-primary-soft px-5 py-3.5 text-left transition-colors hover:bg-primary-soft/70"
           >
-            <span className="flex items-center gap-2.5 text-sm font-medium text-accent-warm">
+            <span className="flex items-center gap-2.5 text-sm font-medium text-primary">
               <AlertTriangle className="h-4 w-4" /> Tu perfil está al {score}% — Completar perfil
             </span>
-            <ChevronRight className="h-4 w-4 text-accent-warm" />
+            <ChevronRight className="h-4 w-4 text-primary" />
           </button>
         )}
 

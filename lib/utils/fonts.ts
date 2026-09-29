@@ -26,6 +26,9 @@ export const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-inter',
+  // La cursiva real, para los pocos textos en `italic` («guardando…», notas).
+  // Solo se descarga si alguna vista la usa.
+  style: ['normal', 'italic'],
 });
 
 export const geistMono = GeistMono;

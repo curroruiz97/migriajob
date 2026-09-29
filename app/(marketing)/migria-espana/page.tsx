@@ -219,7 +219,7 @@ export default function MigriaEspanaPage() {
               </p>
             </div>
             <div className="card-hover rounded-2xl border border-border bg-surface p-8">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-accent-warm/20 text-accent-warm">
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary-soft text-primary">
                 <Heart className="h-6 w-6" />
               </div>
               <h3 className="mt-5 text-xl font-semibold text-foreground">Valores</h3>
@@ -329,7 +329,7 @@ export default function MigriaEspanaPage() {
           <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {WHY_MIGRIA.map((b) => (
               <div key={b} className="flex items-center gap-3 rounded-xl bg-secondary-foreground/5 p-4 backdrop-blur-sm">
-                <CheckCircle2 className="h-5 w-5 shrink-0 text-accent-warm" />
+                <CheckCircle2 className="h-5 w-5 shrink-0 text-accent-warm dark:text-accent" />
                 <span className="text-sm">{b}</span>
               </div>
             ))}
