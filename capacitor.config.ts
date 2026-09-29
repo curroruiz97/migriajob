@@ -51,6 +51,11 @@ const config: CapacitorConfig = {
     // notificaciones para nada y podría cerrarse al registrarse. Así estaba la
     // 1.6 publicada. Cuando se configure Firebase, quitar esta lista.
     includePlugins: ['@capacitor/app', '@capacitor/status-bar'],
+    // Android 15 dibuja la web también detrás de la barra de estado y la de
+    // gestos (borde a borde obligatorio), y las pantallas sin `safe-top` —el
+    // login, por ejemplo— quedaban con el logo debajo de la hora. 'auto' deja
+    // la web entre las dos barras, como en Android 14 y anteriores.
+    adjustMarginsForEdgeToEdge: 'auto',
   },
 };
 
