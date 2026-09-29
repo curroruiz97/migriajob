@@ -85,18 +85,10 @@ const config: Config = {
         '2xl': 'var(--radius-2xl)',
       },
       fontFamily: {
-        sans: [
-          'var(--font-geist-sans)',
-          'var(--font-inter)',
-          'system-ui',
-          'sans-serif',
-        ],
-        serif: [
-          'var(--font-ibm-plex-serif)',
-          'Georgia',
-          'Times New Roman',
-          'serif',
-        ],
+        // Manual de marca de Talnet: Inter para el texto y la interfaz, Sora
+        // para titulares (`font-display`, que es la que se usa en las vistas).
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-sora)', 'system-ui', 'sans-serif'],
         mono: ['var(--font-geist-mono)', 'monospace'],
       },
       container: {

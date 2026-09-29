@@ -96,7 +96,7 @@ function PlanesContenido() {
     <div className="bg-background">
       {/* HERO */}
       <section className="relative overflow-hidden bg-hero-gradient">
-        <div className="bg-dot-pattern absolute inset-0 opacity-50" aria-hidden="true" />
+        <div className="bg-patron-marca absolute inset-0 opacity-50" aria-hidden="true" />
         <div className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 lg:px-8">
           <Badge variant="soft" className="mb-4">
             <Sparkles className="mr-1 h-3 w-3" /> Precios transparentes
@@ -119,7 +119,7 @@ function PlanesContenido() {
               className={cn(
                 'card-hover relative flex flex-col rounded-2xl border p-8',
                 plan.highlight
-                  ? 'border-primary bg-gradient-to-br from-primary to-accent text-white shadow-2xl scale-[1.02] z-10'
+                  ? 'border-primary bg-cta-marca text-white shadow-2xl scale-[1.02] z-10'
                   : 'border-border bg-surface'
               )}
             >

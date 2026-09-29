@@ -4,43 +4,49 @@
 
 @layer base {
   :root {
-    --font-geist-sans: "Geist Sans";
-    --font-geist-mono: "Geist Mono";
-    --font-display: "Instrument Serif", "Fraunces", Georgia, serif;
+    /* Tipografías del manual: Sora (principal) e Inter (secundaria). Las
+       variables las pone next/font en el <html>; aquí solo el respaldo. */
+    --font-display: var(--font-sora), system-ui, sans-serif;
 
-    /* === Paleta Talnet (#507BEC azul, #050335 azul marino) ===
-       Los dos colores salen de su propia identidad: el token --primary de
-       talnetgroup.com y los pixeles de su favicon. Los neutros llevan un
-       sesgo minimo hacia el azul —no son grises puros— para que el conjunto
-       lea como elegido y no como plantilla. */
+    /* === Paleta Talnet — manual de marca 2026, página «Paleta de colores» ===
+       Escala de azules: #2A56FB (principal), #4878F4, #0E2C9F, #100E51,
+       #070039. Acentos del patrón: #0435EB, #225CF2, #0A2075.
+       Antes usábamos #507BEC y #050335, sacados de su web y su favicon; no
+       están en el manual y el blanco sobre #507BEC no llegaba al contraste
+       mínimo (3,9:1). Sobre #2A56FB llega a 5,5:1.
+       Los neutros llevan un sesgo mínimo hacia el azul —no son grises puros—
+       para que el conjunto lea como elegido y no como plantilla. */
     --background: 0 0% 98%;
-    --foreground: 230 25% 12%;
+    --foreground: 240 30% 12%;
     --surface: 0 0% 100%;
-    --surface-muted: 220 22% 95%;
+    --surface-muted: 228 30% 96%;
     --card: 0 0% 100%;
-    --card-foreground: 230 25% 12%;
+    --card-foreground: 240 30% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 230 25% 12%;
+    --popover-foreground: 240 30% 12%;
 
-    /* PRIMARY = #507BEC — color oficial Talnet */
-    --primary: 224 80% 62%;
+    /* PRIMARY = #2A56FB — «Azul primario» del manual */
+    --primary: 227 96% 57%;
     --primary-foreground: 0 0% 100%;
-    --primary-soft: 224 80% 92%;
+    --primary-soft: 227 100% 95%;
 
-    /* SECONDARY = #050335 — el azul marino del logotipo */
-    --secondary: 242 89% 11%;
+    /* SECONDARY = #100E51 — el azul marino de fondo del manual (portada,
+       tarjeta de visita, versión blanca del logotipo) */
+    --secondary: 242 71% 19%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 220 22% 95%;
-    --muted-foreground: 222 10% 45%;
+    --muted: 228 30% 96%;
+    --muted-foreground: 232 10% 44%;
 
-    /* ACCENT: en Talnet el acento ES el primario. Se conserva el token con
-       una variante mas profunda para los degradados, y --accent-warm, que
-       era el amarillo de Migria, pasa a un azul claro: se usa en el
-       degradado del hero y quitarlo lo romperia. */
-    --accent: 230 72% 52%;
+    /* ACCENT = #0435EB — el tono que el manual pone sobre #2A56FB en el
+       patrón. Con él los degradados primary→accent quedan dentro de la
+       familia de azules, casi planos, como las piezas del manual.
+       --accent-warm es el punto del logotipo (#4878F4) aclarado: se usa para
+       resaltar sobre el azul marino, donde #4878F4 tal cual no llega al
+       contraste de texto (4,4:1) y este sí (7,6:1). */
+    --accent: 227 97% 47%;
     --accent-foreground: 0 0% 100%;
-    --accent-warm: 214 90% 70%;
+    --accent-warm: 223 89% 76%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -58,10 +64,10 @@
     --info-foreground: 0 0% 100%;
     --info-soft: 199 85% 91%;
 
-    --border: 220 18% 87%;
-    --border-strong: 220 14% 72%;
-    --input: 220 18% 87%;
-    --ring: 224 80% 62%;
+    --border: 228 20% 88%;
+    --border-strong: 228 14% 72%;
+    --input: 228 20% 88%;
+    --ring: 227 96% 57%;
 
     --radius: 0.625rem;
     --radius-sm: 0.375rem;
@@ -70,35 +76,37 @@
     --radius-xl: 1.25rem;
     --radius-2xl: 1.75rem;
 
-    --shadow-sm: 0 1px 2px rgba(5, 3, 53, .06);
-    --shadow-md: 0 4px 12px rgba(5, 3, 53, .08);
-    --shadow-lg: 0 12px 32px rgba(5, 3, 53, .10);
+    --shadow-sm: 0 1px 2px rgba(16, 14, 81, .06);
+    --shadow-md: 0 4px 12px rgba(16, 14, 81, .08);
+    --shadow-lg: 0 12px 32px rgba(16, 14, 81, .10);
   }
 
   .dark {
-    --background: 240 30% 7%;
+    --background: 244 40% 7%;
     --foreground: 0 0% 98%;
-    --surface: 240 24% 11%;
-    --surface-muted: 235 25% 15%;
-    --card: 240 24% 11%;
+    --surface: 244 32% 11%;
+    --surface-muted: 242 28% 15%;
+    --card: 244 32% 11%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 24% 11%;
+    --popover: 244 32% 11%;
     --popover-foreground: 0 0% 98%;
 
-    /* En oscuro el fondo es el azul marino de la marca, no un gris. */
-    --primary: 224 85% 68%;
-    --primary-foreground: 242 89% 11%;
-    --primary-soft: 235 40% 20%;
+    /* En oscuro el principal sube a #4878F4 (el punto del logotipo), que es
+       el azul del manual que se lee sobre fondo oscuro; el texto encima va en
+       #070039 (4,9:1), porque el blanco se queda en 4:1. */
+    --primary: 223 89% 62%;
+    --primary-foreground: 247 100% 11%;
+    --primary-soft: 238 45% 20%;
 
     --secondary: 0 0% 98%;
-    --secondary-foreground: 242 89% 11%;
+    --secondary-foreground: 242 71% 19%;
 
-    --muted: 235 25% 17%;
-    --muted-foreground: 225 14% 65%;
+    --muted: 242 28% 17%;
+    --muted-foreground: 230 16% 68%;
 
-    --accent: 224 75% 58%;
+    --accent: 227 97% 58%;
     --accent-foreground: 0 0% 100%;
-    --accent-warm: 214 85% 66%;
+    --accent-warm: 223 85% 74%;
 
     --destructive: 0 75% 62%;
     --destructive-foreground: 0 0% 100%;
@@ -116,10 +124,10 @@
     --info-foreground: 0 0% 100%;
     --info-soft: 199 34% 19%;
 
-    --border: 235 22% 20%;
-    --border-strong: 235 16% 30%;
-    --input: 235 22% 20%;
-    --ring: 224 85% 68%;
+    --border: 240 24% 20%;
+    --border-strong: 240 18% 30%;
+    --input: 240 24% 20%;
+    --ring: 223 89% 62%;
   }
 
   * {
@@ -137,27 +145,44 @@
     max-width: 100vw;
   }
 
-  /* Display font para headings .font-display */
-  .font-display {
+  /* Titulares en Sora. Seminegrita por defecto, como los titulares de las
+     piezas del manual; las clases font-* de Tailwind la pueden cambiar. Sora
+     es ancha, por eso el interletraje algo más cerrado. */
+  .font-display,
+  h1,
+  h2 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    font-weight: 600;
+    letter-spacing: -0.025em;
   }
 }
 
 @layer components {
-  /* Gradiente premium para hero */
+  /* Fondo de cabecera: plano, como los paneles del manual. Antes era un
+     degradado radial; el manual trabaja siempre con color liso. */
   .bg-hero-gradient {
-    background-image:
-      radial-gradient(60% 80% at 0% 0%, hsl(var(--primary-soft) / 0.9), transparent 62%),
-      radial-gradient(55% 75% at 100% 0%, hsl(var(--primary) / 0.10), transparent 60%),
-      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--surface)) 100%);
+    background-color: hsl(var(--surface-muted));
   }
 
-  /* Patrón de puntos sutil */
-  .bg-dot-pattern {
-    background-image: radial-gradient(hsl(var(--border-strong) / 0.3) 1px, transparent 1px);
-    background-size: 24px 24px;
-    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  /* Patrón de marca (la barra y las curvas de la «t») como fondo de una
+     sección: la pieza ancha asoma desde abajo a la derecha. Se pinta con
+     máscara para que el color salga de los tokens y cambie con el tema.
+     Mismo trazado que <BrandPattern pieza="ancho" />. */
+  .bg-patron-marca {
+    background-color: hsl(var(--primary) / 0.10);
+    -webkit-mask: url('/marca/patron-ancho.svg') no-repeat right -3rem bottom 0 / min(38rem, 80%) auto;
+    mask: url('/marca/patron-ancho.svg') no-repeat right -3rem bottom 0 / min(38rem, 80%) auto;
+  }
+
+  /* Bloque de llamada a la acción: azul principal liso con la pieza cuadrada
+     del patrón asomando por la esquina, como las piezas de redes del manual.
+     La pieza va en #0435EB fijo (es un fichero, no admite variables). */
+  .bg-cta-marca {
+    background-color: hsl(var(--primary));
+    background-image: url('/marca/patron-cuadrado-acento.svg');
+    background-repeat: no-repeat;
+    background-position: right -1.5rem top -1.5rem;
+    background-size: 11rem auto;
   }
 
   /* Glass para sticky headers */
@@ -179,12 +204,11 @@
     border-color: hsl(var(--primary) / 0.3);
   }
 
-  /* Texto con gradient */
+  /* Palabra resaltada dentro de un titular. Se llamaba así porque era un
+     degradado; el manual no usa degradados en texto, así que ahora es el azul
+     principal liso. Se mantiene el nombre para no tocar cada titular. */
   .text-gradient-primary {
-    background-image: linear-gradient(120deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: hsl(var(--primary));
   }
 
   /* Skeleton shimmer real */

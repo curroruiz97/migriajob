@@ -32,7 +32,7 @@ export default async function ContactoPage() {
     <div className="bg-background">
       {/* HERO */}
       <section className="relative overflow-hidden bg-hero-gradient">
-        <div className="bg-dot-pattern absolute inset-0 opacity-50" aria-hidden="true" />
+        <div className="bg-patron-marca absolute inset-0 opacity-50" aria-hidden="true" />
         <div className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 lg:px-8">
           <Badge variant="soft" className="mb-4">
             <MessageCircle className="mr-1 h-3 w-3" /> Hablemos
@@ -72,7 +72,7 @@ export default async function ContactoPage() {
                 <Users className="h-8 w-8 text-primary" />
                 <h2 className="font-display mt-4 text-2xl text-foreground">Soy candidato</h2>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Quiero información sobre cómo trabajar en España con TALNET.
+                  Quiero información sobre cómo trabajar en España con Talnet.
                 </p>
                 <Button asChild variant="outline" size="sm" className="mt-4">
                   <a href="#form">Escribirnos ↓</a>

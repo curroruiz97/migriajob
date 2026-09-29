@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 export const metadata = {
   title: 'Talnet España',
   description:
-    'TALNET España, consultora especializada en reclutamiento y selección de talento estratégico para sectores clave de la economía española. Partner colaborador de las empresas.',
+    'Talnet España, consultora especializada en reclutamiento y selección de talento estratégico para sectores clave de la economía española. Partner colaborador de las empresas.',
 };
 
 const VALUES = [
@@ -122,7 +122,7 @@ const PLANS = [
     subtitle: 'Reclutamiento recurrente',
     price: 'Consultar',
     priceNote: 'Cuota mensual según volumen, más honorario por candidato contratado.',
-    description: 'Diseñado para empresas que necesitan contratar de forma continua. TALNET actúa como partner externo de reclutamiento.',
+    description: 'Diseñado para empresas que necesitan contratar de forma continua. Talnet actúa como partner externo de reclutamiento.',
     features: [
       'Gestión continua de procesos.',
       'Reclutamiento activo.',
@@ -145,7 +145,7 @@ export default function MigriaEspanaPage() {
     <div className="bg-background">
       {/* HERO */}
       <section className="relative overflow-hidden bg-hero-gradient">
-        <div className="bg-dot-pattern absolute inset-0 opacity-50" aria-hidden="true" />
+        <div className="bg-patron-marca absolute inset-0 opacity-50" aria-hidden="true" />
         <div className="relative mx-auto max-w-5xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <Badge variant="soft" className="mb-6">
             <Building2 className="mr-1 h-3 w-3" /> Talnet España
@@ -178,7 +178,7 @@ export default function MigriaEspanaPage() {
         </h2>
         <div className="prose prose-zinc dark:prose-invert mt-6 max-w-none">
           <p>
-            TALNET España es una consultora especializada en <strong>reclutamiento y selección de talento</strong>{' '}
+            Talnet España es una consultora especializada en <strong>reclutamiento y selección de talento</strong>{' '}
             para sectores clave de la economía española.
           </p>
           <p>
@@ -273,7 +273,7 @@ export default function MigriaEspanaPage() {
           </h2>
           <div className="prose prose-zinc dark:prose-invert mx-auto mt-6 max-w-none">
             <p>
-              En TALNET trabajamos <strong>desde dentro del proyecto del cliente</strong>, alineando el proceso
+              En Talnet trabajamos <strong>desde dentro del proyecto del cliente</strong>, alineando el proceso
               de selección con su identidad corporativa, valores y necesidades reales. Cada proceso refuerza la
               imagen de marca empleadora de la empresa.
             </p>
@@ -313,13 +313,13 @@ export default function MigriaEspanaPage() {
         </div>
       </section>
 
-      {/* PROPUESTA DE VALOR / POR QUÉ ELEGIR TALNET */}
+      {/* PROPUESTA DE VALOR / POR QUÉ ELEGIR Talnet */}
       <section className="border-y border-border bg-secondary py-20 text-secondary-foreground">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <Badge className="mb-4 bg-accent-warm text-secondary">Nuestra propuesta de valor</Badge>
             <h2 className="font-display text-4xl leading-tight sm:text-5xl">
-              Por qué elegir TALNET.
+              Por qué elegir Talnet.
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-secondary-foreground/80">
               Minimizar tiempos, optimizar resultados e impulsar el crecimiento empresarial con el mejor
@@ -351,7 +351,7 @@ export default function MigriaEspanaPage() {
               key={p.name}
               className={`relative flex flex-col rounded-3xl border p-8 ${
                 p.highlight
-                  ? 'border-primary bg-gradient-to-br from-primary to-accent text-white shadow-2xl scale-[1.02] z-10'
+                  ? 'border-primary bg-cta-marca text-white shadow-2xl scale-[1.02] z-10'
                   : 'border-border bg-surface'
               }`}
             >
@@ -446,7 +446,7 @@ export default function MigriaEspanaPage() {
 
       {/* CTA FINAL */}
       <section className="mx-auto max-w-5xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-accent p-10 text-center text-white sm:p-14">
+        <div className="overflow-hidden rounded-xl bg-cta-marca p-10 text-center text-white sm:p-14">
           <Headphones className="mx-auto h-10 w-10" />
           <h2 className="font-display mt-6 text-3xl leading-tight sm:text-4xl">
             Hablemos de tu próxima incorporación.

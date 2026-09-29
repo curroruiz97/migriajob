@@ -8,7 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { ProfileCard, ProfileCardPlaceholder } from '@/components/public/profile-card';
 import { PerfilTeaser, aPerfilAnonimo } from '@/components/public/catalogo-bloqueado';
 import { puedeVerCatalogo } from '@/lib/config/catalogo';
-import { HeroFloatingCards } from '@/components/public/hero-floating-cards';
+import { HeroMarca } from '@/components/public/hero-marca';
+import { BrandPattern } from '@/components/ui/brand-pattern';
 import { AnimatedCounter } from '@/components/ui/animated-counter';
 import { CountryFlag } from '@/components/ui/country-flag';
 import { getFeaturedProfiles } from '@/lib/db/queries';
@@ -35,24 +36,24 @@ const VALUES = [
 
 const FAQ = [
   {
-    q: '¿Qué es TALNET y cuál es su objetivo?',
-    a: 'TALNET es una marca especializada en la captación, formación y movilidad de profesionales hispanoamericanos hacia oportunidades laborales reales en España, con foco inicial en hostelería (cocina y sala) y expansión a logística, construcción, mantenimiento, limpieza, agricultura y otros sectores. Su objetivo es dar una respuesta ética, legal y profesional a la escasez de personal cualificado, creando relaciones estables entre talento y empresas.',
+    q: '¿Qué es Talnet y cuál es su objetivo?',
+    a: 'Talnet es una marca especializada en la captación, formación y movilidad de profesionales hispanoamericanos hacia oportunidades laborales reales en España, con foco inicial en hostelería (cocina y sala) y expansión a logística, construcción, mantenimiento, limpieza, agricultura y otros sectores. Su objetivo es dar una respuesta ética, legal y profesional a la escasez de personal cualificado, creando relaciones estables entre talento y empresas.',
   },
   {
-    q: '¿Qué perfiles profesionales selecciona TALNET?',
+    q: '¿Qué perfiles profesionales selecciona Talnet?',
     a: 'Trabajamos con perfiles de hostelería (cocineros, chefs de partida, ayudantes de cocina, jefes de sala, camareros especializados, baristas, sommeliers) y de otros sectores demandados en España: operarios de producción, técnicos de mantenimiento, pescaderos senior, recruiters, supervisores de turno, etc. Todos los candidatos pasan por evaluación técnica y de experiencia antes de presentarse a las empresas.',
   },
   {
     q: '¿Cómo funciona el proceso para las empresas?',
-    a: 'TALNET opera con un modelo por proceso cerrado, adaptado al tamaño y necesidades de cada cliente. El servicio incluye captación internacional, evaluación técnica, coordinación documental completa, formación previa (cultura laboral española, certificaciones, inglés funcional cuando aplica) y acompañamiento y seguimiento de la integración del profesional en el negocio.',
+    a: 'Talnet opera con un modelo por proceso cerrado, adaptado al tamaño y necesidades de cada cliente. El servicio incluye captación internacional, evaluación técnica, coordinación documental completa, formación previa (cultura laboral española, certificaciones, inglés funcional cuando aplica) y acompañamiento y seguimiento de la integración del profesional en el negocio.',
   },
   {
     q: '¿Qué apoyo recibe el profesional que viaja a España?',
-    a: 'La persona no viaja sola: TALNET la acompaña desde la primera entrevista hasta su integración en España. Esto incluye formación previa, gestión de trámites legales y de extranjería, acompañamiento emocional, recepción en aeropuerto y seguimiento durante los primeros meses de trabajo.',
+    a: 'La persona no viaja sola: Talnet la acompaña desde la primera entrevista hasta su integración en España. Esto incluye formación previa, gestión de trámites legales y de extranjería, acompañamiento emocional, recepción en aeropuerto y seguimiento durante los primeros meses de trabajo.',
   },
   {
     q: '¿Qué niveles de servicio y política de retención ofrecéis a las empresas?',
-    a: 'Ofrecemos tres niveles: Básico, Estándar y Premium, con distintas intensidades de acompañamiento y volumen (desde 2 hasta unos 30 puestos). Garantía de retención: 3 meses en Básico, 4 en Estándar y 6 en Premium. Si el candidato no completa el periodo de garantía por causas justificadas, TALNET ofrece reposición gratuita o un descuento proporcional en el siguiente proceso.',
+    a: 'Ofrecemos tres niveles: Básico, Estándar y Premium, con distintas intensidades de acompañamiento y volumen (desde 2 hasta unos 30 puestos). Garantía de retención: 3 meses en Básico, 4 en Estándar y 6 en Premium. Si el candidato no completa el periodo de garantía por causas justificadas, Talnet ofrece reposición gratuita o un descuento proporcional en el siguiente proceso.',
   },
 ];
 
@@ -89,21 +90,20 @@ export default async function HomePage() {
     <div className="bg-background">
       {/* HERO */}
       <section className="relative overflow-hidden bg-hero-gradient">
-        <div className="bg-dot-pattern absolute inset-0 opacity-50" aria-hidden="true" />
-        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-          <div className="grid items-center gap-12 lg:grid-cols-[1fr_540px]">
+        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+          <div className="grid items-center gap-12 lg:grid-cols-[1fr_500px]">
             <div>
               <Badge variant="soft" className="mb-6">
                 <Zap className="mr-1 h-3 w-3" />
                 Talento hispanoamericano · Empleos en España
               </Badge>
-              <h1 className="font-display text-5xl leading-[1.05] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+              <h1 className="font-display text-[2.5rem] leading-[1.08] tracking-tight text-foreground sm:text-6xl">
                 Talento que <em className="text-gradient-primary not-italic">viaja</em>,
                 <br />
                 empresas que <em className="text-gradient-primary not-italic">crecen</em>.
               </h1>
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-                TALNET conecta el talento hispanoamericano con oportunidades reales en España.
+                Talnet conecta el talento hispanoamericano con oportunidades reales en España.
                 <strong className="text-foreground"> Captamos, formamos y acompañamos</strong> a profesionales
                 y empresas en cada paso del proceso.
               </p>
@@ -155,16 +155,27 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <HeroFloatingCards />
+            <HeroMarca />
           </div>
         </div>
       </section>
 
       {/* TAGLINE */}
-      <section className="border-y border-border bg-secondary py-12 text-secondary-foreground">
-        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <p className="font-display text-2xl leading-tight italic sm:text-3xl">
-            "Talento que viaja, empresas que crecen, comunidades que prosperan."
+      <section className="relative overflow-hidden bg-secondary py-12 text-secondary-foreground">
+        <BrandPattern
+          pieza="alto"
+          ancla="xMinYMax"
+          className="absolute -left-6 top-0 hidden h-full w-40 text-white/[0.06] sm:block"
+        />
+        <BrandPattern
+          pieza="cuadrado"
+          ancla="xMaxYMin"
+          className="absolute -right-6 top-0 hidden h-full w-40 text-white/[0.06] sm:block"
+        />
+        <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+          <p className="font-display text-2xl leading-snug sm:text-3xl">
+            Talento que viaja, empresas que crecen,{' '}
+            <span className="text-accent-warm dark:text-accent">comunidades que prosperan.</span>
           </p>
         </div>
       </section>
@@ -193,22 +204,11 @@ export default async function HomePage() {
 
       {/* QUIÉNES SOMOS — layout editorial */}
       <section className="relative overflow-hidden border-y border-border bg-secondary py-24 text-secondary-foreground sm:py-32">
-        {/* Patrón decorativo */}
-        <div
-          className="absolute inset-0 opacity-[0.05]"
-          style={{
-            backgroundImage: 'radial-gradient(currentColor 1px, transparent 1px)',
-            backgroundSize: '32px 32px',
-          }}
-          aria-hidden="true"
-        />
-        <div
-          className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-primary/30 blur-3xl"
-          aria-hidden="true"
-        />
-        <div
-          className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-accent/20 blur-3xl"
-          aria-hidden="true"
+        {/* Patrón de marca: la pieza ancha asomando desde abajo a la izquierda */}
+        <BrandPattern
+          pieza="ancho"
+          ancla="xMinYMax"
+          className="absolute bottom-0 left-0 h-64 w-[32rem] max-w-full text-white/[0.05]"
         />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -218,15 +218,15 @@ export default async function HomePage() {
               <Badge className="mb-6 bg-secondary-foreground/10 text-secondary-foreground border-0">
                 Sobre nosotros
               </Badge>
-              <h2 className="font-display text-5xl leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
-                El talento <em className="text-gradient-primary not-italic">no tiene</em> fronteras.
+              <h2 className="font-display text-4xl leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
+                El talento <em className="not-italic text-accent-warm dark:text-accent">no tiene</em> fronteras.
               </h2>
               <p className="mt-6 max-w-md text-lg leading-relaxed opacity-80">
-                TALNET es una marca integral de captación internacional. Simplificamos, profesionalizamos y
+                Talnet es una marca integral de captación internacional. Simplificamos, profesionalizamos y
                 humanizamos toda la movilidad laboral, acompañando a empresas y candidatos en cada paso.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button asChild size="lg" className="bg-accent-warm text-secondary hover:bg-accent-warm/90">
+                <Button asChild size="lg">
                   <Link href="/empresas">
                     Para empresas <ArrowRight className="ml-1.5 h-4 w-4" />
                   </Link>
@@ -270,14 +270,14 @@ export default async function HomePage() {
                     key={p.n}
                     className="group relative grid gap-5 border-b border-secondary-foreground/10 px-6 py-7 transition-colors last:border-b-0 hover:bg-secondary-foreground/[0.04] sm:grid-cols-[80px_1fr] sm:px-8"
                   >
-                    <span className="font-display text-5xl leading-none text-primary/60 transition-colors group-hover:text-accent-warm sm:text-6xl">
+                    <span className="font-display text-4xl leading-none text-accent-warm/60 transition-colors group-hover:text-accent-warm dark:text-accent/60 dark:group-hover:text-accent sm:text-5xl">
                       {p.n}
                     </span>
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary-foreground/60">
                         {p.label}
                       </p>
-                      <h3 className="font-display mt-2 text-2xl leading-snug text-secondary-foreground sm:text-3xl">
+                      <h3 className="font-display mt-2 text-xl leading-snug text-secondary-foreground sm:text-2xl">
                         {p.title}
                       </h3>
                       <p className="mt-3 text-sm leading-relaxed text-secondary-foreground/70">
@@ -354,7 +354,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* CULTURA TALNET */}
+      {/* CULTURA Talnet */}
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="text-center">
           <Badge variant="outline" className="mb-4">Cultura Talnet</Badge>
@@ -379,22 +379,27 @@ export default async function HomePage() {
       </section>
 
       {/* CTA EMPRESAS */}
-      <section className="border-y border-border bg-secondary py-20 text-secondary-foreground">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-secondary py-20 text-secondary-foreground">
+        <BrandPattern
+          pieza="cuadrado"
+          ancla="xMaxYMin"
+          className="absolute right-0 top-0 h-72 w-72 text-white/[0.05]"
+        />
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid items-center gap-10 lg:grid-cols-2">
             <div>
               <Badge className="mb-4 bg-accent-warm text-secondary">
                 <Plane className="mr-1 h-3 w-3" /> Tu partner de reclutamiento
               </Badge>
               <h2 className="font-display text-4xl leading-tight sm:text-5xl">
-                Da el salto con TALNET.
+                Da el salto con Talnet.
               </h2>
               <p className="mt-4 max-w-xl opacity-80">
                 Acompañamos a empresas de toda España en la captación y contratación de talento, gestionando
                 cada proceso de forma profesional, legal y estructurada. Equipos locales en Latinoamérica,
                 estructura legal y operativa consolidada.
               </p>
-              <Button asChild size="lg" className="mt-6 bg-accent-warm text-secondary hover:bg-accent-warm/90">
+              <Button asChild size="lg" className="mt-6">
                 <Link href="/empresas">
                   Solicitar presupuesto <ArrowRight className="ml-1.5 h-4 w-4" />
                 </Link>
@@ -449,23 +454,28 @@ export default async function HomePage() {
       {/* FINAL CTA dual */}
       <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
         <div className="grid gap-6 md:grid-cols-2">
-          <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-accent p-10 text-white">
-            <Building2 className="h-10 w-10" />
-            <h3 className="font-display mt-6 text-3xl leading-tight">
+          <div className="relative overflow-hidden rounded-xl bg-primary p-10 text-white">
+            <BrandPattern
+              pieza="cuadrado"
+              ancla="xMaxYMin"
+              className="absolute -right-4 -top-4 h-44 w-44 text-accent"
+            />
+            <Building2 className="relative h-10 w-10" />
+            <h3 className="font-display relative mt-6 text-3xl leading-tight">
               ¿Tu empresa necesita talento?
             </h3>
-            <p className="mt-3 text-primary-foreground/90">
+            <p className="relative mt-3 text-primary-foreground/90">
               Solicita presupuesto. Tres niveles de servicio (Básico / Estándar / Premium) con garantía de
               retención de hasta 6 meses.
             </p>
-            <Button asChild size="lg" className="mt-6 bg-white text-primary hover:bg-white/90">
+            <Button asChild size="lg" className="relative mt-6 bg-white text-primary hover:bg-white/90">
               <Link href="/empresas">
                 Ver servicios para empresas <ArrowRight className="ml-1.5 h-4 w-4" />
               </Link>
             </Button>
           </div>
 
-          <div className="overflow-hidden rounded-3xl border border-border bg-surface p-10">
+          <div className="overflow-hidden rounded-xl border border-border bg-surface p-10">
             <Users className="h-10 w-10 text-foreground" />
             <h3 className="font-display mt-6 text-3xl leading-tight text-foreground">
               ¿Buscas trabajar en España?

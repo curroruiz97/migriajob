@@ -28,8 +28,10 @@ export function NativeBootstrap() {
       ]);
 
       StatusBar.setOverlaysWebView({ overlay: false }).catch(() => {});
-      StatusBar.setBackgroundColor({ color: '#b55339' }).catch(() => {});
-      StatusBar.setStyle({ style: Style.Light }).catch(() => {}); // texto claro sobre terracota
+      // Azul marino de Talnet (#100E51). Hasta el cambio al manual de marca
+      // seguía el terracota de Migria.
+      StatusBar.setBackgroundColor({ color: '#100E51' }).catch(() => {});
+      StatusBar.setStyle({ style: Style.Dark }).catch(() => {}); // Dark = texto claro, para fondo oscuro
 
       const sub = await App.addListener('backButton', ({ canGoBack }) => {
         if (canGoBack) {

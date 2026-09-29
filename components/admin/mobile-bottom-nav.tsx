@@ -118,7 +118,7 @@ export function MobileBottomNav({
     : menuBase;
   const hasMore = menu.length > 0;
 
-  // Acento unificado: ambos roles usan el terracota (primary) de marca para
+  // Acento unificado: ambos roles usan el azul (primary) de marca para
   // que el resalto sea consistente entre /dashboard y /admin.
   const activeIcon = 'bg-primary-soft text-primary';
   const activeText = 'text-primary';

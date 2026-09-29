@@ -39,8 +39,8 @@ export function MarketingFooter() {
         <div className="grid grid-cols-2 gap-10 md:grid-cols-4">
           <div className="col-span-2 md:col-span-1">
             <Logo height={34} />
-            <p className="mt-4 max-w-xs text-sm italic text-muted-foreground">
-              "Talento que viaja, empresas que crecen, comunidades que prosperan."
+            <p className="mt-4 max-w-xs text-sm text-muted-foreground">
+              Talento que viaja, empresas que crecen, comunidades que prosperan.
             </p>
           </div>
 

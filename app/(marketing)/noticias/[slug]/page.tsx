@@ -117,7 +117,7 @@ export default async function ArticleDetailPage({
 
       {/* CTA */}
       <Container size="md" className="py-20">
-        <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-accent p-10 text-center text-white sm:p-14">
+        <div className="overflow-hidden rounded-xl bg-cta-marca p-10 text-center text-white sm:p-14">
           <h2 className="font-display text-3xl leading-tight sm:text-4xl">
             ¿Hablamos de tu próximo paso?
           </h2>
